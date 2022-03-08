@@ -1,26 +1,25 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { Routes, Route } from "react-router-dom";
+import MainNavbar from "./components/MainNavbar/MainNavbar";
+import AssistantPage from "./components/AssistantPage/AssistantPage";
+import SetupPage from "./components/SetupPage/SetupPage";
+import LoginPage from "./components/LoginPage/LoginPage";
+import {styleWrapper} from "./StyleWrapper";
+import './App.css'
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-        <h1>This should show up when refreshed after save</h1>
-      </header>
-    </div>
+    <>
+      <MainNavbar/>
+      <div className={'content'}>
+        <Routes>
+          <Route path={'/'} element={<AssistantPage />} />
+          <Route path={'/setup'} element={<SetupPage />} />
+          <Route path={'/login'} element={<LoginPage />} />
+        </Routes>
+      </div>
+    </>
   );
 }
 
-export default App;
+export default styleWrapper(App);
