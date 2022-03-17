@@ -1,9 +1,9 @@
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 from pygments.lexers import get_all_lexers
 from pygments.styles import get_all_styles
 
-import Django_API.model_enums
 from Django_API import model_enums
 
 # Create your models here.
@@ -14,11 +14,8 @@ LANGUAGE_CHOICES = sorted([(item[1][0], item[0]) for item in LEXERS])
 STYLE_CHOICES = sorted([(item, item) for item in get_all_styles()])
 
 
-class User(models.Model):
-    name = models.CharField(max_length=30, blank=False, default='')
-    password = models.CharField(max_length=30, blank=False, default='')
-    email = models.EmailField(max_length=30, blank=False, default='')
-    accessLevel = models.ForeignKey(Django_API.model_enums.AccessLevelChoices, on_delete=models.CASCADE)
+class User(AbstractUser):
+    accessLevel = models.CharField(max_length=255, choices=model_enums.AccessLevelChoices)
 
 
 class RegistrationRequest(models.Model):
@@ -46,7 +43,7 @@ class TimeSlot(models.Model):
 class Course(models.Model):
     course_title = models.CharField(max_length=30, blank=False, default='')
     course_number = models.CharField(max_length=4, blank=False, default='')
-    subject_disciplines = models.ForeignKey(Django_API.model_enums.DisciplineChoices, on_delete=models.CASCADE)
+    subject_disciplines = models.CharField(choices=model_enums.DisciplineChoices, max_length=255, blank=True, null=True)
 
 
 class Section(models.Model):
@@ -55,9 +52,9 @@ class Section(models.Model):
 
 
 class Instructor(models.Model):
-    lastName = models.CharField(max_length=30, blank=False, default='')
-    maxSections = models.IntegerField(max_length=2, blank=False, default='1')
-    qualifications = models.ForeignKey(Django_API.model_enums.DisciplineChoices, on_delete=models.CASCADE)
+    lastName = models.CharField(max_length=30)
+    maxSections = models.IntegerField(max_length=2, default='1')
+    qualifications = models.CharField(choices=model_enums.DisciplineChoices, max_length=255, blank=True, null=True)
 
 
 class Snippet(models.Model):
