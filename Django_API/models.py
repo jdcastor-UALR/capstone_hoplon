@@ -3,7 +3,11 @@ from django.db import models
 from pygments.lexers import get_all_lexers
 from pygments.styles import get_all_styles
 
+import Django_API.model_enums
+from Django_API import model_enums
+
 # Create your models here.
+from Django_API.model_enums import AccessLevelChoices
 
 LEXERS = [item for item in get_all_lexers() if item[1]]
 LANGUAGE_CHOICES = sorted([(item[1][0], item[0]) for item in LEXERS])
@@ -14,26 +18,13 @@ class User(models.Model):
     name = models.CharField(max_length=30, blank=False, default='')
     password = models.CharField(max_length=30, blank=False, default='')
     email = models.EmailField(max_length=30, blank=False, default='')
-    # AccessLevel
+    accessLevel = models.ForeignKey(Django_API.model_enums.AccessLevelChoices, on_delete=models.CASCADE)
 
 
 class RegistrationRequest(models.Model):
-    Root = 'Root'
-    Admin = 'Admin'
-    Assistant = 'Assistant'
-    Public = 'Public'
-
-    ACCESS_LEVEL_CHOICES = [
-        (Root, 'Root'),
-        (Admin, 'Admin'),
-        (Assistant, 'Assistant'),
-        (Public, 'Public')
-    ]
-
     access_level = models.CharField(
         max_length=9,
-        choices=ACCESS_LEVEL_CHOICES,
-        default=Public,
+        choices=AccessLevelChoices.choices,
         blank=False
     )
 
@@ -55,7 +46,7 @@ class TimeSlot(models.Model):
 class Course(models.Model):
     course_title = models.CharField(max_length=30, blank=False, default='')
     course_number = models.CharField(max_length=4, blank=False, default='')
-    subject_disciplines = models.CharField(max_length=100, blank=False, default='')
+    subject_disciplines = models.ForeignKey(Django_API.model_enums.DisciplineChoices, on_delete=models.CASCADE)
 
 
 class Section(models.Model):
@@ -66,7 +57,7 @@ class Section(models.Model):
 class Instructor(models.Model):
     lastName = models.CharField(max_length=30, blank=False, default='')
     maxSections = models.IntegerField(max_length=2, blank=False, default='1')
-    # qualifications = models.Discipline
+    qualifications = models.ForeignKey(Django_API.model_enums.DisciplineChoices, on_delete=models.CASCADE)
 
 
 class Snippet(models.Model):
