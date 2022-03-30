@@ -15,12 +15,20 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from rest_framework.urlpatterns import format_suffix_patterns
 
-from Django_API.views import InstructorView
+from Django_API.views import InstructorView, UserView, RegistrationRequestView, SessionView, SectionView, CourseView, TimeSlotView
 from .views import index
 
 urlpatterns = [
     path('', index, name='index'),
     path('admin/', admin.site.urls),
-    path('api/instructor/', InstructorView.as_view(), name='instructor')
+    path('api/instructor/', InstructorView.as_view(), name='instructor'),
+    path('api/user/', UserView.as_view(), name='user'),
+    path('api/registrationrequest/', RegistrationRequestView.as_view(), name='registration'),
+    path('api/session/', SessionView.as_view(), name='session'),
+    path('api/section/', SectionView.as_view(), name='section'),
+    path('api/course/', CourseView.as_view(), name='course')
 ]
+
+urlpatterns = format_suffix_patterns(urlpatterns)

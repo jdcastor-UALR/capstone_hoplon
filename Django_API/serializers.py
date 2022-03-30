@@ -1,5 +1,10 @@
 from rest_framework import serializers
-from Django_API.models import Snippet, LANGUAGE_CHOICES, STYLE_CHOICES
+
+from Django_API import model_enums
+from Django_API.models import Snippet, LANGUAGE_CHOICES, STYLE_CHOICES, User, RegistrationRequest, Session, Section, \
+    TimeSlot, \
+    Course, Instructor
+
 
 class SnippetSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
@@ -26,3 +31,45 @@ class SnippetSerializer(serializers.Serializer):
         instance.style = validated_data.get('style', instance.style)
         instance.save()
         return instance
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['AccessLevel']
+
+
+class RegistrationRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RegistrationRequest
+        fields = ['access_level', 'requested_username', 'requested_password', 'contact_email']
+
+
+class SessionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Session
+        fields = ['associated_user']
+
+
+class TimeSlotSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TimeSlot
+        fields = ['begin_time', 'end_time']
+
+
+class CourseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Course
+        fields = ['course_title', 'course_number', 'subject_disciplines']
+
+
+class SectionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Section
+        fields = ['course', 'MeetingTimes']
+
+
+class InstructorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Instructor
+        fields = ['lastName', 'maxSections', 'qualifications']

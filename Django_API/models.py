@@ -17,6 +17,9 @@ STYLE_CHOICES = sorted([(item, item) for item in get_all_styles()])
 class User(AbstractUser):
     accessLevel = models.CharField(max_length=255, choices=model_enums.AccessLevelChoices)
 
+    class Meta:
+        ordering = ['created']
+
 
 class RegistrationRequest(models.Model):
     access_level = models.CharField(
@@ -29,15 +32,24 @@ class RegistrationRequest(models.Model):
     requested_password = models.CharField(max_length=30, blank=False, default='')
     contact_email = models.EmailField(max_length=30, blank=False, default='')
 
+    class Meta:
+        ordering = ['created']
+
 
 class Session(models.Model):
     # Id = Session ID, which is automatically generated
     associated_user = models.ForeignKey(User, on_delete=models.CASCADE)
 
+    class Meta:
+        ordering = ['created']
+
 
 class TimeSlot(models.Model):
     begin_time = models.DateTimeField()
     end_time = models.DateTimeField()
+
+    class Meta:
+        ordering = ['created']
 
 
 class Course(models.Model):
@@ -45,16 +57,25 @@ class Course(models.Model):
     course_number = models.CharField(max_length=4, blank=False, default='')
     subject_disciplines = models.CharField(choices=model_enums.DisciplineChoices, max_length=255, blank=True, null=True)
 
+    class Meta:
+        ordering = ['created']
+
 
 class Section(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     meetingTimes = models.ForeignKey(TimeSlot, on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ['created']
 
 
 class Instructor(models.Model):
     lastName = models.CharField(max_length=30)
     maxSections = models.IntegerField(max_length=2, default='1')
     qualifications = models.CharField(choices=model_enums.DisciplineChoices, max_length=255, blank=True, null=True)
+
+    class Meta:
+        ordering = ['created']
 
 
 class Snippet(models.Model):
@@ -64,7 +85,6 @@ class Snippet(models.Model):
     linenos = models.BooleanField(default=False)
     language = models.CharField(choices=LANGUAGE_CHOICES, default='python', max_length=100)
     style = models.CharField(choices=STYLE_CHOICES, default='friendly', max_length=100)
-
 
     class Meta:
         ordering = ['created']
