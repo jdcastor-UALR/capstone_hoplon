@@ -15,7 +15,7 @@ STYLE_CHOICES = sorted([(item, item) for item in get_all_styles()])
 
 
 class User(AbstractUser):
-    accessLevel = models.CharField(max_length=255, choices=model_enums.AccessLevelChoices)
+    accessLevel = models.CharField(max_length=255, choices=AccessLevelChoices.choices)
 
 
 class RegistrationRequest(models.Model):
@@ -31,7 +31,6 @@ class RegistrationRequest(models.Model):
 
 
 class Session(models.Model):
-    # Id = Session ID, which is automatically generated
     associated_user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
@@ -40,31 +39,23 @@ class TimeSlot(models.Model):
     end_time = models.DateTimeField()
 
 
+class Discipline(models.Model):
+    name = models.CharField(max_length=255)
+
+
 class Course(models.Model):
     course_title = models.CharField(max_length=30, blank=False, default='')
     course_number = models.CharField(max_length=4, blank=False, default='')
-    subject_disciplines = models.CharField(choices=model_enums.DisciplineChoices, max_length=255, blank=True, null=True)
+    subject_disciplines = models.ManyToManyField(Discipline, blank=True)
 
 
 class Section(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    meetingTimes = models.ForeignKey(TimeSlot, on_delete=models.CASCADE)
+    meetingTimes = models.ManyToManyField(TimeSlot)
 
 
 class Instructor(models.Model):
     lastName = models.CharField(max_length=30)
-    maxSections = models.IntegerField(max_length=2, default='1')
-    qualifications = models.CharField(choices=model_enums.DisciplineChoices, max_length=255, blank=True, null=True)
+    maxSections = models.IntegerField(default='1')
+    qualifications = models.ManyToManyField(Discipline, blank=True)
 
-
-class Snippet(models.Model):
-    created = models.DateTimeField(auto_now_add=True)
-    title = models.CharField(max_length=100, blank=True, default='')
-    code = models.TextField()
-    linenos = models.BooleanField(default=False)
-    language = models.CharField(choices=LANGUAGE_CHOICES, default='python', max_length=100)
-    style = models.CharField(choices=STYLE_CHOICES, default='friendly', max_length=100)
-
-
-    class Meta:
-        ordering = ['created']
