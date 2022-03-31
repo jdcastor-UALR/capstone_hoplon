@@ -7,7 +7,7 @@ from rest_framework.response import Response
 
 from Django_API.models import Instructor, User, RegistrationRequest, Session, TimeSlot, Course, Section
 from Django_API.serializers import UserSerializer, RegistrationRequestSerializer, SessionSerializer, TimeSlotSerializer, \
-    CourseSerializer, SectionSerializer, InstructorSerializer
+    CourseSerializer, SectionSerializer, InstructorSerializer, DisciplineSerializer
 
 
 class UserView(APIView):
@@ -194,6 +194,14 @@ class SectionView(APIView):
         section = self.get_object(pk)
         section.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class DisciplineView(APIView):
+
+    def get(self, request, **kwargs):
+        disciplines = DisciplineSerializer.objects.all()
+        serializer = DisciplineSerializer(disciplines, many=True)
+        return Response(serializer.data)
 
 
 class InstructorView(APIView):
