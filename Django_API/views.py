@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from Django_API.models import Instructor, User, RegistrationRequest, Session, TimeSlot, Course, Section
+from Django_API.models import Instructor, User, RegistrationRequest, Session, TimeSlot, Course, Section, Discipline
 from Django_API.serializers import UserSerializer, RegistrationRequestSerializer, SessionSerializer, TimeSlotSerializer, \
     CourseSerializer, SectionSerializer, InstructorSerializer, DisciplineSerializer
 
@@ -168,7 +168,7 @@ class CourseView(APIView):
 class SectionView(APIView):
     # Read
     def get(self, request, **kwargs, ):
-        section = SectionSerializer.objects.all()
+        section = Section.objects.all()
         serializer = SectionSerializer(section, many=True)
         return Response(serializer.data)
 
@@ -199,7 +199,7 @@ class SectionView(APIView):
 class DisciplineView(APIView):
 
     def get(self, request, **kwargs):
-        disciplines = DisciplineSerializer.objects.all()
+        disciplines = Discipline.objects.all()
         serializer = DisciplineSerializer(disciplines, many=True)
         return Response(serializer.data)
 

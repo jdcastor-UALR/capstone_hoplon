@@ -17,7 +17,8 @@ from django.contrib import admin
 from django.urls import path
 from rest_framework.urlpatterns import format_suffix_patterns
 
-from Django_API.views import InstructorView, UserView, RegistrationRequestView, SessionView, SectionView, CourseView, TimeSlotView
+from Django_API.views import InstructorView, UserView, RegistrationRequestView, SessionView, SectionView, CourseView, \
+    TimeSlotView, DisciplineView
 from .views import index
 
 urlpatterns = [
@@ -28,7 +29,8 @@ urlpatterns = [
     path('api/registrationrequest/', RegistrationRequestView.as_view(), name='registration'),
     path('api/session/', SessionView.as_view(), name='session'),
     path('api/section/', SectionView.as_view(), name='section'),
-    path('api/course/', CourseView.as_view(), name='course')
+    path('api/course/', CourseView.as_view(), name='course'),
+    path('api/discipline/', DisciplineView.as_view(), name='disciplines')
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

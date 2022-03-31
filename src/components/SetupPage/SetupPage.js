@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 import Grid from "@material-ui/core/Grid";
 import Divider from "@material-ui/core/Divider";
@@ -57,10 +57,14 @@ const ClassList = (classes) => {
 const SetupPage = () => {
   const theme = useTheme();
 
+  const [disciplines, setDisciplines] = useState([]);
+  const [instructors, setInstructors] = useState([]);
+  const [classes, setClasses] = useState([]);
+
   const dummyInstructors = [
-    {lastName: 'Smith', maxSections: 5, qualifications: ['Programming', 'Data Structures']},
-    {lastName: 'Smith', maxSections: 5, qualifications: ['Programming', 'Data Structures']},
-    {lastName: 'Smith', maxSections: 5, qualifications: ['Programming', 'Data Structures']},
+    {lastName: 'Smith', maxSections: 5, qualifications: [{name: 'Programming'}, {name: 'Data Structures'}]},
+    {lastName: 'Smith', maxSections: 5, qualifications: [{name: 'Programming'}, {name: 'Data Structures'}]},
+    {lastName: 'Smith', maxSections: 5, qualifications: [{name: 'Programming'}, {name: 'Data Structures'}]},
   ];
 
   const dummyClasses = [
@@ -69,6 +73,30 @@ const SetupPage = () => {
     {courseTitle: 'Programming 1', courseNumber: 1135, subjectDisciplines: ['Programming', 'Algorithms'],
       meetingTimes: 'TR 9:25 AM'},
   ];
+
+  useEffect(() => {
+    const getDisciplines = async () => {
+      const response = await fetch('/api/discipline/');
+      const data = await response.json();
+      setDisciplines(data);
+    }
+
+    const getInstructors = async () => {
+      const response = await fetch('/api/instructor/');
+      const data = await response.json();
+      setInstructors(data);
+    }
+
+    const getClasses = async () => {
+      const response = await fetch('/api/section/');
+      const data = await response.json();
+      setClasses(data);
+    }
+
+    getDisciplines().catch(console.error);
+    getInstructors().catch(console.error);
+    getClasses().catch(console.error);
+  }, []);
 
   return (
     <div data-testid="SetupPage">
@@ -79,7 +107,7 @@ const SetupPage = () => {
           </Typography>
           <div style={{padding: '1rem 5rem'}}>
             <List style={{border: `1px #0000001f solid`}}>
-              {InstructorList(dummyInstructors)}
+              {InstructorList(instructors)}
               <ListItem button>
                 <ListItemIcon><AddIcon /></ListItemIcon>
                 <ListItemText primary={'Add New'} />

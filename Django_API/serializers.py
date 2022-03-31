@@ -63,16 +63,18 @@ class CourseSerializer(serializers.ModelSerializer):
 class SectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Section
-        fields = ['course', 'MeetingTimes']
+        fields = ['course', 'meetingTimes']
 
 
 class DisciplineSerializer(serializers.ModelSerializer):
     class Meta:
         model = Discipline
-        fields = ['name']
+        fields = ['id', 'name']
 
 
 class InstructorSerializer(serializers.ModelSerializer):
+    qualifications = DisciplineSerializer(read_only=True, many=True)
+
     class Meta:
         model = Instructor
-        fields = ['lastName', 'maxSections', 'qualifications']
+        fields = '__all__'
