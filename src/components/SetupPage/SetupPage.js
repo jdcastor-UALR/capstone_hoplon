@@ -4,55 +4,8 @@ import Grid from "@material-ui/core/Grid";
 import Divider from "@material-ui/core/Divider";
 import useTheme from "@material-ui/core/styles/useTheme";
 import Typography from "@material-ui/core/Typography";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import EditIcon from "@material-ui/icons/Edit"
-import AddIcon from "@material-ui/icons/Add"
-import IconButton from "@material-ui/core/IconButton";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
-
-const InstructorList = (instructors) => {
-  let listItems = [];
-
-  for (let instructor of instructors) {
-    listItems.push(
-      <ListItem>
-        <ListItemText primary={instructor.lastName}
-                      secondary={'Assignment Limit: ' + instructor.maxSections.toString()} />
-        <ListItemSecondaryAction>
-          <IconButton edge={"end"} aria-label={"edit"}>
-            <EditIcon />
-          </IconButton>
-        </ListItemSecondaryAction>
-      </ListItem>
-    );
-    listItems.push(<Divider />);
-  }
-
-  return listItems;
-};
-
-const ClassList = (classes) => {
-  let listItems = [];
-
-  for (let cls of classes) {
-    listItems.push(
-      <ListItem>
-        <ListItemText primary={cls.courseTitle} secondary={'CPSC ' + cls.courseNumber + ' - ' + cls.meetingTimes} />
-        <ListItemSecondaryAction>
-          <IconButton edge={"end"} aria-label={"edit"}>
-            <EditIcon />
-          </IconButton>
-        </ListItemSecondaryAction>
-      </ListItem>
-    );
-    listItems.push(<Divider />);
-  }
-
-  return listItems;
-};
+import InstructorList from "./InstructorList/InstructorList";
+import ClassList from "./ClassList/ClassList";
 
 const SetupPage = () => {
   const theme = useTheme();
@@ -61,11 +14,11 @@ const SetupPage = () => {
   const [instructors, setInstructors] = useState([]);
   const [classes, setClasses] = useState([]);
 
-  const dummyInstructors = [
-    {lastName: 'Smith', maxSections: 5, qualifications: [{name: 'Programming'}, {name: 'Data Structures'}]},
-    {lastName: 'Smith', maxSections: 5, qualifications: [{name: 'Programming'}, {name: 'Data Structures'}]},
-    {lastName: 'Smith', maxSections: 5, qualifications: [{name: 'Programming'}, {name: 'Data Structures'}]},
-  ];
+  // const dummyInstructors = [
+  //   {lastName: 'Smith', maxSections: 5, qualifications: [{name: 'Programming'}, {name: 'Data Structures'}]},
+  //   {lastName: 'Smith', maxSections: 5, qualifications: [{name: 'Programming'}, {name: 'Data Structures'}]},
+  //   {lastName: 'Smith', maxSections: 5, qualifications: [{name: 'Programming'}, {name: 'Data Structures'}]},
+  // ];
 
   const dummyClasses = [
     {courseTitle: 'Programming 1', courseNumber: 1135, subjectDisciplines: ['Programming', 'Algorithms'],
@@ -106,13 +59,7 @@ const SetupPage = () => {
             Teaching Staff
           </Typography>
           <div style={{padding: '1rem 5rem'}}>
-            <List style={{border: `1px #0000001f solid`}}>
-              {InstructorList(instructors)}
-              <ListItem button>
-                <ListItemIcon><AddIcon /></ListItemIcon>
-                <ListItemText primary={'Add New'} />
-              </ListItem>
-            </List>
+            <InstructorList instructors={instructors} disciplines={disciplines} />
           </div>
         </Grid>
         <Divider orientation={"vertical"} flexItem />
@@ -121,13 +68,7 @@ const SetupPage = () => {
             Class Roster
           </Typography>
           <div style={{padding: '1rem 5rem'}}>
-            <List style={{border: `1px #0000001f solid`}}>
-              {ClassList(dummyClasses)}
-              <ListItem button>
-                <ListItemIcon><AddIcon /></ListItemIcon>
-                <ListItemText primary={'Add New'} />
-              </ListItem>
-            </List>
+            <ClassList classes={dummyClasses} disciplines={disciplines} />
           </div>
         </Grid>
       </Grid>
