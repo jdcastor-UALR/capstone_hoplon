@@ -9,6 +9,8 @@ import TextField from "@material-ui/core/TextField";
 import MenuItem from "@material-ui/core/MenuItem";
 import Grid from "@material-ui/core/Grid";
 import Chip from "@material-ui/core/Chip";
+import APIService from "../../../APIService";
+import {URL_INSTRUCTORS} from "../../../urls";
 
 
 const InstructorForm = (props) => {
@@ -61,18 +63,42 @@ const InstructorForm = (props) => {
 
 
 const InstructorDialog = (props) => {
-  const { create, open, setOpen, row, disciplines } = props;
+  const { create, open, setOpen, row, disciplines, setInstructors } = props;
+  const [instructorFormData, setInstructorFormData] = useState(
+    {lastName: null, maxSections: null, qualifications: []}
+    );
+
   const title = (create) ? 'Create Instructor' : 'Edit Instructor';
 
   const close = () => setOpen(false);
 
-  const [instructor, setInstructor] = useState({lastName: null, maxSections: null, qualifications: []});
+  const onSubmit = () => {
+    let data = {...instructorFormData, qualifications: instructorFormData.qualifications.map(obj => obj.id)};
+    console.log(data);
+
+    if (create) {
+      APIService.post(URL_INSTRUCTORS, data).then((data) => {
+        setInstructors((instructors) => instructors.concat([data]));
+        setOpen(false);
+      }, (error) => console.log(error));
+    } else {
+      APIService.put(URL_INSTRUCTORS, data).then(() => {
+        setInstructors((instructors) => {
+          const rowIndex = instructors.findIndex(instructor => instructor.id === instructorFormData.id);
+          const instructorsCopy = instructors.slice(0);
+          instructorsCopy[rowIndex] = instructorFormData;
+          return instructorsCopy;
+        });
+        setOpen(false);
+      }, (error) => console.log(error));
+    }
+  }
 
   useEffect(() => {
     if (open && !create) {
-      setInstructor(row);
+      setInstructorFormData(row);
     } else if (open && create) {
-      setInstructor({lastName: null, maxSections: null, qualifications: []});
+      setInstructorFormData({lastName: null, maxSections: null, qualifications: []});
     }
   }, [open]);
 
@@ -84,12 +110,12 @@ const InstructorDialog = (props) => {
               fullWidth maxWidth={"sm"}>
         <DialogTitle id="instructor-dialog">{title}</DialogTitle>
         <DialogContent>
-          <InstructorForm row={instructor} setRow={setInstructor} disciplines={disciplines} />
+          <InstructorForm row={instructorFormData} setRow={setInstructorFormData} disciplines={disciplines} />
         </DialogContent>
         <DialogActions>
           <Button variant={"contained"} onClick={close} color={"default"}>Cancel</Button>
-          <Button variant={"contained"} disabled={!instructor.lastName || !instructor.maxSections}
-                  onClick={() => console.log(instructor)} color={"primary"}>Submit</Button>
+          <Button variant={"contained"} disabled={!instructorFormData.lastName || !instructorFormData.maxSections}
+                  onClick={onSubmit} color={"primary"}>Submit</Button>
         </DialogActions>
       </Dialog>
     </div>

@@ -57,7 +57,7 @@ const SetupPage = () => {
             Teaching Staff
           </Typography>
           <div style={{padding: '1rem 5rem'}}>
-            <InstructorList instructors={instructors} disciplines={disciplines} />
+            <InstructorList instructors={instructors} setInstructors={setInstructors} disciplines={disciplines} />
           </div>
         </Grid>
         <Divider orientation={"vertical"} flexItem />
