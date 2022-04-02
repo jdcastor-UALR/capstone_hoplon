@@ -204,7 +204,7 @@ class DisciplineView(APIView):
         return Response(serializer.data)
 
 
-class InstructorView(APIView):
+class InstructorsView(APIView):
     # Read
     def get(self, request, **kwargs, ):
         instructor = Instructor.objects.all()
@@ -219,9 +219,23 @@ class InstructorView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+class InstructorView(APIView):
+    # Read
+    def get(self, request, instructor_id, **kwargs):
+        try:
+            instructor = Instructor.objects.get(id=instructor_id)
+        except Instructor.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = InstructorSerializer(instructor)
+        return Response(serializer.data)
+
     # Update
-    def put(self, request, pk, **kwargs):
-        instructor = self.get_object(pk)
+    def put(self, request, instructor_id, **kwargs):
+        try:
+            instructor = Instructor.objects.get(id=instructor_id)
+        except Instructor.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = InstructorSerializer(instructor, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -229,7 +243,10 @@ class InstructorView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # Delete
-    def delete(self, request, pk, **kwargs):
-        instructor = self.get_object(pk)
+    def delete(self, request, instructor_id, **kwargs):
+        try:
+            instructor = Instructor.objects.get(id=instructor_id)
+        except Instructor.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
         instructor.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

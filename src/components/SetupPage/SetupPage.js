@@ -6,6 +6,8 @@ import useTheme from "@material-ui/core/styles/useTheme";
 import Typography from "@material-ui/core/Typography";
 import InstructorList from "./InstructorList/InstructorList";
 import ClassList from "./ClassList/ClassList";
+import APIService from "../../APIService";
+import {URL_CLASSES, URL_DISCIPLINES, URL_INSTRUCTORS} from "../../urls";
 
 const SetupPage = () => {
   const theme = useTheme();
@@ -28,27 +30,23 @@ const SetupPage = () => {
   ];
 
   useEffect(() => {
-    const getDisciplines = async () => {
-      const response = await fetch('/api/discipline/');
-      const data = await response.json();
+    APIService.get(URL_DISCIPLINES).then((data) => {
       setDisciplines(data);
-    }
+    }, (error) => {
+      console.error(error);
+    });
 
-    const getInstructors = async () => {
-      const response = await fetch('/api/instructor/');
-      const data = await response.json();
+    APIService.get(URL_INSTRUCTORS).then((data) => {
       setInstructors(data);
-    }
+    }, (error) => {
+      console.error(error);
+    });
 
-    const getClasses = async () => {
-      const response = await fetch('/api/section/');
-      const data = await response.json();
+    APIService.get(URL_CLASSES).then((data) => {
       setClasses(data);
-    }
-
-    getDisciplines().catch(console.error);
-    getInstructors().catch(console.error);
-    getClasses().catch(console.error);
+    }, (error) => {
+      console.error(error);
+    });
   }, []);
 
   return (

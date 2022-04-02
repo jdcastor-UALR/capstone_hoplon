@@ -18,13 +18,14 @@ from django.urls import path
 from rest_framework.urlpatterns import format_suffix_patterns
 
 from Django_API.views import InstructorView, UserView, RegistrationRequestView, SessionView, SectionView, CourseView, \
-    TimeSlotView, DisciplineView
+    TimeSlotView, DisciplineView, InstructorsView
 from .views import index
 
 urlpatterns = [
     path('', index, name='index'),
     path('admin/', admin.site.urls),
-    path('api/instructor/', InstructorView.as_view(), name='instructor'),
+    path('api/instructor/', InstructorsView.as_view(), name='instructors'),
+    path('api/instructor/<int:instructor_id>', InstructorView.as_view(), name='instructor'),
     path('api/user/', UserView.as_view(), name='user'),
     path('api/registrationrequest/', RegistrationRequestView.as_view(), name='registration'),
     path('api/session/', SessionView.as_view(), name='session'),
