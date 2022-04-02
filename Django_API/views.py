@@ -6,8 +6,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from Django_API.models import Instructor, User, RegistrationRequest, Session, TimeSlot, Course, Section, Discipline
-from Django_API.serializers import UserSerializer, RegistrationRequestSerializer, SessionSerializer, TimeSlotSerializer, \
-    CourseSerializer, SectionSerializer, InstructorSerializer, DisciplineSerializer
+from Django_API.serializers import UserSerializer, RegistrationRequestSerializer, SessionSerializer, \
+    TimeSlotSerializer, CourseSerializer, SectionSerializer, InstructorSerializer, DisciplineSerializer
 
 
 class UserList(APIView):

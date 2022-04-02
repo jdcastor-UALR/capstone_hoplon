@@ -10,10 +10,10 @@ class AccessLevelChoices(models.TextChoices):
 
 
 class SectionDayChoices(models.TextChoices):
-    Sunday = 'sunday', _('Sunday')
-    Monday = 'monday', _('Monday')
-    Tuesday = 'tuesday', _('Tuesday')
-    Wednesday = 'wednesday', _('Wednesday')
-    Thursday = 'thursday', _('Thursday')
-    Friday = 'friday', _('Friday')
-    Saturday = 'saturday', _('Saturday')
+    Sunday = 'Sun.', _('Sunday')
+    Monday = 'Mon.', _('Monday')
+    Tuesday = 'Tu.', _('Tuesday')
+    Wednesday = 'Wed.', _('Wednesday')
+    Thursday = 'Th.', _('Thursday')
+    Friday = 'Fri.', _('Friday')
+    Saturday = 'Sat.', _('Saturday')

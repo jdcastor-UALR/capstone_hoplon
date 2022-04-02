@@ -13,16 +13,6 @@ class Command(BaseCommand):
         {'lastName': 'Roberts', 'maxSections': 3, 'qualifications': []}
     ]
 
-    sections = [
-        {'courseTitle': 'AI', 'meetingTimes':
-            [
-                {'begin_time': '10:10',
-                 'end_time': '10:11',
-                 'meetingDays': 'sunday'}
-            ]
-        }
-    ]
-
     courses = [
         {'course_title': 'AI', 'course_number': '4383', 'subject_disciplines':
             ['Python Programming', 'Artificial Intelligence']},
@@ -30,6 +20,34 @@ class Command(BaseCommand):
             ['Python Programming', 'Artificial Intelligence']},
         {'course_title': 'Software Engineering', 'course_number': '4301', 'subject_disciplines':
             ['Python Programming', 'Artificial Intelligence']}
+    ]
+
+    sections = [
+        {'courseTitle': 'AI', 'meetingTimes':
+            [
+                {'begin_time': '10:10', 'end_time': '11:00', 'meetingDays': 'Sun.'},
+                {'begin_time': '10:10', 'end_time': '11:00', 'meetingDays': 'Wed.'},
+                {'begin_time': '13:00', 'end_time': '13:50', 'meetingDays': 'Fri.'}
+            ]
+         },
+        {'courseTitle': 'Capstone Project', 'meetingTimes':
+            [
+                {'begin_time': '9:25', 'end_time': '10:40', 'meetingDays': 'Tu.'},
+                {'begin_time': '9:25', 'end_time': '10:40', 'meetingDays': 'Th.'}
+            ]
+         },
+        {'courseTitle': 'Capstone Project', 'meetingTimes':
+            [
+                {'begin_time': '16:25', 'end_time': '17:40', 'meetingDays': 'Mon.'},
+                {'begin_time': '16:25', 'end_time': '17:40', 'meetingDays': 'Wed.'}
+            ]
+         },
+        {'courseTitle': 'Software Engineering', 'meetingTimes':
+            [
+                {'begin_time': '16:25', 'end_time': '17:40', 'meetingDays': 'Wed.'},
+                {'begin_time': '16:25', 'end_time': '17:40', 'meetingDays': 'Fri.'}
+            ]
+         }
     ]
 
     def handle(self, *args, **options):
@@ -41,6 +59,7 @@ class Command(BaseCommand):
         Course.objects.all().delete()
         Section.objects.all().delete()
         TimeSlot.objects.all().delete()
+
         # Loop For Instructors
         for instructor in self.instructors:
             new_instructor = Instructor(lastName=instructor['lastName'], maxSections=instructor['maxSections'])
