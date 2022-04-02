@@ -75,7 +75,7 @@ class SectionSerializer(serializers.ModelSerializer):
         model = Section
         fields = '__all__'
 
-    def stringmeetingtimes(self, instance, validated_data, meetingtimestring):
+    def stringify(self, instance, validated_data, meetingtimestring):
         self.meetingtimestring = meetingtimestring
         # sectionMeetings = self.meetingTimes.objects.all()
         # return meetingTimeString

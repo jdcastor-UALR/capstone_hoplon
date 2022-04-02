@@ -28,18 +28,13 @@ class UserList(APIView):
 
 class UserDetail(APIView):
     # Read
-    def get(self, request, **kwargs, ):
-        user = User.objects.all()
-        serializer = UserSerializer(user, many=True)
+    def get(self, request, user_id, **kwargs):
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = UserSerializer(user)
         return Response(serializer.data)
-
-    # Create
-    def post(self, request, **kwargs):
-        serializer = UserSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # Update
     def put(self, request, user_id, **kwargs):
@@ -75,18 +70,13 @@ class RegistrationRequestList(APIView):
 
 class RegistrationRequestDetail(APIView):
     # Read
-    def get(self, request, **kwargs, ):
-        registration_request = RegistrationRequest.objects.all()
-        serializer = RegistrationRequestSerializer(registration_request, many=True)
+    def get(self, request, registration_request_id, **kwargs):
+        try:
+            registration_request = RegistrationRequest.objects.get(id=registration_request_id)
+        except RegistrationRequest.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = RegistrationRequestSerializer(registration_request)
         return Response(serializer.data)
-
-    # Create
-    def post(self, request, **kwargs):
-        serializer = RegistrationRequestSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # Update
     def put(self, request, registration_request_id, **kwargs):
@@ -122,18 +112,13 @@ class SessionList(APIView):
 
 class SessionDetail(APIView):
     # Read
-    def get(self, request, **kwargs, ):
-        session = Session.objects.all()
-        serializer = SessionSerializer(session, many=True)
+    def get(self, request, session_id, **kwargs):
+        try:
+            session = Session.objects.get(id=session_id)
+        except Session.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = SessionSerializer(session)
         return Response(serializer.data)
-
-    # Create
-    def post(self, request, **kwargs):
-        serializer = SessionSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # Update
     def put(self, request, session_id, **kwargs):
@@ -169,18 +154,13 @@ class TimeSlotList(APIView):
 
 class TimeSlotDetail(APIView):
     # Read
-    def get(self, request, **kwargs, ):
-        time_slot = TimeSlot.objects.all()
-        serializer = TimeSlotSerializer(time_slot, many=True)
+    def get(self, request, time_slot_id, **kwargs):
+        try:
+            time_slot = TimeSlot.objects.get(id=time_slot_id)
+        except TimeSlot.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = TimeSlotSerializer(time_slot)
         return Response(serializer.data)
-
-    # Create
-    def post(self, request, **kwargs):
-        serializer = TimeSlotSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # Update
     def put(self, request, time_slot_id, **kwargs):
@@ -216,18 +196,13 @@ class CourseList(APIView):
 
 class CourseDetail(APIView):
     # Read
-    def get(self, request, **kwargs, ):
-        course = Course.objects.all()
-        serializer = CourseSerializer(course, many=True)
+    def get(self, request, course_id, **kwargs):
+        try:
+            course = Course.objects.get(id=course_id)
+        except Course.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = CourseSerializer(course)
         return Response(serializer.data)
-
-    # Create
-    def post(self, request, **kwargs):
-        serializer = CourseSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # Update
     def put(self, request, course_id, **kwargs):
@@ -263,18 +238,21 @@ class SectionList(APIView):
 
 class SectionDetail(APIView):
     # Read
-    def get(self, request, **kwargs, ):
-        section = Section.objects.all()
-        serializer = SectionSerializer(section, many=True)
-        return Response(serializer.data)
+    def prettyTimeString(self, section_id):
+        prettyString = ""
+        for time_slot in TimeSlot.objects.all().filter(section=section_id):
+            prettyString += ("bruh {} bruh {} bruh {}").format(time_slot.begin_time, time_slot.end_time, time_slot.meetingDays)
 
-    # Create
-    def post(self, request, **kwargs):
-        serializer = SectionSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return prettyString
+
+    def get(self, request, section_id, **kwargs):
+        try:
+            section = Section.objects.get(id=section_id)
+            section.meetingTimeString = self.prettyTimeString(section_id)
+        except Section.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = SectionSerializer(section)
+        return Response(serializer.data)
 
     # Update
     def put(self, request, section_id, **kwargs):
