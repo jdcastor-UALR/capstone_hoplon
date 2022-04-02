@@ -29,7 +29,7 @@ const APIService = {
     const options = { method: 'DELETE' };
     const response = await fetch(url + id.toString(), options);
     catchErrorResponse(response);
-    return response.json();
+    return response;
   }
 }
 
