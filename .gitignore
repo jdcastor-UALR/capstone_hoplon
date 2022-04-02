@@ -17,6 +17,7 @@ media
 .idea/**/dictionaries
 .idea/**/shelf
 .idea/dataSources.xml
+.idea
 
 # AWS User-specific
 .idea/**/aws.xml
@@ -169,3 +170,8 @@ frontend/.yarn/*
 
 # Django Migrations
 migrations/
+/backend/.idea/
+/backend/.idea/
+
+
+package.json

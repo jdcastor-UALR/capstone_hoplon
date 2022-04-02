@@ -20,7 +20,7 @@ class Command(BaseCommand):
                  'end_time': '10:11',
                  'meetingDays': 'sunday'}
             ]
-         }
+        }
     ]
 
     courses = [
@@ -40,8 +40,7 @@ class Command(BaseCommand):
         Instructor.objects.all().delete()
         Course.objects.all().delete()
         Section.objects.all().delete()
-        Section.objects.all().delete()
-        Course.objects.all().delete()
+        TimeSlot.objects.all().delete()
         # Loop For Instructors
         for instructor in self.instructors:
             new_instructor = Instructor(lastName=instructor['lastName'], maxSections=instructor['maxSections'])
@@ -49,7 +48,7 @@ class Command(BaseCommand):
             for qual in instructor['qualifications']:
                 new_instructor.qualifications.add(disciplines.get(name=qual))
             new_instructor.save()
-        '''
+
         # Loop for Course
         for course in self.courses:
             new_course = Course(course_title=course['course_title'], course_number=course['course_number'])
@@ -57,30 +56,13 @@ class Command(BaseCommand):
 
             for discipline in course['subject_disciplines']:
                 new_course.subject_disciplines.add(disciplines.get(name=discipline))
-            new_course.save()
 
         # Loop for Section
         for section in self.sections:
-            new_section = Section(meetingTimes=section['meetingTimes'],
-                                  course=Course.objects.get(course_title=section['courseTitle']))
+            new_section = Section(course=Course.objects.get(course_title=section['courseTitle']))
             new_section.save()
-            '''
-
-
-            # Loop for Course
-            for course in self.courses:
-                new_course = Course(course_title=course['course_title'], course_number=course['course_number'])
-                new_course.save()
-
-                for discipline in course['subject_disciplines']:
-                    new_course.subject_disciplines.add(disciplines.get(name=discipline))
-
-            # Loop for Section
-            for section in self.sections:
-                new_section = Section(course=Course.objects.get(course_title=section['courseTitle']))
-                new_section.save()
-                for time in section['meetingTimes']:
-                    new_time = TimeSlot(begin_time=time['begin_time'], end_time=time['end_time'],
-                                        meetingDays=time['meetingDays'])
-                    new_time.save()
-                    new_section.meetingTimes.add(new_time)
+            for time in section['meetingTimes']:
+                new_time = TimeSlot(begin_time=time['begin_time'], end_time=time['end_time'],
+                                    meetingDays=time['meetingDays'])
+                new_time.save()
+                new_section.meetingTimes.add(new_time)
