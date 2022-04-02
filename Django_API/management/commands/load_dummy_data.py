@@ -25,27 +25,27 @@ class Command(BaseCommand):
     sections = [
         {'courseTitle': 'AI', 'meetingTimes':
             [
-                {'begin_time': '10:10', 'end_time': '11:00', 'meetingDays': 'sunday'},
-                {'begin_time': '10:10', 'end_time': '11:00', 'meetingDays': 'wednesday'},
-                {'begin_time': '13:00', 'end_time': '13:50', 'meetingDays': 'friday'}
+                {'begin_time': '10:10', 'end_time': '11:00', 'meetingDays': 'Sun.'},
+                {'begin_time': '10:10', 'end_time': '11:00', 'meetingDays': 'Wed.'},
+                {'begin_time': '13:00', 'end_time': '13:50', 'meetingDays': 'Fri.'}
             ]
          },
         {'courseTitle': 'Capstone Project', 'meetingTimes':
             [
-                {'begin_time': '9:25', 'end_time': '10:40', 'meetingDays': 'tuesday'},
-                {'begin_time': '9:25', 'end_time': '10:40', 'meetingDays': 'thursday'}
+                {'begin_time': '9:25', 'end_time': '10:40', 'meetingDays': 'Tu.'},
+                {'begin_time': '9:25', 'end_time': '10:40', 'meetingDays': 'Th.'}
             ]
          },
         {'courseTitle': 'Capstone Project', 'meetingTimes':
             [
-                {'begin_time': '16:25', 'end_time': '17:40', 'meetingDays': 'monday'},
-                {'begin_time': '16:25', 'end_time': '17:40', 'meetingDays': 'wednesday'}
+                {'begin_time': '16:25', 'end_time': '17:40', 'meetingDays': 'Mon.'},
+                {'begin_time': '16:25', 'end_time': '17:40', 'meetingDays': 'Wed.'}
             ]
          },
         {'courseTitle': 'Software Engineering', 'meetingTimes':
             [
-                {'begin_time': '16:25', 'end_time': '17:40', 'meetingDays': 'wednesday'},
-                {'begin_time': '16:25', 'end_time': '17:40', 'meetingDays': 'friday'}
+                {'begin_time': '16:25', 'end_time': '17:40', 'meetingDays': 'Wed.'},
+                {'begin_time': '16:25', 'end_time': '17:40', 'meetingDays': 'Fri.'}
             ]
          }
     ]

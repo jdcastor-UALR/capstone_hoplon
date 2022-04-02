@@ -13,7 +13,7 @@ from Django_API.models import User, RegistrationRequest, Session, Section, TimeS
 #
 #     def create(self, validated_data):
 #         """
-#         Create and return a new `Snippet` instance, givent the validated data.
+#         Create and return a new `Snippet` instance, given the validated data.
 #         """
 #         return Snippet.objects.create(**validated_data)
 #
@@ -65,10 +65,10 @@ class SectionSerializer(serializers.ModelSerializer):
         model = Section
         fields = '__all__'
 
-    #def stringmeetingtimes(self, instance, validated_data):
-
-        #sectionMeetings = self.meetingTimes.objects.all()
-        #return outputString
+    def stringmeetingtimes(self, instance, validated_data, meetingtimestring):
+        self.meetingtimestring = meetingtimestring
+        # sectionMeetings = self.meetingTimes.objects.all()
+        # return meetingTimeString
     # Return a prettified string of all the MeetingTimes attached to a Section(Begin Time, End Time, Meeting Day)
     # For all MeetingTimes in an Instance of Section, output a prettified string
 
