@@ -27,7 +27,7 @@ class Session(models.Model):
 class TimeSlot(models.Model):
     begin_time = models.TimeField()
     end_time = models.TimeField()
-    meetingDays = models.CharField(max_length=10, blank=False, choices=SectionDayChoices.choices)
+    meetingDays = models.CharField(max_length=10, blank=False, choices=SectionDayChoices.choices, default='sunday')
 
 
 class Discipline(models.Model):
