@@ -65,8 +65,7 @@ const InstructorForm = (props) => {
 const InstructorDialog = (props) => {
   const { create, open, setOpen, row, disciplines, setInstructors } = props;
   const [instructorFormData, setInstructorFormData] = useState(
-    {lastName: null, maxSections: null, qualifications: []}
-    );
+    {lastName: null, maxSections: null, qualifications: []});
 
   const title = (create) ? 'Create Instructor' : 'Edit Instructor';
 
