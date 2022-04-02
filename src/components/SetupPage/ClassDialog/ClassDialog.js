@@ -71,6 +71,7 @@ const ClassDialog = (props) => {
 
   useEffect(() => {
     if (open && !create) {
+      console.log(row);
       setCourseFormData(row);
     } else if (open && create) {
       setCourseFormData({course_title: '', course_number: null, subject_disciplines: []});

@@ -54,13 +54,23 @@ class TimeSlotSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class DisciplineSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Discipline
+        fields = '__all__'
+
+
 class CourseSerializer(serializers.ModelSerializer):
+    subject_disciplines = DisciplineSerializer(read_only=True, many=True)
+
     class Meta:
         model = Course
         fields = '__all__'
 
 
 class SectionSerializer(serializers.ModelSerializer):
+    meetingTimes = TimeSlotSerializer(read_only=True, many=True)
+
     class Meta:
         model = Section
         fields = '__all__'
@@ -72,11 +82,6 @@ class SectionSerializer(serializers.ModelSerializer):
     # Return a prettified string of all the MeetingTimes attached to a Section(Begin Time, End Time, Meeting Day)
     # For all MeetingTimes in an Instance of Section, output a prettified string
 
-
-class DisciplineSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Discipline
-        fields = '__all__'
 
 
 class InstructorSerializer(serializers.ModelSerializer):
