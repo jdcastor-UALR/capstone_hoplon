@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
@@ -20,7 +20,7 @@ const InstructorListItems = (instructors, openEditDialog) => {
         <ListItemText primary={instructor.lastName}
                       secondary={'Assignment Limit: ' + instructor.maxSections.toString()} />
         <ListItemSecondaryAction>
-          <IconButton edge={"end"} aria-label={"edit-instructor"} onClick={openEditDialog}>
+          <IconButton edge={"end"} aria-label={"edit-instructor"} onClick={() => openEditDialog(instructor)}>
             <EditIcon />
           </IconButton>
         </ListItemSecondaryAction>
@@ -33,10 +33,15 @@ const InstructorListItems = (instructors, openEditDialog) => {
 };
 
 const InstructorList = (props) => {
+  const [selected, setSelected] = useState({});
+
   const [addOpen, setAddOpen] = useState(false);
   const openAddDialog = () => setAddOpen(true);
   const [editOpen, setEditOpen] = useState(false);
-  const openEditDialog = () => setEditOpen(true);
+  const openEditDialog = (instructor) => {
+    setSelected(instructor);
+    setEditOpen(true);
+  };
 
   return (
     <div data-testid="InstructorList">
@@ -47,8 +52,8 @@ const InstructorList = (props) => {
           <ListItemText primary={'Add New'} />
         </ListItem>
       </List>
-      <InstructorDialog create={true} open={addOpen} setOpen={setAddOpen} />
-      <InstructorDialog open={editOpen} setOpen={setEditOpen} />
+      <InstructorDialog create={true} open={addOpen} setOpen={setAddOpen} disciplines={props.disciplines} />
+      <InstructorDialog open={editOpen} setOpen={setEditOpen} row={selected} disciplines={props.disciplines} />
     </div>
   );
 };
