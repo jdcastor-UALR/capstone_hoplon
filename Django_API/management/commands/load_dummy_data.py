@@ -3,7 +3,7 @@ from Django_API.models import Instructor, Discipline, Section, Course, TimeSlot
 
 
 class Command(BaseCommand):
-    help = 'Loads dummy data for instructors'
+    help = 'Loads dummy data'
     # TODO: Add classes to this
 
     instructors = [
@@ -36,17 +36,36 @@ class Command(BaseCommand):
         # Load disciplines
         disciplines = Discipline.objects.all()
 
-        # Clear all existing instructors
+        # Clear All Existing Data
         Instructor.objects.all().delete()
         Course.objects.all().delete()
         Section.objects.all().delete()
-
+        Section.objects.all().delete()
+        Course.objects.all().delete()
+        # Loop For Instructors
         for instructor in self.instructors:
             new_instructor = Instructor(lastName=instructor['lastName'], maxSections=instructor['maxSections'])
             new_instructor.save()
             for qual in instructor['qualifications']:
                 new_instructor.qualifications.add(disciplines.get(name=qual))
             new_instructor.save()
+        '''
+        # Loop for Course
+        for course in self.courses:
+            new_course = Course(course_title=course['course_title'], course_number=course['course_number'])
+            new_course.save()
+
+            for discipline in course['subject_disciplines']:
+                new_course.subject_disciplines.add(disciplines.get(name=discipline))
+            new_course.save()
+
+        # Loop for Section
+        for section in self.sections:
+            new_section = Section(meetingTimes=section['meetingTimes'],
+                                  course=Course.objects.get(course_title=section['courseTitle']))
+            new_section.save()
+            '''
+
 
             # Loop for Course
             for course in self.courses:

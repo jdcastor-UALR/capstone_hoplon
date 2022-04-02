@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 from Django_API.models import Discipline
 
+
 class Command(BaseCommand):
     help = 'Loads dummy data for disciplines model'
 
