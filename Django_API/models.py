@@ -1,7 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from Django_API.model_enums import AccessLevelChoices
+from Django_API.model_enums import AccessLevelChoices, SectionDayChoices
 
 
 class User(AbstractUser):
@@ -25,8 +25,9 @@ class Session(models.Model):
 
 
 class TimeSlot(models.Model):
-    begin_time = models.DateTimeField()
-    end_time = models.DateTimeField()
+    begin_time = models.TimeField()
+    end_time = models.TimeField()
+    meetingDays = models.CharField(max_length=10, blank=False, choices=SectionDayChoices.choices)
 
 
 class Discipline(models.Model):
@@ -48,4 +49,3 @@ class Instructor(models.Model):
     lastName = models.CharField(max_length=30)
     maxSections = models.IntegerField(default='1')
     qualifications = models.ManyToManyField(Discipline, blank=True)
-

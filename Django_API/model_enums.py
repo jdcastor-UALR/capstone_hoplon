@@ -7,3 +7,13 @@ class AccessLevelChoices(models.TextChoices):
     ADMIN = 'admin', _('Admin')
     ASSISTANT = 'assistant', _('Assistant')
     PUBLIC = 'public', _('Public')
+
+
+class SectionDayChoices(models.TextChoices):
+    Sunday = 'sunday', _('Sunday')
+    Monday = 'monday', _('Monday')
+    Tuesday = 'tuesday', _('Tuesday')
+    Wednesday = 'wednesday', _('Wednesday')
+    Thursday = 'thursday', _('Thursday')
+    Friday = 'friday', _('Friday')
+    Saturday = 'saturday', _('Saturday')

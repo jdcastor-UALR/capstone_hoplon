@@ -33,43 +33,50 @@ from Django_API.models import User, RegistrationRequest, Session, Section, TimeS
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['AccessLevel']
+        fields = '__all__'
 
 
 class RegistrationRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = RegistrationRequest
-        fields = ['access_level', 'requested_username', 'requested_password', 'contact_email']
+        fields = '__all__'
 
 
 class SessionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Session
-        fields = ['associated_user']
+        fields = '__all__'
 
 
 class TimeSlotSerializer(serializers.ModelSerializer):
     class Meta:
         model = TimeSlot
-        fields = ['begin_time', 'end_time']
+        fields = '__all__'
 
 
 class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
-        fields = ['course_title', 'course_number', 'subject_disciplines']
+        fields = '__all__'
 
 
 class SectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Section
-        fields = ['course', 'meetingTimes']
+        fields = '__all__'
+
+    #def stringmeetingtimes(self, instance, validated_data):
+
+        #sectionMeetings = self.meetingTimes.objects.all()
+        #return outputString
+    # Return a prettified string of all the MeetingTimes attached to a Section(Begin Time, End Time, Meeting Day)
+    # For all MeetingTimes in an Instance of Section, output a prettified string
 
 
 class DisciplineSerializer(serializers.ModelSerializer):
     class Meta:
         model = Discipline
-        fields = ['id', 'name']
+        fields = '__all__'
 
 
 class InstructorSerializer(serializers.ModelSerializer):

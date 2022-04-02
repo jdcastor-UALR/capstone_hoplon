@@ -17,21 +17,39 @@ from django.contrib import admin
 from django.urls import path
 from rest_framework.urlpatterns import format_suffix_patterns
 
-from Django_API.views import InstructorView, UserView, RegistrationRequestView, SessionView, SectionView, CourseView, \
-    TimeSlotView, DisciplineView, InstructorsView
+from Django_API.views import InstructorList, InstructorDetail, UserList, UserDetail, RegistrationRequestList, \
+    RegistrationRequestDetail, SessionList, SessionDetail, TimeSlotList, TimeSlotDetail, CourseList, CourseDetail, \
+    SectionList, SectionDetail, DisciplineView
 from .views import index
 
 urlpatterns = [
     path('', index, name='index'),
     path('admin/', admin.site.urls),
-    path('api/instructor/', InstructorsView.as_view(), name='instructors'),
-    path('api/instructor/<int:instructor_id>', InstructorView.as_view(), name='instructor'),
-    path('api/user/', UserView.as_view(), name='user'),
-    path('api/registrationrequest/', RegistrationRequestView.as_view(), name='registration'),
-    path('api/session/', SessionView.as_view(), name='session'),
-    path('api/section/', SectionView.as_view(), name='section'),
-    path('api/course/', CourseView.as_view(), name='course'),
-    path('api/discipline/', DisciplineView.as_view(), name='disciplines')
+    path('api/instructor/', InstructorList.as_view(), name='instructors'),
+    path('api/instructor/<int:instructor_id>', InstructorDetail.as_view(), name='instructor'),
+
+    path('api/user/', UserList.as_view(), name='users'),
+    path('api/user/<int:user_id>', UserDetail.as_view(), name='user'),
+
+    path('api/registrationrequest/', RegistrationRequestList.as_view(), name='registrationrequests'),
+    path('api/registrationrequest/<int:registration_request_id>', RegistrationRequestDetail.as_view(), name='registrationrequest'),
+
+    path('api/session/', SessionList.as_view(), name='sessions'),
+    path('api/session/<int:session_id>', SessionDetail.as_view(), name='session'),
+
+    path('api/timeslot/', TimeSlotList.as_view(), name='timeslots'),
+    path('api/timeslot/<int:time_slot_id>', TimeSlotDetail.as_view(), name='timeslot'),
+
+    path('api/course/', CourseList.as_view(), name='courses'),
+    path('api/course/<int:course_id>', CourseDetail.as_view(), name='course'),
+
+    path('api/instructor/', InstructorList.as_view(), name='instructors'),
+    path('api/instructor/<int:instructor_id>', InstructorDetail.as_view(), name='instructor'),
+
+    path('api/section/', SectionList.as_view(), name='sections'),
+    path('api/section/<int:section_id>', SectionDetail.as_view(), name='section'),
+
+    path('api/discipline/', DisciplineView.as_view(), name='disciplines'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
