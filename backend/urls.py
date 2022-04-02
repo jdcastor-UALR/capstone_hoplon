@@ -22,6 +22,7 @@ from Django_API.views import InstructorList, InstructorDetail, UserList, UserDet
     SectionList, SectionDetail, DisciplineView
 from .views import index
 
+
 urlpatterns = [
     path('', index, name='index'),
     path('admin/', admin.site.urls),
@@ -36,7 +37,6 @@ urlpatterns = [
 
     path('api/session/', SessionList.as_view(), name='sessions'),
     path('api/session/<int:session_id>', SessionDetail.as_view(), name='session'),
-
     path('api/timeslot/', TimeSlotList.as_view(), name='timeslots'),
     path('api/timeslot/<int:time_slot_id>', TimeSlotDetail.as_view(), name='timeslot'),
 
