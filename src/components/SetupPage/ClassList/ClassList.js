@@ -16,7 +16,7 @@ const ClassListItems = (classes, courses, openEditDialog) => {
   let listItems = [];
 
   for (let course of courses) {
-    const classesOnCourse = classes.filter(cls => cls.course_id === course.id);
+    const classesOnCourse = classes.filter(cls => cls.course === course.id);
     const meetingTimeStrings = classesOnCourse.map(cls => cls.meetingTimeString);
     listItems.push(
       <ListItem>

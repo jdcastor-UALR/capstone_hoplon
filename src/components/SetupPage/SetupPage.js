@@ -63,6 +63,7 @@ const SetupPage = () => {
 
     APIService.get(URL_CLASSES).then((data) => {
       setClasses(data);
+      console.log(data);
     }, (error) => {
       console.error(error);
     });
