@@ -28,6 +28,7 @@ from Django_API.models import User, RegistrationRequest, Session, Section, TimeS
 #         instance.style = validated_data.get('style', instance.style)
 #         instance.save()
 #         return instance
+from Django_API.utility import prettyTimeString
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -70,17 +71,14 @@ class CourseSerializer(serializers.ModelSerializer):
 
 class SectionSerializer(serializers.ModelSerializer):
     meetingTimes = TimeSlotSerializer(read_only=True, many=True)
+    meetingTimeString = serializers.SerializerMethodField('prettify_time_string')
+
+    def prettify_time_string(self, model):
+        return prettyTimeString(model.id)
 
     class Meta:
         model = Section
         fields = '__all__'
-
-    def stringify(self, instance, validated_data, meetingtimestring):
-        self.meetingtimestring = meetingtimestring
-        # sectionMeetings = self.meetingTimes.objects.all()
-        # return meetingTimeString
-    # Return a prettified string of all the MeetingTimes attached to a Section(Begin Time, End Time, Meeting Day)
-    # For all MeetingTimes in an Instance of Section, output a prettified string
 
 
 

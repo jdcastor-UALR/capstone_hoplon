@@ -1,6 +1,3 @@
-from django.shortcuts import render
-
-# Create your views here.
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -38,7 +35,10 @@ class UserDetail(APIView):
 
     # Update
     def put(self, request, user_id, **kwargs):
-        user = self.get_object(user_id)
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = UserSerializer(user, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -47,7 +47,10 @@ class UserDetail(APIView):
 
     # Delete
     def delete(self, request, user_id, **kwargs):
-        user = self.get_object(user_id)
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -80,7 +83,10 @@ class RegistrationRequestDetail(APIView):
 
     # Update
     def put(self, request, registration_request_id, **kwargs):
-        registration_request = self.get_object(registration_request_id)
+        try:
+            registration_request = RegistrationRequest.objects.get(id=registration_request_id)
+        except RegistrationRequest.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = RegistrationRequestSerializer(registration_request, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -89,7 +95,10 @@ class RegistrationRequestDetail(APIView):
 
     # Delete
     def delete(self, request, registration_request_id, **kwargs):
-        registration_request = self.get_object(registration_request_id)
+        try:
+            registration_request = RegistrationRequest.objects.get(id=registration_request_id)
+        except RegistrationRequest.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
         registration_request.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -122,7 +131,10 @@ class SessionDetail(APIView):
 
     # Update
     def put(self, request, session_id, **kwargs):
-        session = self.get_object(session_id)
+        try:
+            session = Session.objects.get(id=session_id)
+        except Session.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = SessionSerializer(session, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -131,7 +143,10 @@ class SessionDetail(APIView):
 
     # Delete
     def delete(self, request, session_id, **kwargs):
-        session = self.get_object(session_id)
+        try:
+            session = Session.objects.get(id=session_id)
+        except Session.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
         session.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -164,7 +179,10 @@ class TimeSlotDetail(APIView):
 
     # Update
     def put(self, request, time_slot_id, **kwargs):
-        time_slot = self.get_object(time_slot_id)
+        try:
+            time_slot = TimeSlot.objects.get(id=time_slot_id)
+        except TimeSlot.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = TimeSlotSerializer(time_slot, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -173,7 +191,10 @@ class TimeSlotDetail(APIView):
 
     # Delete
     def delete(self, request, time_slot_id, **kwargs):
-        time_slot = self.get_object(time_slot_id)
+        try:
+            time_slot = TimeSlot.objects.get(id=time_slot_id)
+        except TimeSlot.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
         time_slot.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -206,7 +227,10 @@ class CourseDetail(APIView):
 
     # Update
     def put(self, request, course_id, **kwargs):
-        course = self.get_object(course_id)
+        try:
+            course = Course.objects.get(id=course_id)
+        except Course.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = CourseSerializer(course, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -215,7 +239,10 @@ class CourseDetail(APIView):
 
     # Delete
     def delete(self, request, course_id, **kwargs):
-        course = self.get_object(course_id)
+        try:
+            course = Course.objects.get(id=course_id)
+        except Course.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
         course.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -237,35 +264,31 @@ class SectionList(APIView):
 
 
 class SectionDetail(APIView):
-    # Read
-    def prettyTimeString(self, section_id):
-        prettyString = ""
-        for time_slot in TimeSlot.objects.all().filter(section=section_id):
-            prettyString += ("bruh {} bruh {} bruh {}").format(time_slot.begin_time, time_slot.end_time, time_slot.meetingDays)
-
-        return prettyString
 
     def get(self, request, section_id, **kwargs):
         try:
             section = Section.objects.get(id=section_id)
-            section.meetingTimeString = self.prettyTimeString(section_id)
         except Section.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = SectionSerializer(section)
         return Response(serializer.data)
 
-    # Update
     def put(self, request, section_id, **kwargs):
-        section = self.get_object(section_id)
+        try:
+            section = Section.objects.get(id=section_id)
+        except Section.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = SectionSerializer(section, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    # Delete
     def delete(self, request, section_id, **kwargs):
-        section = self.get_object(section_id)
+        try:
+            section = Section.objects.get(id=section_id)
+        except Section.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
         section.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 

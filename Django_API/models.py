@@ -43,7 +43,6 @@ class Course(models.Model):
 class Section(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     meetingTimes = models.ManyToManyField(TimeSlot)
-    meetingTimeString = models.TextField(max_length=100, blank=True, default='')
 
 
 class Instructor(models.Model):
