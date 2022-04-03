@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from Django_API.model_enums import SectionDayChoices
 from Django_API.models import User, RegistrationRequest, Session, Section, TimeSlot, Course, Instructor, Discipline
 
 
@@ -62,7 +63,15 @@ class DisciplineSerializer(serializers.ModelSerializer):
 
 
 class CourseSerializer(serializers.ModelSerializer):
-    subject_disciplines = DisciplineSerializer(read_only=True, many=True)
+    subject_disciplines = DisciplineSerializer(many=True)
+
+    class Meta:
+        model = Course
+        fields = '__all__'
+
+
+class CourseWriteSerializer(serializers.ModelSerializer):
+    subject_disciplines = serializers.PrimaryKeyRelatedField(many=True, queryset=Discipline.objects)
 
     class Meta:
         model = Course
@@ -70,20 +79,50 @@ class CourseSerializer(serializers.ModelSerializer):
 
 
 class SectionSerializer(serializers.ModelSerializer):
-    meetingTimes = TimeSlotSerializer(read_only=True, many=True)
+    meetingTimes = serializers.SerializerMethodField('get_meeting_times_by_day')
     meetingTimeString = serializers.SerializerMethodField('prettify_time_string')
 
     def prettify_time_string(self, model):
         return prettyTimeString(model.id)
 
+    def get_meeting_times_by_day(self, instance):
+        times = sorted(instance.meetingTimes.all(), key=lambda x: SectionDayChoices.values.index(x.meetingDays))
+        return TimeSlotSerializer(times, many=True).data
+
     class Meta:
         model = Section
         fields = '__all__'
 
+    def create(self, validated_data):
+        meetingTime_data = validated_data.pop('meetingTimes')
+        section = Section.objects.create(**validated_data)
+        for meetingTime in meetingTime_data:
+            section.meetingTimes.add(TimeSlot.objects.create(**meetingTime))
+        return section
+
+    def update(self, instance, validated_data):
+        meetingTime_data = validated_data.pop('meetingTimes')
+        remove_ids = [x.id for x in instance.meetingTimes.all()]
+        for meetingTime in meetingTime_data:
+            if not meetingTime.get('id'):
+                instance.meetingTimes.add(TimeSlot.objects.create(**meetingTime))
+            else:
+                remove_ids.remove(meetingTime['id'])
+        instance.meetingTimes.remove(*remove_ids)
+        instance.save()
+        return instance
 
 
 class InstructorSerializer(serializers.ModelSerializer):
     qualifications = DisciplineSerializer(read_only=True, many=True)
+
+    class Meta:
+        model = Instructor
+        fields = '__all__'
+
+
+class InstructorWriteSerializer(serializers.ModelSerializer):
+    qualifications = serializers.PrimaryKeyRelatedField(many=True, queryset=Discipline.objects)
 
     class Meta:
         model = Instructor

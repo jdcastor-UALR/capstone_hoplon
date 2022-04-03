@@ -89,7 +89,8 @@ const SetupPage = () => {
             Class Roster
           </Typography>
           <div style={{padding: '1rem 5rem'}}>
-            <ClassList classes={classes} courses={courses} disciplines={disciplines} />
+            <ClassList classes={classes} setClasses={setClasses} courses={courses} setCourses={setCourses}
+                       disciplines={disciplines} />
           </div>
         </Grid>
       </Grid>

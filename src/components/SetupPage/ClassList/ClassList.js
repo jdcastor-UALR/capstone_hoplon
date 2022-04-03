@@ -11,8 +11,10 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import AddIcon from "@material-ui/icons/Add";
 import List from "@material-ui/core/List";
 import ClassDialog from "../ClassDialog/ClassDialog";
+import APIService from "../../../APIService";
+import {URL_COURSES} from "../../../urls";
 
-const ClassListItems = (classes, courses, openEditDialog) => {
+const ClassListItems = (classes, courses, setCourses, openEditDialog) => {
   let listItems = [];
 
   for (let course of courses) {
@@ -26,7 +28,12 @@ const ClassListItems = (classes, courses, openEditDialog) => {
           <IconButton edge={"end"} onClick={() => openEditDialog(course)}>
             <EditIcon />
           </IconButton>
-          <IconButton edge={"end"}>
+          <IconButton edge={"end"}
+                      onClick={() => {
+                        APIService.delete(URL_COURSES, course.id).then(data => {
+                          setCourses(courses.filter(crs => crs.id !== course.id));
+                        }, error => console.error(error));
+                      }}>
             <DeleteIcon />
           </IconButton>
         </ListItemSecondaryAction>
@@ -52,16 +59,17 @@ const ClassList = (props) => {
   return (
     <div data-testid="ClassList">
       <List style={{border: `1px #0000001f solid`}}>
-        {ClassListItems(props.classes, props.courses, openEditDialog)}
+        {ClassListItems(props.classes, props.courses, props.setCourses, openEditDialog)}
         <ListItem button onClick={openAddDialog}>
           <ListItemIcon><AddIcon /></ListItemIcon>
           <ListItemText primary={'Add New'} />
         </ListItem>
       </List>
-      <ClassDialog create={true} open={addOpen} setOpen={setAddOpen}
-                   disciplines={props.disciplines} />
-      <ClassDialog open={editOpen} setOpen={setEditOpen} row={selected}
-                   disciplines={props.disciplines} classes={props.classes} />
+      <ClassDialog create={true} open={addOpen} setOpen={setAddOpen} setCourses={props.setCourses}
+                   disciplines={props.disciplines} setClasses={props.setClasses}
+                   setSelected={setSelected} setEditOpen={setEditOpen}/>
+      <ClassDialog open={editOpen} setOpen={setEditOpen} row={selected} setCourses={props.setCourses}
+                   disciplines={props.disciplines} classes={props.classes} setClasses={props.setClasses} />
     </div>
   );
 };

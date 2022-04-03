@@ -73,7 +73,6 @@ const InstructorDialog = (props) => {
 
   const onSubmit = () => {
     let data = {...instructorFormData, qualifications: instructorFormData.qualifications.map(obj => obj.id)};
-    console.log(data);
 
     if (create) {
       APIService.post(URL_INSTRUCTORS, data).then((data) => {

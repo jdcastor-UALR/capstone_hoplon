@@ -4,7 +4,8 @@ from rest_framework.response import Response
 
 from Django_API.models import Instructor, User, RegistrationRequest, Session, TimeSlot, Course, Section, Discipline
 from Django_API.serializers import UserSerializer, RegistrationRequestSerializer, SessionSerializer, \
-    TimeSlotSerializer, CourseSerializer, SectionSerializer, InstructorSerializer, DisciplineSerializer
+    TimeSlotSerializer, CourseSerializer, SectionSerializer, InstructorSerializer, DisciplineSerializer, \
+    InstructorWriteSerializer, CourseWriteSerializer
 
 
 class UserList(APIView):
@@ -208,7 +209,7 @@ class CourseList(APIView):
 
     # Create
     def post(self, request, **kwargs):
-        serializer = CourseSerializer(data=request.data)
+        serializer = CourseWriteSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -231,7 +232,7 @@ class CourseDetail(APIView):
             course = Course.objects.get(id=course_id)
         except Course.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = CourseSerializer(course, data=request.data)
+        serializer = CourseWriteSerializer(course, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -309,7 +310,7 @@ class InstructorList(APIView):
 
     # Create
     def post(self, request, **kwargs):
-        serializer = InstructorSerializer(data=request.data)
+        serializer = InstructorWriteSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -332,7 +333,7 @@ class InstructorDetail(APIView):
             instructor = Instructor.objects.get(id=instructor_id)
         except Instructor.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = InstructorSerializer(instructor, data=request.data)
+        serializer = InstructorWriteSerializer(instructor, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
