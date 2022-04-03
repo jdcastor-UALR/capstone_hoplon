@@ -23,6 +23,8 @@ const ClassForm = (props) => {
   const getDisciplineOptions = () => disciplines.filter(
     d => row.subject_disciplines.findIndex(q => q.id === d.id) < 0
   );
+  const onAddNewDiscipline = () =>
+    setRow({...row, subject_disciplines: row.subject_disciplines.concat([newDiscipline])});
 
   return (
     <>
@@ -49,11 +51,12 @@ const ClassForm = (props) => {
           </TextField>
         </Grid>
         <Grid item>
-          <Button variant={"contained"} color={"default"}>Add</Button>
+          <Button variant={"contained"} color={"default"} onClick={onAddNewDiscipline}>Add</Button>
         </Grid>
         <Grid item xs={12}>
           {row.subject_disciplines.map((qual) => (
-            <Chip label={qual.name} />
+            <Chip label={qual.name} onDelete={() =>
+              setRow({...row, subject_disciplines: row.subject_disciplines.filter(x => x.id !== qual.id)})} />
           ))}
         </Grid>
       </Grid>
@@ -100,6 +103,7 @@ const ClassDialog = (props) => {
           coursesCopy[rowIndex] = courseFormData;
           return coursesCopy;
         });
+        setOpen(false);
       }, error => console.error(error));
     }
   };
