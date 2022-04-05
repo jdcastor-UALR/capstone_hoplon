@@ -168,8 +168,6 @@ frontend/.yarn/*
 !.yarn/cache
 #.pnp.*
 
-# Django Migrations
-migrations/
 /backend/.idea/
 /backend/.idea/
 
