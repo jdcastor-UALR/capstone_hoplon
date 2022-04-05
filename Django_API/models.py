@@ -35,7 +35,7 @@ class Discipline(models.Model):
 
 
 class Course(models.Model):
-    course_title = models.CharField(max_length=30, blank=False, default='')
+    course_title = models.CharField(max_length=55, blank=False, default='')
     course_number = models.CharField(max_length=4, blank=False, default='')
     subject_disciplines = models.ManyToManyField(Discipline, blank=True)
 
