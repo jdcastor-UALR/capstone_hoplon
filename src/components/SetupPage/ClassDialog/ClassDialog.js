@@ -32,7 +32,7 @@ const ClassForm = (props) => {
       <Grid container alignItems={"center"} justifyContent={"center"} spacing={2}>
         <Grid item>
           <TextField label={"Course Title"} required value={row.course_title || ''}
-                     inputProps={{ maxLength: 30 }} type={"text"}
+                     inputProps={{ maxLength: 55 }} type={"text"}
                      onChange={(e) => setRow({...row, course_title: e.target.value})} />
         </Grid>
         <Grid item>

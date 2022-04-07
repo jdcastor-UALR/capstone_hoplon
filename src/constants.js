@@ -1,4 +1,4 @@
 export const DayAbbrevToValue = {
-  'Mon.': 'Monday', 'Tu.': 'Tuesday', 'Wed.': 'Wednesday', 'Th.': 'Thursday',
+  'Mon.': 'Monday', 'Tue.': 'Tuesday', 'Wed.': 'Wednesday', 'Thu.': 'Thursday',
   'Fri.': 'Friday', 'Sat.': 'Saturday', 'Sun.': 'Sunday'
 };
