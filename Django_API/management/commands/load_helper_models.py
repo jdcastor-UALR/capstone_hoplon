@@ -6,20 +6,24 @@ class Command(BaseCommand):
     help = 'Loads dummy data for disciplines model'
 
     disciplines = [
-        {'name': 'C++ Programming'},
-        {'name': 'Python Programming'},
+        {'name': 'Programming-C++'},
+        {'name': 'Programming-Python'},
+        {'name': 'Software Engineering'},
+        {'name': 'Software Development Methodologies'},
         {'name': 'Game Development'},
         {'name': 'Data Structures and Algorithms'},
         {'name': 'Computer Organization'},
-        {'name': 'Operation Systems'},
+        {'name': 'Operating Systems'},
         {'name': 'Programming Languages'},
         {'name': 'Cybersecurity'},
-        {'name': 'Mobile Applications Development'},
+        {'name': 'Mobile Applications'},
         {'name': 'Artificial Intelligence'},
         {'name': 'Networks'},
         {'name': 'Theory of Computation'},
-        {'name': 'Distributed Systems'},
-        {'name': 'Virtual Reality'}
+        {'name': 'Parallel and Distributed Systems'},
+        {'name': 'Virtual Reality'},
+        {'name': 'Hardware Designs'},
+        {'name': 'Data Structures'}
     ]
 
     def handle(self, *args, **options):
