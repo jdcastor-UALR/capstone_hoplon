@@ -75,8 +75,10 @@ const InstructorDialog = (props) => {
     let data = {...instructorFormData, qualifications: instructorFormData.qualifications.map(obj => obj.id)};
 
     if (create) {
-      APIService.post(URL_INSTRUCTORS, data).then((data) => {
-        setInstructors((instructors) => instructors.concat([data]));
+      APIService.post(URL_INSTRUCTORS, data).then((newRow) => {
+        setInstructors((instructors) => instructors.concat(
+          [{...newRow, qualifications: instructorFormData.qualifications}])
+        );
         setOpen(false);
       }, (error) => console.log(error));
     } else {

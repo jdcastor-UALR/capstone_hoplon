@@ -89,9 +89,10 @@ const ClassDialog = (props) => {
     const data = {...courseFormData, subject_disciplines: courseFormData.subject_disciplines.map(sd => sd.id)};
 
     if (create) {
-      APIService.post(URL_COURSES, data).then((data) => {
-        setCourses(courses => courses.concat([data]));
-        setSelected(data);
+      APIService.post(URL_COURSES, data).then((newRow) => {
+        const newCourse = {...newRow, subject_disciplines: courseFormData.subject_disciplines};
+        setCourses(courses => courses.concat([newCourse]));
+        setSelected(newCourse);
         setOpen(false);
         setEditOpen(true);
       }, error => console.error(error));
