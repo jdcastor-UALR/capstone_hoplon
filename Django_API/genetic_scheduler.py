@@ -9,12 +9,20 @@ class GeneticScheduler:
     instructors = []
     sections = []
 
+    lookup_instructors = []
+    lookup_sections = []
+
     score_max = 10
     penalty = 0.8
 
     def __init__(self, instructors: list, sections: list):
-        self.instructors.append(instructors)
-        self.sections.append(sections)
+        self.instructors += instructors
+        self.lookup_instructors = {i['id']: i for i in self.instructors}
+        self.sections += sections
+        self.lookup_sections = {s['id']: s for s in self.sections}
+
+        population = self._generate_population(20)
+        print([self._score_schedule(schedule) for schedule in population])
 
     def _generate_population(self, n):
         """
@@ -41,18 +49,25 @@ class GeneticScheduler:
         """
         violations = 0
 
-        assigned_instructors = [i for i in list(set([y for (x, y) in schedule]))]
-        instructor_assignments = {i: [x for (x, y) in schedule if y['id'] == i['id']] for i in assigned_instructors}
+        assigned_instructor_ids = [i_id for i_id in list(set([y['id'] for x, y in schedule]))]
+        instructor_assignments = {i: [x for x, y in schedule if y['id'] == i]
+                                  for i in assigned_instructor_ids}
 
-        for instructor, sections in instructor_assignments.items():
+        for i_id, sections in instructor_assignments.items():
             # Check instructor class overlap
-            timeslots = [s['meetingTimes'] for s in sections]
+            timeslots = [ts for s in sections for ts in s['meetingTimes']]
             if do_timeslots_overlap(timeslots):
                 violations += 1
             # Check instructor assignment limit violation
+            instructor = self.lookup_instructors[i_id]
             if len(sections) > instructor['maxSections']:
                 violations += 1
         # Check assignment discipline match
+        for section, instructor in schedule:
+            section_disciplines = [d['id'] for d in section['course']['subject_disciplines']]
+            instructor_disciplines = [d['id'] for d in instructor['qualifications']]
+            if set(section_disciplines).isdisjoint(instructor_disciplines):
+                violations += 1
 
         return self.score_max - (violations * self.penalty)
 

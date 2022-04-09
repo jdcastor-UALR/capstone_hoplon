@@ -113,6 +113,20 @@ class SectionSerializer(serializers.ModelSerializer):
         return instance
 
 
+class SectionFullSerializer(serializers.ModelSerializer):
+    """ Read only serializer with more detail of foreign keys """
+    meetingTimes = serializers.SerializerMethodField('get_meeting_times_by_day')
+    course = CourseSerializer()
+
+    def get_meeting_times_by_day(self, instance):
+        times = sorted(instance.meetingTimes.all(), key=lambda x: SectionDayChoices.values.index(x.meetingDays))
+        return TimeSlotSerializer(times, many=True).data
+
+    class Meta:
+        model = Section
+        fields = '__all__'
+
+
 class InstructorSerializer(serializers.ModelSerializer):
     qualifications = DisciplineSerializer(read_only=True, many=True)
 

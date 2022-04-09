@@ -4,7 +4,6 @@ from Django_API.models import Instructor, Discipline, Section, Course, TimeSlot
 
 class Command(BaseCommand):
     help = 'Loads dummy data'
-    # TODO: Add classes to this
 
     instructors = [
         {'lastName': 'Baker', 'maxSections': 2, 'qualifications':
@@ -137,7 +136,7 @@ class Command(BaseCommand):
                 [
                     {'begin_time': '8:25', 'end_time': '9:40', 'meetingDays': 'Tue.'},
                     {'begin_time': '8:25', 'end_time': '9:40', 'meetingDays': 'Wed.'},
-                    {'begin_time': '13:35', 'end_time': '14:25', 'meetingDays': 'Thur.'}
+                    {'begin_time': '13:35', 'end_time': '14:25', 'meetingDays': 'Thu.'}
 
                 ]
              },
