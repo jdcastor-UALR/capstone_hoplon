@@ -26,6 +26,8 @@ class GeneticScheduler:
         population = self._generate_population(self.population_size)
         initial_scores = [self._score_schedule(schedule) for schedule in population]
         selected = [self._selection(population, initial_scores) for _ in range(self.population_size)]
+        selected_scores = [self._score_schedule(schedule) for schedule in selected]
+        print(selected_scores)
 
     def _generate_population(self, n):
         """
