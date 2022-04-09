@@ -81,19 +81,19 @@ class Command(BaseCommand):
                 [
                     {'begin_time': '13:35', 'end_time': '14:25', 'meetingDays': 'Mon.'},
                     {'begin_time': '13:35', 'end_time': '14:25', 'meetingDays': 'Wed.'},
-                    {'begin_time': '10:15', 'end_time': '11:25', 'meetingDays': 'Fri.'},
+                    {'begin_time': '9:25', 'end_time': '10:15', 'meetingDays': 'Fri.'},
                 ]
              },
             {'courseTitle': 'Computer Security', 'meetingTimes':
                 [
                     {'begin_time': '9:25', 'end_time': '10:40', 'meetingDays': 'Mon.'},
                     {'begin_time': '9:25', 'end_time': '10:40', 'meetingDays': 'Wed.'},
-                    {'begin_time': '10:25', 'end_time': '11:25', 'meetingDays': 'Fri.'}
+                    {'begin_time': '10:15', 'end_time': '11:25', 'meetingDays': 'Fri.'}
                 ]
              },
             {'courseTitle': 'Computer Security', 'meetingTimes':
                 [
-                    {'begin_time': '14:25', 'end_time': '15:40', 'meetingDays': 'Tue.'},
+                    {'begin_time': '14:25', 'end_time': '15:40', 'meetingDays': 'Tue.'}
                 ]
              },
             {'courseTitle': 'Distributed Computing', 'meetingTimes':
@@ -110,8 +110,8 @@ class Command(BaseCommand):
              },
             {'courseTitle': 'Principle of UI & UX', 'meetingTimes':
                 [
-                    {'begin_time': '13:35', 'end_time': '14:45', 'meetingDays': 'Mon.'},
-                    {'begin_time': '13:35', 'end_time': '14:45', 'meetingDays': 'Wed.'}
+                    {'begin_time': '13:45', 'end_time': '14:45', 'meetingDays': 'Mon.'},
+                    {'begin_time': '13:45', 'end_time': '14:45', 'meetingDays': 'Wed.'}
                 ]
              },
             {'courseTitle': 'Theory of Computers', 'meetingTimes':
@@ -155,7 +155,7 @@ class Command(BaseCommand):
              },
             {'courseTitle': '3D Modeling for Game Designs', 'meetingTimes':
                 [
-                    {'begin_time': '11:15', 'end_time': '12:50', 'meetingDays': 'Sun.'},
+                    {'begin_time': '11:15', 'end_time': '12:50', 'meetingDays': 'Tue.'},
                     {'begin_time': '11:15', 'end_time': '12:50', 'meetingDays': 'Wed.'}
                 ]
              },
@@ -219,8 +219,8 @@ class Command(BaseCommand):
             {'courseTitle': 'Computer Networks', 'meetingTimes':
                 [
                     {'begin_time': '16:50', 'end_time': '17:30', 'meetingDays': 'Wed.'},
-                    {'begin_time': '16:50', 'end_time': '17:30', 'meetingDays': 'Thu.'},
-                    {'begin_time': '16:20', 'end_time': '17:00', 'meetingDays': 'Fri.'}
+                    {'begin_time': '16:50', 'end_time': '17:30', 'meetingDays': 'Fri.'},
+                    {'begin_time': '16:20', 'end_time': '17:00', 'meetingDays': 'Thu.'}
                 ]
              },
             {'courseTitle': 'Programming II', 'meetingTimes':
