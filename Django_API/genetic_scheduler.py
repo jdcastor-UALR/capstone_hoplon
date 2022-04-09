@@ -1,4 +1,5 @@
-from random import choice
+from copy import deepcopy
+from random import choice, sample, random, randint, randrange
 
 from Django_API.utility import do_timeslots_overlap
 
@@ -12,6 +13,7 @@ class GeneticScheduler:
     lookup_instructors = []
     lookup_sections = []
 
+    population_size = 20
     score_max = 10
     penalty = 0.8
 
@@ -21,8 +23,9 @@ class GeneticScheduler:
         self.sections += sections
         self.lookup_sections = {s['id']: s for s in self.sections}
 
-        population = self._generate_population(20)
-        print([self._score_schedule(schedule) for schedule in population])
+        population = self._generate_population(self.population_size)
+        initial_scores = [self._score_schedule(schedule) for schedule in population]
+        selected = [self._selection(population, initial_scores) for _ in range(self.population_size)]
 
     def _generate_population(self, n):
         """
@@ -37,7 +40,18 @@ class GeneticScheduler:
 
         population = []
         for _ in range(n):
-            population.append([(s, choice(self.instructors)) for s in self.sections])
+            # Start population by meeting instructor constraint
+            instructors = []
+            for i in self.instructors:
+                instructors += i['maxSections'] * [i]
+
+            if len(self.sections) > len(instructors):
+                instructor_sample = sample(instructors, len(instructors))
+                instructor_sample += [choice(self.instructors) for _ in range(len(self.sections) - len(instructors))]
+            else:
+                instructor_sample = sample(instructors, len(self.sections))
+
+            population.append(list(zip([s for s in self.sections], instructor_sample)))
         return population
 
     def _score_schedule(self, schedule):
@@ -71,5 +85,33 @@ class GeneticScheduler:
 
         return self.score_max - (violations * self.penalty)
 
-    def _evaluate_population(self, pop):
-        pass
+    def _selection(self, pop, scores, k=3):
+        """
+        Performs tournament selection to get best parent out of k random parents
+
+        :param pop: population to select from
+        :param scores: fitness scores that map to population
+        :param k: amount of parents to compare
+        :return: element from pop that wins tournament selection
+        """
+
+        selection_index = randrange(0, self.population_size)
+        for index in [randrange(0, self.population_size) for _ in range(k-1)]:
+            if scores[index] > scores[selection_index]:
+                selection_index = index
+        return pop[selection_index]
+
+    @staticmethod
+    def _perform_crossover(parent1, parent2, r_cross=0.9):
+        child1, child2 = deepcopy(parent1), deepcopy(parent2)
+        if random() < r_cross:
+            crossover_point = randrange(1, len(parent1)-1)
+            child1 = parent1[:crossover_point] + parent2[crossover_point:]
+            child2 = parent2[:crossover_point] + parent1[crossover_point:]
+        return child1, child2
+
+    def _perform_mutation(self, child, r_mut=0.01):
+        for i in range(len(child)):
+            if random() < r_mut:
+                child[i] = choice(self.instructors)
+        return child
