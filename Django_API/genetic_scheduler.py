@@ -13,21 +13,28 @@ class GeneticScheduler:
     lookup_instructors = []
     lookup_sections = []
 
-    population_size = 20
+    population_size = 0
     score_max = 10
     penalty = 0.8
 
-    def __init__(self, instructors: list, sections: list):
+    def __init__(self, instructors: list, sections: list, n_pop=20):
         self.instructors += instructors
         self.lookup_instructors = {i['id']: i for i in self.instructors}
         self.sections += sections
         self.lookup_sections = {s['id']: s for s in self.sections}
 
+        self.population_size = n_pop
+        if n_pop % 2 != 0:
+            raise ValueError(f'Population size {n_pop} is not even!')
+
         population = self._generate_population(self.population_size)
         initial_scores = [self._score_schedule(schedule) for schedule in population]
         selected = [self._selection(population, initial_scores) for _ in range(self.population_size)]
-        selected_scores = [self._score_schedule(schedule) for schedule in selected]
-        print(selected_scores)
+        children = self._crossover(selected)
+        children = [self._perform_mutation(child) for child in children]
+        print(self._score_schedule(children[0]))
+        test_repair = self._repair_schedule(children[0])
+        print(self._score_schedule(test_repair))
 
     def _generate_population(self, n):
         """
@@ -103,6 +110,14 @@ class GeneticScheduler:
                 selection_index = index
         return pop[selection_index]
 
+    def _crossover(self, selected_parents):
+        children = []
+        for i in range(0, len(selected_parents) - 1, 2):
+            child1, child2 = self._perform_crossover(selected_parents[i], selected_parents[i+1])
+            children.append(child1)
+            children.append(child2)
+        return children
+
     @staticmethod
     def _perform_crossover(parent1, parent2, r_cross=0.9):
         child1, child2 = deepcopy(parent1), deepcopy(parent2)
@@ -113,7 +128,68 @@ class GeneticScheduler:
         return child1, child2
 
     def _perform_mutation(self, child, r_mut=0.01):
+        # TODO: Grab instructor from list of possible instructors
         for i in range(len(child)):
             if random() < r_mut:
                 child[i] = choice(self.instructors)
         return child
+
+    def _repair_schedule(self, schedule):
+        # Determine if schedule is invalid and get available/unavailable instructors
+        assigned_instructor_ids = [i_id for i_id in list(set([y['id'] for x, y in schedule]))]
+        instructor_assignments = {i: [x for x, y in schedule if y['id'] == i]
+                                  for i in assigned_instructor_ids}
+        over_scheduled_instructor_ids = []
+        under_scheduled_instructor_ids = \
+            {i['id']: i['maxSections'] for i in self.instructors if i['id'] not in assigned_instructor_ids}
+        double_scheduled_instructor_ids = []
+
+        for i_id, sections in instructor_assignments.items():
+            # Check instructor class overlap
+            timeslots = [ts for s in sections for ts in s['meetingTimes']]
+            if do_timeslots_overlap(timeslots):
+                double_scheduled_instructor_ids.append(i_id)
+            # Check instructor assignment limit violation
+            instructor = self.lookup_instructors[i_id]
+            if len(sections) > instructor['maxSections']:
+                over_scheduled_instructor_ids.append(i_id)
+            elif len(sections) < instructor['maxSections']:
+                under_scheduled_instructor_ids[i_id] = instructor['maxSections']
+
+        if len(over_scheduled_instructor_ids) == 0 and len(double_scheduled_instructor_ids) == 0:
+            return
+
+        # Fix credit constraint
+        previously_repaired = 0
+        currently_repaired = 0
+        while previously_repaired > currently_repaired and not currently_repaired == 0:
+            previously_repaired = currently_repaired
+            currently_repaired = 0
+
+            for i_id in over_scheduled_instructor_ids:
+                scheduled_sections = sum(map(lambda x, y: y['id'] == i_id, schedule))
+                section_cap = self.lookup_instructors[i_id]['maxSections']
+
+                while scheduled_sections > section_cap:
+                    # Pass on fixing schedule when no instructors available
+                    if not under_scheduled_instructor_ids:
+                        break
+
+                    swap_index = choice(range(len([True for x, y in schedule if y['id'] == i_id])))
+                    new_assignment = choice(list(under_scheduled_instructor_ids))
+                    schedule[swap_index] = (schedule[swap_index][0], self.lookup_instructors[new_assignment])
+
+                    under_scheduled_instructor_ids[new_assignment] += 1
+                    if under_scheduled_instructor_ids[new_assignment] >= \
+                            self.lookup_instructors[new_assignment]['maxSections']:
+                        under_scheduled_instructor_ids.pop(new_assignment, None)
+                    scheduled_sections -= 1
+
+                if scheduled_sections <= section_cap:
+                    currently_repaired += 1
+                    over_scheduled_instructor_ids.remove(i_id)
+
+        return schedule
+
+    def _optimize_schedule(self, schedule):
+        pass
