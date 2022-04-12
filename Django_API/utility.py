@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from django.core.mail import send_mail
 from more_itertools import pairwise
 
 from Django_API.models import TimeSlot
@@ -25,3 +26,17 @@ def do_timeslots_overlap(timeslots: list):
             return True
 
     return False
+'''
+def send_email( approved = False, credential):
+    if (approved) :
+        subject = "You got in Cheif"
+    subject = ""
+    message = ""
+    send_mail('Subject here',
+    'Here is the message.',
+    'from@example.com',
+    ['to@example.com'],
+    fail_silently=False,)#Approve Email
+
+    #Deny Email
+'''
