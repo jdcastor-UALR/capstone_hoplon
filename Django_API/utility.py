@@ -26,17 +26,26 @@ def do_timeslots_overlap(timeslots: list):
             return True
 
     return False
-'''
-def send_email( approved = False, credential):
-    if (approved) :
-        subject = "You got in Cheif"
-    subject = ""
-    message = ""
-    send_mail('Subject here',
-    'Here is the message.',
-    'from@example.com',
-    ['to@example.com'],
-    fail_silently=False,)#Approve Email
 
-    #Deny Email
-'''
+
+def send_email(email, approved, password):
+    if approved:
+        messageTo = "Your ADTAA Account Request was Approved with the credentials: Email:"
+        messageTo = messageTo + email + "Password:" + password
+        send_mail(
+            subject='ADTAA Account Request',
+            from_email=None,
+            message=messageTo,
+            recipient_list=[email],
+            fail_silently=False, )
+
+    # Deny Email
+    if not approved:
+        messageTo = "Your ADTAA Account Request was Denied with the credentials: Email:"
+        messageTo = messageTo + email + "Password: " + password
+        send_mail(
+            subject='ADTAA Account Request',
+            from_email=None,
+            message=messageTo,
+            recipient_list=[email],
+            fail_silently=False, )

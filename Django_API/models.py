@@ -14,8 +14,6 @@ class RegistrationRequest(models.Model):
         choices=AccessLevelChoices.choices,
         blank=False
     )
-
-    requested_user_name = models.CharField(max_length=30, blank=False, default='')
     requested_password = models.CharField(max_length=30, blank=False, default='')
     contact_email = models.EmailField(max_length=30, blank=False, default='')
 
