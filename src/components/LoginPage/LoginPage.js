@@ -1,12 +1,16 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, {useEffect, useState} from 'react';
+import useTheme from "@material-ui/core/styles/useTheme";
 
-const LoginPage = () => (
-  <div data-testid="LoginPage">
-    LoginPage Component
-  </div>
-);
+const LoginPage = () => {
+  const theme = useTheme();
 
+
+  return (
+    <div data-testid="LoginPage">
+      Login Test Component
+    </div>
+  );
+};
 LoginPage.propTypes = {};
 
 LoginPage.defaultProps = {};

@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from django.core.mail import send_mail
 from more_itertools import pairwise
 
 from Django_API.models import TimeSlot
@@ -25,3 +26,26 @@ def do_timeslots_overlap(timeslots: list):
             return True
 
     return False
+
+
+def send_email(email, approved, password):
+    if approved:
+        messageTo = "Your ADTAA Account Request was Approved with the credentials: Email:"
+        messageTo = messageTo + email + "Password:" + password
+        send_mail(
+            subject='ADTAA Account Request',
+            from_email=None,
+            message=messageTo,
+            recipient_list=[email],
+            fail_silently=False, )
+
+    # Deny Email
+    if not approved:
+        messageTo = "Your ADTAA Account Request was Denied with the credentials: Email:"
+        messageTo = messageTo + email + "Password: " + password
+        send_mail(
+            subject='ADTAA Account Request',
+            from_email=None,
+            message=messageTo,
+            recipient_list=[email],
+            fail_silently=False, )
