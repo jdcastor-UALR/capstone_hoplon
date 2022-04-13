@@ -1,4 +1,5 @@
 import json
+import time
 
 from django.core.management import BaseCommand
 
@@ -14,4 +15,6 @@ class Command(BaseCommand):
         section_data = json.loads(json.dumps(SectionFullSerializer(Section.objects.all(), many=True).data))
         instructor_data = json.loads(json.dumps(InstructorSerializer(Instructor.objects.all(), many=True).data))
 
+        start_time = time.time()
         scheduler = GeneticScheduler(instructor_data, section_data)
+        print(f'{(time.time() - start_time) / 60} minutes')
