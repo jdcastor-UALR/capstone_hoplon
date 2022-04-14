@@ -10,58 +10,94 @@ class RecursiveScheduler:
     sections = []
 
     lookup_instructors = {}
-    lookup_sections = {}
 
     section_discipline_map = {}
     section_overlap_map = {}
 
+    # Statistics for algorithm run
+    complete_solutions_found = 0
+    incomplete_solutions_found = 0
+    tree_distribution = {}
+
     def __init__(self, sections: list, instructors: list):
+        """
+        :param sections: Fully serialized data of section models
+        :param instructors: Fully serialized data of instructor models
+
+        Example serialization:
+            section_data = json.loads(json.dumps(SectionFullSerializer(Section.objects.all(), many=True).data))
+            instructor_data = json.loads(json.dumps(InstructorSerializer(Instructor.objects.all(), many=True).data))
+        """
         self.instructors += instructors
         self.lookup_instructors = {i['id']: i for i in self.instructors}
         self.sections += sections
-        self.lookup_sections = {s['id']: s for s in self.sections}
 
         self.section_discipline_map = get_section_instructor_discipline_map()
         self.section_overlap_map = get_section_overlap_map(sections)
 
     def run(self):
+        """ Runs algorithm to generate all possible schedules and save as Solution model """
         schedule = []
-        section = self._pick_section(schedule)
-        instructor = self._pick_instructor(schedule, section)
-        self._generate_schedule(schedule, section, instructor)
-        print(schedule)
+        for section in self._get_remaining_sections(schedule):
+            instructors = self._pick_instructor(schedule, section)
+            if instructors:
+                for instructor in instructors:
+                    self._generate_schedule(schedule, section, instructor)
+
+        # Log statistics about algorithm run
+        print(f'Found {self.complete_solutions_found} complete solutions and {self.incomplete_solutions_found} '
+              f'incomplete solutions.')
+        print(self.tree_distribution)
+
+        # TODO: Add model saving here
 
     def _generate_schedule(self, schedule, next_section, next_instructor):
+        """
+        Recursive function to generate schedule one assignment at a time
+        :param schedule: Initial schedule (empty list) or schedule from parent execution
+        :param next_section: Initial section ID to root tree from, or section ID from parent execution
+        :param next_instructor: Initial instructor ID to root tree from, or instructor ID from parent execution
+        :return: None
+        """
         if next_section is None or next_instructor is None:
-            return schedule
+            pass
         else:
             schedule.append((next_section, next_instructor))
-            section = self._pick_section(schedule)
-            return self._generate_schedule(schedule, section, self._pick_instructor(schedule, section))
+            sections = self._get_remaining_sections(schedule)
+            if not sections:
+                self._add_solution(schedule)
+            else:
+                for section in sections:
+                    instructors = self._pick_instructor(schedule, section)
+                    if not instructors:
+                        self._add_solution(schedule)
+                    else:
+                        for instructor in instructors:
+                            self._generate_schedule(schedule, section, instructor)
 
-    def _pick_section(self, schedule):
+    def _get_remaining_sections(self, schedule):
         """
-        Picks section based on most conflicting classes heuristic
+        Gets remaining sections sorted by most conflicting classes heuristic
         :param schedule: List of (Section ID, Instructor ID) tuples generated so far
-        :return: Section ID from sections_to_assign or None if there is no option
+        :return: List of Section IDs left sorted by heuristic (possibly empty)
         """
 
         sections_to_assign = [s['id'] for s in self.sections if s['id'] not in [s for s, i in schedule]]
 
         if len(sections_to_assign) < 1:
             return None
-        return max(sections_to_assign, key=lambda x: len(self.section_overlap_map[x]))
+        return sorted(sections_to_assign, key=lambda x: len(self.section_overlap_map[x]), reverse=True)
 
     def _pick_instructor(self, schedule, section_id):
         """
-        Picks an instructor meeting the following constraints:
+        Gets instructors meeting the following constraints:
             1 - Instructor is not at assignment cap
             2 - Instructor is not assigned to overlapping class
             3 - Instructor shares one discipline in common with class
-        based on the least assignment heuristic
-        :param schedule:
-        :param section_id:
-        :return: Chosen instructor ID or None if no valid choice exists
+        sorted by the least assignment heuristic
+        :param schedule: List of (Section ID, Instructor ID) tuples generated so far
+        :param section_id: ID of section instructor is being assigned to
+        :return: List of instructor IDs meeting constraints sorted by heuristic (possibly empty)
         """
 
         instructor_assignment_map = {**{i['id']: 0 for i in self.instructors},
@@ -75,9 +111,16 @@ class RecursiveScheduler:
 
         if len(valid_instructors) < 1:
             return None
-        chosen_instructor = min(valid_instructors, key=lambda x: instructor_assignment_map[x])
-        instructor_assignment_map[chosen_instructor] += 1
-        if instructor_assignment_map[chosen_instructor] >= self.lookup_instructors[chosen_instructor]['maxSections']:
-            available_instructors.remove(chosen_instructor)
-        return chosen_instructor
+        return sorted(valid_instructors, key=lambda x: instructor_assignment_map[x])
 
+    def _add_solution(self, schedule):
+        """ Add solution to list of models to be created and collect statistics about generated solutions """
+
+        if len(schedule) == len(self.sections):
+            self.complete_solutions_found += 1
+        else:
+            self.incomplete_solutions_found += 1
+
+        self.tree_distribution[len(schedule)] = self.tree_distribution.get(len(schedule), 0) + 1
+
+        # TODO: Add solution data saving here

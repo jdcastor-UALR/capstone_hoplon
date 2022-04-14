@@ -9,7 +9,7 @@ from Django_API.serializers import InstructorSerializer, SectionFullSerializer
 
 
 class Command(BaseCommand):
-    help = 'Loads dummy data'
+    help = 'Runs recursive scheduler on initialized data and outputs execution time'
 
     def handle(self, *args, **options):
         section_data = json.loads(json.dumps(SectionFullSerializer(Section.objects.all(), many=True).data))
