@@ -1,7 +1,7 @@
 from copy import deepcopy
 from random import choice, sample, random, randint, randrange
 
-from Django_API.model_functions import get_section_instructor_discipline_map
+from Django_API.model_functions import get_section_instructor_discipline_map, get_section_overlap_map
 from Django_API.utility import do_timeslots_overlap
 
 
@@ -15,6 +15,7 @@ class GeneticScheduler:
     lookup_sections = []
 
     section_discipline_map = {}
+    section_overlap_map = {}
 
     population_size = 0
     score_max = 10
@@ -27,6 +28,7 @@ class GeneticScheduler:
         self.lookup_sections = {s['id']: s for s in self.sections}
 
         self.section_discipline_map = get_section_instructor_discipline_map()
+        self.section_overlap_map = get_section_overlap_map(sections)
 
         self.population_size = n_pop
         if n_pop % 2 != 0:
@@ -79,9 +81,9 @@ class GeneticScheduler:
 
         for i_id, sections in instructor_assignments.items():
             # Check instructor class overlap
-            timeslots = [ts for s in sections for ts in self.lookup_sections[s]['meetingTimes']]
-            if do_timeslots_overlap(timeslots):
-                violations += 0
+            for section, overlapped in self.section_overlap_map.items():
+                if section in sections and not set(sections).isdisjoint(set(overlapped)):
+                    violations += 1
             # Check instructor assignment limit violation
             instructor = self.lookup_instructors[i_id]
             if len(sections) > instructor['maxSections']:
@@ -166,6 +168,9 @@ class GeneticScheduler:
 
         if len(over_scheduled_instructor_ids) == 0 and len(double_scheduled_instructor_ids) == 0:
             return
+
+        # Fix double assignment
+        
 
         # Fix credit constraint
         previously_repaired = 2
