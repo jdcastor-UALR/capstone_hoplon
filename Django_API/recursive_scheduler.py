@@ -1,6 +1,12 @@
+import logging
 from collections import Counter
 
 from Django_API.model_functions import get_section_instructor_discipline_map, get_section_overlap_map
+from Django_API.models import Solution, AssignedSection
+
+DEFAULT_LEAF_LIMIT = 1
+
+logger = logging.getLogger()
 
 
 class RecursiveScheduler:
@@ -14,12 +20,14 @@ class RecursiveScheduler:
     section_discipline_map = {}
     section_overlap_map = {}
 
+    generated_solutions = []
+
     # Statistics for algorithm run
     complete_solutions_found = 0
     incomplete_solutions_found = 0
     tree_distribution = {}
 
-    def __init__(self, sections: list, instructors: list):
+    def __init__(self, sections: list, instructors: list, leaf_limit=DEFAULT_LEAF_LIMIT):
         """
         :param sections: Fully serialized data of section models
         :param instructors: Fully serialized data of instructor models
@@ -35,21 +43,40 @@ class RecursiveScheduler:
         self.section_discipline_map = get_section_instructor_discipline_map()
         self.section_overlap_map = get_section_overlap_map(sections)
 
+        self.leaf_limit = leaf_limit
+
     def run(self):
         """ Runs algorithm to generate all possible schedules and save as Solution model """
         schedule = []
-        for section in self._get_remaining_sections(schedule):
-            instructors = self._pick_instructor(schedule, section)
-            if instructors:
-                for instructor in instructors:
-                    self._generate_schedule(schedule, section, instructor)
+        sections = self._get_remaining_sections(schedule)
+        if sections:
+            for section in sections[:self.leaf_limit]:
+                instructors = self._pick_instructor(schedule, section)
+                if instructors:
+                    for instructor in instructors[:self.leaf_limit]:
+                        self._generate_schedule(schedule, section, instructor)
 
         # Log statistics about algorithm run
-        print(f'Found {self.complete_solutions_found} complete solutions and {self.incomplete_solutions_found} '
-              f'incomplete solutions.')
-        print(self.tree_distribution)
+        logger.info(f'Found {self.complete_solutions_found} complete solutions and {self.incomplete_solutions_found} '
+                    f'incomplete solutions.')
+        logger.info(self.tree_distribution)
 
-        # TODO: Add model saving here
+        # Save results of algorithm as model
+        if len(self.generated_solutions):
+            # Delete existing results
+            Solution.objects.all().delete()
+            AssignedSection.objects.all().delete()
+            try:
+                solutions = Solution.objects.bulk_create(
+                    map(lambda x: Solution(assignment_count=len(x)), self.generated_solutions))
+                assignments = []
+                for solution, assignment in zip(solutions, self.generated_solutions):
+                    for sid, iid in assignment:
+                        assignments.append(AssignedSection(solution_id=solution.id, section_id=sid, instructor_id=iid))
+                AssignedSection.objects.bulk_create(assignments)
+            except Exception as e:
+                logger.error('Encountered exception while saving results from scheduler.')
+                raise e
 
     def _generate_schedule(self, schedule, next_section, next_instructor):
         """
@@ -62,17 +89,17 @@ class RecursiveScheduler:
         if next_section is None or next_instructor is None:
             pass
         else:
-            schedule.append((next_section, next_instructor))
+            schedule = schedule + [(next_section, next_instructor)]
             sections = self._get_remaining_sections(schedule)
             if not sections:
                 self._add_solution(schedule)
             else:
-                for section in sections:
+                for section in sections[:self.leaf_limit]:
                     instructors = self._pick_instructor(schedule, section)
                     if not instructors:
                         self._add_solution(schedule)
                     else:
-                        for instructor in instructors:
+                        for instructor in instructors[:self.leaf_limit]:
                             self._generate_schedule(schedule, section, instructor)
 
     def _get_remaining_sections(self, schedule):
@@ -118,9 +145,11 @@ class RecursiveScheduler:
 
         if len(schedule) == len(self.sections):
             self.complete_solutions_found += 1
+            print(schedule)
         else:
             self.incomplete_solutions_found += 1
 
         self.tree_distribution[len(schedule)] = self.tree_distribution.get(len(schedule), 0) + 1
 
-        # TODO: Add solution data saving here
+        self.generated_solutions.append(schedule)
+        print(f'Explored {self.complete_solutions_found + self.incomplete_solutions_found} options')

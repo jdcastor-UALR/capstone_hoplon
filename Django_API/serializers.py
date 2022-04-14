@@ -1,8 +1,8 @@
 from rest_framework import serializers
 
 from Django_API.model_enums import SectionDayChoices
-from Django_API.models import User, RegistrationRequest, Session, Section, TimeSlot, Course, Instructor, Discipline
-
+from Django_API.models import User, RegistrationRequest, Session, Section, TimeSlot, Course, Instructor, Discipline, \
+    Solution
 
 # class SnippetSerializer(serializers.Serializer):
 #     id = serializers.IntegerField(read_only=True)
@@ -140,4 +140,11 @@ class InstructorWriteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Instructor
+        fields = '__all__'
+
+
+class SolutionSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Solution
         fields = '__all__'

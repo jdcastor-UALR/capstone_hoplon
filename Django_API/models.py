@@ -47,3 +47,13 @@ class Instructor(models.Model):
     lastName = models.CharField(max_length=30)
     maxSections = models.IntegerField(default='1')
     qualifications = models.ManyToManyField(Discipline, blank=True)
+
+
+class Solution(models.Model):
+    assignment_count = models.IntegerField(default=0)
+
+
+class AssignedSection(models.Model):
+    solution = models.ForeignKey(Solution, on_delete=models.CASCADE)
+    section = models.ForeignKey(Section, on_delete=models.CASCADE)
+    instructor = models.ForeignKey(Instructor, blank=True, null=True, on_delete=models.SET_NULL)

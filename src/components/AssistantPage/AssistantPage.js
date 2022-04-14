@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import PropTypes from 'prop-types';
 import Typography from "@material-ui/core/Typography";
 import useTheme from "@material-ui/core/styles/useTheme";
@@ -8,6 +8,8 @@ import CardContent from "@material-ui/core/CardContent";
 import CardActions from "@material-ui/core/CardActions";
 import IconButton from "@material-ui/core/IconButton";
 import EditIcon from "@material-ui/icons/Edit"
+import APIService from "../../APIService";
+import {URL_CLASSES, URL_COURSES, URL_DISCIPLINES, URL_INSTRUCTORS, URL_SOLUTIONS} from "../../urls";
 
 const generateCards = (schedule) => {
   let cards = [];
@@ -74,6 +76,14 @@ const AssistantPage = () => {
         {section: 'Section5', instructor: null},
       ], issues: [], id: 5},
   ];
+
+  useEffect(() => {
+    APIService.get(URL_SOLUTIONS).then((data) => {
+      console.log(data);
+    }, (error) => {
+      console.error(error);
+    });
+  }, []);
 
   return (
     <div data-testid="AssistantPage">

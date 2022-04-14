@@ -1,11 +1,16 @@
+import logging
+
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from Django_API.models import Instructor, User, RegistrationRequest, Session, TimeSlot, Course, Section, Discipline
+from Django_API.models import Instructor, User, RegistrationRequest, Session, TimeSlot, Course, Section, Discipline, \
+    Solution
 from Django_API.serializers import UserSerializer, RegistrationRequestSerializer, SessionSerializer, \
     TimeSlotSerializer, CourseSerializer, SectionSerializer, InstructorSerializer, DisciplineSerializer, \
-    InstructorWriteSerializer, CourseWriteSerializer
+    InstructorWriteSerializer, CourseWriteSerializer, SolutionSerializer
+
+logger = logging.getLogger()
 
 
 class UserList(APIView):
@@ -347,3 +352,10 @@ class InstructorDetail(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
         instructor.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class SolutionList(APIView):
+    def get(self, request, **kwargs):
+        solutions = Solution.objects.all()
+        serializer = SolutionSerializer(solutions, many=True)
+        return Response(serializer.data)
