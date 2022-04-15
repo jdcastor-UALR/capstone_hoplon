@@ -4,7 +4,7 @@ from collections import Counter
 from Django_API.model_functions import get_section_instructor_discipline_map, get_section_overlap_map
 from Django_API.models import Solution, AssignedSection
 
-DEFAULT_LEAF_LIMIT = 1
+DEFAULT_LEAF_LIMIT = 2
 
 logger = logging.getLogger()
 
@@ -50,30 +50,44 @@ class RecursiveScheduler:
         schedule = []
         sections = self._get_remaining_sections(schedule)
         if sections:
-            for section in sections[:self.leaf_limit]:
+            for section in sections:
                 instructors = self._pick_instructor(schedule, section)
                 if instructors:
-                    for instructor in instructors[:self.leaf_limit]:
+                    for instructor in instructors:
                         self._generate_schedule(schedule, section, instructor)
 
         # Log statistics about algorithm run
-        logger.info(f'Found {self.complete_solutions_found} complete solutions and {self.incomplete_solutions_found} '
-                    f'incomplete solutions.')
-        logger.info(self.tree_distribution)
+        print(f'Found {self.complete_solutions_found} complete solutions and {self.incomplete_solutions_found} '
+              f'incomplete solutions.')
+        print(self.tree_distribution)
 
         # Save results of algorithm as model
         if len(self.generated_solutions):
             # Delete existing results
             Solution.objects.all().delete()
             AssignedSection.objects.all().delete()
+
             try:
-                solutions = Solution.objects.bulk_create(
-                    map(lambda x: Solution(assignment_count=len(x)), self.generated_solutions))
+                # Save solution objects
+                solutions_to_save = list(sorted(self.generated_solutions, key=lambda x: len(x), reverse=True))[:1000]
+                saved_solutions = Solution.objects.bulk_create(
+                    map(lambda x: Solution(assignment_count=len(x)), solutions_to_save))
+
+                # Populate unassigned sections with None for instructor id
+                for solution in solutions_to_save:
+                    section_ids = [s['id'] for s in self.sections]
+                    for sid, iid in solution:
+                        section_ids.remove(sid)
+                    for sid in section_ids:
+                        solution.append((sid, None))
+
+                # Save assignment objects
                 assignments = []
-                for solution, assignment in zip(solutions, self.generated_solutions):
+                for solution, assignment in zip(saved_solutions, solutions_to_save):
                     for sid, iid in assignment:
                         assignments.append(AssignedSection(solution_id=solution.id, section_id=sid, instructor_id=iid))
                 AssignedSection.objects.bulk_create(assignments)
+
             except Exception as e:
                 logger.error('Encountered exception while saving results from scheduler.')
                 raise e
@@ -94,7 +108,7 @@ class RecursiveScheduler:
             if not sections:
                 self._add_solution(schedule)
             else:
-                for section in sections[:self.leaf_limit]:
+                for section in sections[:1]:
                     instructors = self._pick_instructor(schedule, section)
                     if not instructors:
                         self._add_solution(schedule)
@@ -152,4 +166,6 @@ class RecursiveScheduler:
         self.tree_distribution[len(schedule)] = self.tree_distribution.get(len(schedule), 0) + 1
 
         self.generated_solutions.append(schedule)
-        print(f'Explored {self.complete_solutions_found + self.incomplete_solutions_found} options')
+
+        if (self.incomplete_solutions_found + self.complete_solutions_found) % 1000 == 0:
+            print(f'Explored {self.complete_solutions_found + self.incomplete_solutions_found} options', end="\r")

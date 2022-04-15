@@ -1,3 +1,4 @@
+import json
 import logging
 
 from rest_framework import status
@@ -6,9 +7,10 @@ from rest_framework.response import Response
 
 from Django_API.models import Instructor, User, RegistrationRequest, Session, TimeSlot, Course, Section, Discipline, \
     Solution
+from Django_API.recursive_scheduler import RecursiveScheduler
 from Django_API.serializers import UserSerializer, RegistrationRequestSerializer, SessionSerializer, \
     TimeSlotSerializer, CourseSerializer, SectionSerializer, InstructorSerializer, DisciplineSerializer, \
-    InstructorWriteSerializer, CourseWriteSerializer, SolutionSerializer
+    InstructorWriteSerializer, CourseWriteSerializer, SolutionSerializer, SectionFullSerializer
 
 logger = logging.getLogger()
 
@@ -355,7 +357,22 @@ class InstructorDetail(APIView):
 
 
 class SolutionList(APIView):
+
     def get(self, request, **kwargs):
+        return Response(self._get_solutions())
+
+    def post(self, request, **kwargs):
+        section_data = json.loads(json.dumps(SectionFullSerializer(Section.objects.all(), many=True).data))
+        instructor_data = json.loads(json.dumps(InstructorSerializer(Instructor.objects.all(), many=True).data))
+        try:
+            rs = RecursiveScheduler(section_data, instructor_data)
+            rs.run()
+        except Exception as e:
+            logger.exception(e)
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response(self._get_solutions())
+
+    def _get_solutions(self):
         solutions = Solution.objects.all()
         serializer = SolutionSerializer(solutions, many=True)
-        return Response(serializer.data)
+        return serializer.data
