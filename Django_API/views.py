@@ -310,13 +310,15 @@ class DisciplineView(APIView):
 
 class InstructorList(APIView):
     # Read
-    def get(self, request, **kwargs, ):
+    @staticmethod
+    def get(request, **kwargs):
         instructor = Instructor.objects.all()
         serializer = InstructorSerializer(instructor, many=True)
         return Response(serializer.data)
 
     # Create
-    def post(self, request, **kwargs):
+    @staticmethod
+    def post(request, **kwargs):
         serializer = InstructorWriteSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -326,7 +328,8 @@ class InstructorList(APIView):
 
 class InstructorDetail(APIView):
     # Read
-    def get(self, request, instructor_id, **kwargs):
+    @staticmethod
+    def get(request, instructor_id, **kwargs):
         try:
             instructor = Instructor.objects.get(id=instructor_id)
         except Instructor.DoesNotExist:
@@ -335,7 +338,8 @@ class InstructorDetail(APIView):
         return Response(serializer.data)
 
     # Update
-    def put(self, request, instructor_id, **kwargs):
+    @staticmethod
+    def put(request, instructor_id, **kwargs):
         try:
             instructor = Instructor.objects.get(id=instructor_id)
         except Instructor.DoesNotExist:
@@ -347,7 +351,8 @@ class InstructorDetail(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # Delete
-    def delete(self, request, instructor_id, **kwargs):
+    @staticmethod
+    def delete(request, instructor_id, **kwargs):
         try:
             instructor = Instructor.objects.get(id=instructor_id)
         except Instructor.DoesNotExist:
@@ -357,6 +362,12 @@ class InstructorDetail(APIView):
 
 
 class SolutionList(APIView):
+
+    @staticmethod
+    def _get_solutions():
+        solutions = Solution.objects.all()
+        serializer = SolutionSerializer(solutions, many=True)
+        return serializer.data
 
     def get(self, request, **kwargs):
         return Response(self._get_solutions())
@@ -372,7 +383,36 @@ class SolutionList(APIView):
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         return Response(self._get_solutions())
 
-    def _get_solutions(self):
-        solutions = Solution.objects.all()
-        serializer = SolutionSerializer(solutions, many=True)
-        return serializer.data
+
+class SolutionDetail(APIView):
+
+    @staticmethod
+    def _get_solution(solution_id):
+        try:
+            return Solution.objects.get(id=solution_id)
+        except Solution.DoesNotExist:
+            return None
+
+    def get(self, request, solution_id, **kwargs):
+        solution = self._get_solution(solution_id)
+        if solution:
+            serializer = SolutionSerializer(solution)
+            return Response(serializer.data)
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def put(self, request, solution_id, **kwargs):
+        solution = self._get_solution(solution_id)
+        if solution:
+            # TODO: put solution editing functionality here
+            pass
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def delete(self, request, solution_id, **kwargs):
+        solution = self._get_solution(solution_id)
+        if solution:
+            solution.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)

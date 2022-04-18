@@ -11,6 +11,7 @@ import EditIcon from "@material-ui/icons/Edit"
 import APIService from "../../APIService";
 import {URL_CLASSES, URL_INSTRUCTORS, URL_SOLUTIONS} from "../../urls";
 import Button from "@material-ui/core/Button";
+import {Link} from "react-router-dom";
 
 const runScheduler = (setSolutions) => {
   APIService.post(URL_SOLUTIONS).then((data) => {
@@ -20,7 +21,36 @@ const runScheduler = (setSolutions) => {
   }, (error) => console.error(error));
 };
 
-const generateCards = (schedule, setSolutions) => {
+const runSchedulerSection = (schedule, instructors, sections, setSolutions) => {
+  let result = (<br />);
+
+  console.log(instructors.size);
+
+  if ((instructors.size === 0 || instructors.size == null) || (sections.size === 0 || sections.size == null)) {
+    result = (
+      <>
+        <Typography>Welcome to ADTAA! To get started, classes and instructors must be defined to generate schedules
+          from. Please use the button below to go to the setup page.</Typography>
+        <br />
+        <Button color={"primary"} variant={"contained"} component={Link} to={'/setup'}>Go to Setup</Button>
+      </>
+    );
+  } else if (schedule.length === 0) {
+    result = (
+      <>
+        <Typography>No solutions have been generated.</Typography>
+        <br />
+        <Button variant={"contained"} color={"primary"} onClick={() => runScheduler(setSolutions)}>
+          Run Scheduler
+        </Button>
+      </>
+    );
+  }
+
+  return result;
+};
+
+const generateCards = (schedule) => {
   let cards = [];
   let count = 1;
 
@@ -41,13 +71,6 @@ const generateCards = (schedule, setSolutions) => {
       </Card>
     );
     count += 1;
-  }
-
-  if (cards.length === 0) {
-    cards.push(<>
-      <Typography>No solutions have been generated.</Typography>
-      <Button variant={"contained"} color={"primary"} onClick={() => runScheduler(setSolutions)}>Run Scheduler</Button>
-    </>)
   }
 
   return cards;
@@ -120,11 +143,12 @@ const AssistantPage = () => {
 
   return (
     <div data-testid="AssistantPage">
-      <Typography variant="h3" style={{color: theme.palette.primary, fontWeight: "bold"}}>
+      <Typography variant="h3" style={{color: theme.palette.primary, fontWeight: "bold", marginBottom: "0.5em"}}>
         Generated Schedules
       </Typography>
+      {runSchedulerSection(solutions, instructors, sections, setSolutions)}
       <Grid container alignItems={"center"} justifyContent={"center"}>
-        {generateCards(solutions.slice(0, 12), setSolutions)}
+        {generateCards(solutions.slice(0, 12))}
       </Grid>
     </div>
   );
