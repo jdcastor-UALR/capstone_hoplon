@@ -12,6 +12,7 @@ import APIService from "../../APIService";
 import {URL_CLASSES, URL_INSTRUCTORS, URL_SOLUTIONS} from "../../urls";
 import Button from "@material-ui/core/Button";
 import {Link} from "react-router-dom";
+import {PageHeading} from "../Utility/text-styles";
 
 const runScheduler = (setSolutions) => {
   APIService.post(URL_SOLUTIONS).then((data) => {
@@ -23,8 +24,6 @@ const runScheduler = (setSolutions) => {
 
 const runSchedulerSection = (schedule, instructors, sections, setSolutions) => {
   let result = (<br />);
-
-  console.log(instructors.size);
 
   if ((instructors.size === 0 || instructors.size == null) || (sections.size === 0 || sections.size == null)) {
     result = (
@@ -64,7 +63,7 @@ const generateCards = (schedule) => {
           <Typography>Issues: None</Typography>
         </CardContent>
         <CardActions>
-          <IconButton style={{marginLeft: "auto"}}>
+          <IconButton style={{marginLeft: "auto"}} component={Link} to={`/edit/${option.id}`}>
             <EditIcon />
           </IconButton>
         </CardActions>
@@ -143,9 +142,7 @@ const AssistantPage = () => {
 
   return (
     <div data-testid="AssistantPage">
-      <Typography variant="h3" style={{color: theme.palette.primary, fontWeight: "bold", marginBottom: "0.5em"}}>
-        Generated Schedules
-      </Typography>
+      {PageHeading('Generated Schedules')}
       {runSchedulerSection(solutions, instructors, sections, setSolutions)}
       <Grid container alignItems={"center"} justifyContent={"center"}>
         {generateCards(solutions.slice(0, 12))}

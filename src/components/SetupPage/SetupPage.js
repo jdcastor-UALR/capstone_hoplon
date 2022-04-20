@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 import Grid from "@material-ui/core/Grid";
 import Divider from "@material-ui/core/Divider";
 import useTheme from "@material-ui/core/styles/useTheme";
-import Typography from "@material-ui/core/Typography";
 import InstructorList from "./InstructorList/InstructorList";
 import ClassList from "./ClassList/ClassList";
 import APIService from "../../APIService";
 import {URL_CLASSES, URL_COURSES, URL_DISCIPLINES, URL_INSTRUCTORS} from "../../urls";
+import {PageHeading} from "../Utility/text-styles";
 
 const SetupPage = () => {
   const theme = useTheme();
@@ -76,18 +76,14 @@ const SetupPage = () => {
     <div data-testid="SetupPage">
       <Grid container spacing={2} justifyContent={"center"}>
         <Grid container item xs={5} direction={"column"}>
-          <Typography variant={"h4"} style={{color: theme.palette.primary, fontWeight: "bold"}}>
-            Teaching Staff
-          </Typography>
+          {PageHeading('Teaching Staff', 'h4')}
           <div style={{padding: '1rem 5rem'}}>
             <InstructorList instructors={instructors} setInstructors={setInstructors} disciplines={disciplines} />
           </div>
         </Grid>
         <Divider orientation={"vertical"} flexItem />
         <Grid container item xs={5} direction={"column"}>
-          <Typography variant={"h4"} style={{color: theme.palette.primary, fontWeight: "bold"}}>
-            Class Roster
-          </Typography>
+          {PageHeading('Class Roster', 'h4')}
           <div style={{padding: '1rem 5rem'}}>
             <ClassList classes={classes} setClasses={setClasses} courses={courses} setCourses={setCourses}
                        disciplines={disciplines} />

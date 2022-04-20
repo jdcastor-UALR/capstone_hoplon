@@ -6,6 +6,7 @@ import SetupPage from "./components/SetupPage/SetupPage";
 import LoginPage from "./components/LoginPage/LoginPage";
 import {styleWrapper} from "./StyleWrapper";
 import './App.css'
+import EditSolution from "./components/AssistantPage/EditSolution/EditSolution";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
       <div className={'content'}>
         <Routes>
           <Route path={'/'} element={<AssistantPage />} />
+          <Route path={'/edit/:solution_id'} element={<EditSolution />} />
           <Route path={'/setup'} element={<SetupPage />} />
           <Route path={'/login'} element={<LoginPage />} />
         </Routes>
