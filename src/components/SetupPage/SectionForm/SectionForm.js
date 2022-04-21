@@ -107,7 +107,7 @@ const SectionForm = (props) => {
   const getSectionList = () => {
     let list = [];
     if (classes) {
-      list = classes.filter(cls => cls.course === row.id).map((cls) => (
+      list = classes.filter(cls => cls.course.id === row.id).map((cls) => (
         <>
           <ListItem button onClick={() => selectSection(cls.id)}>
             {getIcon(cls.id)}
@@ -156,7 +156,7 @@ const SectionForm = (props) => {
                    onChange={event => setNewTimeSlot({...newTimeSlot, end_time: event.target.value})}
                    InputLabelProps={{shrink: true}} inputProps={{step: 60}} fullWidth />
       </Grid>
-      {classes.filter(c => c.course === row.id).length > 0 &&
+      {classes.filter(c => c.course.id === row.id).length > 0 &&
       <Grid item>
         <Button variant={"contained"} color={"default"}
                 disabled={selectedTimeSlot < 0 || isNewTimeSlotInvalid()}

@@ -53,6 +53,7 @@ class CourseWriteSerializer(serializers.ModelSerializer):
 
 
 class SectionSerializer(serializers.ModelSerializer):
+    course = CourseSerializer()
     meetingTimes = serializers.SerializerMethodField('get_meeting_times_by_day')
     meetingTimeString = serializers.SerializerMethodField('prettify_time_string')
 
