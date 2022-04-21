@@ -4,6 +4,7 @@ import logging
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 
 from Django_API.models import Instructor, User, RegistrationRequest, Session, TimeSlot, Course, Section, Discipline, \
     Solution
@@ -12,10 +13,13 @@ from Django_API.serializers import UserSerializer, RegistrationRequestSerializer
     TimeSlotSerializer, CourseSerializer, SectionSerializer, InstructorSerializer, DisciplineSerializer, \
     InstructorWriteSerializer, CourseWriteSerializer, SolutionSerializer, SectionFullSerializer
 
+from .user_permissions import *
+
 logger = logging.getLogger()
 
 
 class UserList(APIView):
+    permission_classes = [IsRoot]
     # Read
     def get(self, request, **kwargs, ):
         user = User.objects.all()
@@ -32,6 +36,8 @@ class UserList(APIView):
 
 
 class UserDetail(APIView):
+    permission_classes = [IsRoot]
+
     # Read
     def get(self, request, user_id, **kwargs):
         try:
@@ -64,6 +70,8 @@ class UserDetail(APIView):
 
 
 class RegistrationRequestList(APIView):
+    permission_classes = [IsRoot]
+
     # Read
     def get(self, request, **kwargs, ):
         registration_request = RegistrationRequest.objects.all()
@@ -80,6 +88,8 @@ class RegistrationRequestList(APIView):
 
 
 class RegistrationRequestDetail(APIView):
+    permission_classes = [IsRoot]
+
     # Read
     def get(self, request, registration_request_id, **kwargs):
         try:
@@ -160,6 +170,8 @@ class SessionDetail(APIView):
 
 
 class TimeSlotList(APIView):
+    permission_classes = [IsRoot | IsAdmin | IsAssistantReadOnly]
+
     # Read
     def get(self, request, **kwargs, ):
         time_slot = TimeSlot.objects.all()
@@ -176,6 +188,8 @@ class TimeSlotList(APIView):
 
 
 class TimeSlotDetail(APIView):
+    permission_classes = [IsRoot | IsAdmin | IsAssistantReadOnly]
+
     # Read
     def get(self, request, time_slot_id, **kwargs):
         try:
@@ -208,6 +222,8 @@ class TimeSlotDetail(APIView):
 
 
 class CourseList(APIView):
+    permission_classes = [IsRoot | IsAdmin | IsAssistantReadOnly]
+
     # Read
     def get(self, request, **kwargs, ):
         course = Course.objects.all()
@@ -224,6 +240,8 @@ class CourseList(APIView):
 
 
 class CourseDetail(APIView):
+    permission_classes = [IsRoot | IsAdmin | IsAssistantReadOnly]
+
     # Read
     def get(self, request, course_id, **kwargs):
         try:
@@ -256,6 +274,8 @@ class CourseDetail(APIView):
 
 
 class SectionList(APIView):
+    permission_classes = [IsRoot | IsAdmin | IsAssistantReadOnly]
+
     # Read
     def get(self, request, **kwargs, ):
         section = Section.objects.all()
@@ -272,6 +292,7 @@ class SectionList(APIView):
 
 
 class SectionDetail(APIView):
+    permission_classes = [IsRoot | IsAdmin | IsAssistantReadOnly]
 
     def get(self, request, section_id, **kwargs):
         try:
@@ -302,13 +323,19 @@ class SectionDetail(APIView):
 
 
 class DisciplineView(APIView):
-    def get(self, request, **kwargs):
+    permission_classes = [IsAuthenticated]
+
+    # Read
+    @staticmethod
+    def get(request, **kwargs):
         disciplines = Discipline.objects.all()
         serializer = DisciplineSerializer(disciplines, many=True)
         return Response(serializer.data)
 
 
 class InstructorList(APIView):
+    permission_classes = [IsRoot | IsAdmin | IsAssistantReadOnly]
+
     # Read
     @staticmethod
     def get(request, **kwargs):
@@ -327,6 +354,9 @@ class InstructorList(APIView):
 
 
 class InstructorDetail(APIView):
+
+    permission_classes = [IsRoot | IsAdmin | IsAssistantReadOnly]
+
     # Read
     @staticmethod
     def get(request, instructor_id, **kwargs):
@@ -362,7 +392,7 @@ class InstructorDetail(APIView):
 
 
 class SolutionList(APIView):
-
+    permission_classes = [IsRoot | IsAdmin | IsAssistant]
     @staticmethod
     def _get_solutions():
         solutions = Solution.objects.all()
@@ -385,6 +415,7 @@ class SolutionList(APIView):
 
 
 class SolutionDetail(APIView):
+    permission_classes = [IsRoot | IsAdmin | IsAssistant]
 
     @staticmethod
     def _get_solution(solution_id):

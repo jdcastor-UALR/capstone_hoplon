@@ -7,6 +7,9 @@ from Django_API.model_enums import AccessLevelChoices, SectionDayChoices
 class User(AbstractUser):
     accessLevel = models.CharField(max_length=255, choices=AccessLevelChoices.choices)
 
+    #def __str__(self):
+       # return "{}".format(self.email)
+
 
 class RegistrationRequest(models.Model):
     access_level = models.CharField(
