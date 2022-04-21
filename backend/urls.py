@@ -20,7 +20,7 @@ from rest_framework.urlpatterns import format_suffix_patterns
 
 from Django_API.views import InstructorList, InstructorDetail, UserList, UserDetail, RegistrationRequestList, \
     RegistrationRequestDetail, SessionList, SessionDetail, TimeSlotList, TimeSlotDetail, CourseList, CourseDetail, \
-    SectionList, SectionDetail, DisciplineView, SolutionList, SolutionDetail
+    SectionList, SectionDetail, DisciplineView, SolutionList, SolutionDetail, SolutionConstraintMap
 from .views import index
 
 
@@ -53,7 +53,8 @@ urlpatterns = [
     path('api/discipline/', DisciplineView.as_view(), name='disciplines'),
 
     path('api/solution/', SolutionList.as_view(), name='solutions'),
-    path('api/solution/<int:solution_id>', SolutionDetail.as_view(), name='solution')
+    path('api/solution/<int:solution_id>', SolutionDetail.as_view(), name='solution'),
+    path('api/solution/constraintmap/', SolutionConstraintMap.as_view(), name='solution_constraint_map')
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

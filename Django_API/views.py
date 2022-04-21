@@ -5,6 +5,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
+from Django_API.model_functions import get_section_instructor_discipline_map, get_section_overlap_map
 from Django_API.models import Instructor, User, RegistrationRequest, Session, TimeSlot, Course, Section, Discipline, \
     Solution
 from Django_API.recursive_scheduler import RecursiveScheduler
@@ -416,3 +417,12 @@ class SolutionDetail(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+class SolutionConstraintMap(APIView):
+    @staticmethod
+    def get(request, **kwargs):
+        section_data = json.loads(json.dumps(SectionFullSerializer(Section.objects.all(), many=True).data))
+        section_overlap_map = get_section_overlap_map(section_data)
+        discipline_overlap_map = get_section_instructor_discipline_map()
+        return Response({'section_overlap_map': section_overlap_map, 'discipline_overlap_map': discipline_overlap_map})
