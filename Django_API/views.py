@@ -18,12 +18,14 @@ logger = logging.getLogger()
 
 class UserList(APIView):
     # Read
+    @staticmethod
     def get(self, request, **kwargs, ):
         user = User.objects.all()
         serializer = UserSerializer(user, many=True)
         return Response(serializer.data)
 
     # Create
+    @staticmethod
     def post(self, request, **kwargs):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
@@ -34,6 +36,7 @@ class UserList(APIView):
 
 class UserDetail(APIView):
     # Read
+    @staticmethod
     def get(self, request, user_id, **kwargs):
         try:
             user = User.objects.get(id=user_id)
@@ -43,6 +46,7 @@ class UserDetail(APIView):
         return Response(serializer.data)
 
     # Update
+    @staticmethod
     def put(self, request, user_id, **kwargs):
         try:
             user = User.objects.get(id=user_id)
@@ -55,6 +59,7 @@ class UserDetail(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # Delete
+    @staticmethod
     def delete(self, request, user_id, **kwargs):
         try:
             user = User.objects.get(id=user_id)
@@ -66,12 +71,14 @@ class UserDetail(APIView):
 
 class RegistrationRequestList(APIView):
     # Read
+    @staticmethod
     def get(self, request, **kwargs, ):
         registration_request = RegistrationRequest.objects.all()
         serializer = RegistrationRequestSerializer(registration_request, many=True)
         return Response(serializer.data)
 
     # Create
+    @staticmethod
     def post(self, request, **kwargs):
         serializer = RegistrationRequestSerializer(data=request.data)
         if serializer.is_valid():
@@ -82,6 +89,7 @@ class RegistrationRequestList(APIView):
 
 class RegistrationRequestDetail(APIView):
     # Read
+    @staticmethod
     def get(self, request, registration_request_id, **kwargs):
         try:
             registration_request = RegistrationRequest.objects.get(id=registration_request_id)
@@ -91,6 +99,7 @@ class RegistrationRequestDetail(APIView):
         return Response(serializer.data)
 
     # Update
+    @staticmethod
     def put(self, request, registration_request_id, **kwargs):
         try:
             registration_request = RegistrationRequest.objects.get(id=registration_request_id)
@@ -103,6 +112,7 @@ class RegistrationRequestDetail(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # Delete
+    @staticmethod
     def delete(self, request, registration_request_id, **kwargs):
         try:
             registration_request = RegistrationRequest.objects.get(id=registration_request_id)
@@ -114,12 +124,14 @@ class RegistrationRequestDetail(APIView):
 
 class SessionList(APIView):
     # Read
+    @staticmethod
     def get(self, request, **kwargs, ):
         session = Session.objects.all()
         serializer = SessionSerializer(session, many=True)
         return Response(serializer.data)
 
     # Create
+    @staticmethod
     def post(self, request, **kwargs):
         serializer = SessionSerializer(data=request.data)
         if serializer.is_valid():
@@ -130,6 +142,7 @@ class SessionList(APIView):
 
 class SessionDetail(APIView):
     # Read
+    @staticmethod
     def get(self, request, session_id, **kwargs):
         try:
             session = Session.objects.get(id=session_id)
@@ -139,6 +152,7 @@ class SessionDetail(APIView):
         return Response(serializer.data)
 
     # Update
+    @staticmethod
     def put(self, request, session_id, **kwargs):
         try:
             session = Session.objects.get(id=session_id)
@@ -151,6 +165,7 @@ class SessionDetail(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # Delete
+    @staticmethod
     def delete(self, request, session_id, **kwargs):
         try:
             session = Session.objects.get(id=session_id)
@@ -162,12 +177,14 @@ class SessionDetail(APIView):
 
 class TimeSlotList(APIView):
     # Read
+    @staticmethod
     def get(self, request, **kwargs, ):
         time_slot = TimeSlot.objects.all()
         serializer = TimeSlotSerializer(time_slot, many=True)
         return Response(serializer.data)
 
     # Create
+    @staticmethod
     def post(self, request, **kwargs):
         serializer = TimeSlotSerializer(data=request.data)
         if serializer.is_valid():
@@ -178,6 +195,7 @@ class TimeSlotList(APIView):
 
 class TimeSlotDetail(APIView):
     # Read
+    @staticmethod
     def get(self, request, time_slot_id, **kwargs):
         try:
             time_slot = TimeSlot.objects.get(id=time_slot_id)
@@ -187,6 +205,7 @@ class TimeSlotDetail(APIView):
         return Response(serializer.data)
 
     # Update
+    @staticmethod
     def put(self, request, time_slot_id, **kwargs):
         try:
             time_slot = TimeSlot.objects.get(id=time_slot_id)
@@ -199,6 +218,7 @@ class TimeSlotDetail(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # Delete
+    @staticmethod
     def delete(self, request, time_slot_id, **kwargs):
         try:
             time_slot = TimeSlot.objects.get(id=time_slot_id)
@@ -210,12 +230,14 @@ class TimeSlotDetail(APIView):
 
 class CourseList(APIView):
     # Read
+    @staticmethod
     def get(self, request, **kwargs, ):
         course = Course.objects.all()
         serializer = CourseSerializer(course, many=True)
         return Response(serializer.data)
 
     # Create
+    @staticmethod
     def post(self, request, **kwargs):
         serializer = CourseWriteSerializer(data=request.data)
         if serializer.is_valid():
@@ -226,6 +248,7 @@ class CourseList(APIView):
 
 class CourseDetail(APIView):
     # Read
+    @staticmethod
     def get(self, request, course_id, **kwargs):
         try:
             course = Course.objects.get(id=course_id)
@@ -235,6 +258,7 @@ class CourseDetail(APIView):
         return Response(serializer.data)
 
     # Update
+    @staticmethod
     def put(self, request, course_id, **kwargs):
         try:
             course = Course.objects.get(id=course_id)
@@ -247,6 +271,7 @@ class CourseDetail(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # Delete
+    @staticmethod
     def delete(self, request, course_id, **kwargs):
         try:
             course = Course.objects.get(id=course_id)
@@ -258,12 +283,14 @@ class CourseDetail(APIView):
 
 class SectionList(APIView):
     # Read
+    @staticmethod
     def get(self, request, **kwargs, ):
         section = Section.objects.all()
         serializer = SectionSerializer(section, many=True)
         return Response(serializer.data)
 
     # Create
+    @staticmethod
     def post(self, request, **kwargs):
         serializer = SectionSerializer(data=request.data)
         if serializer.is_valid():
@@ -273,7 +300,7 @@ class SectionList(APIView):
 
 
 class SectionDetail(APIView):
-
+    @staticmethod
     def get(self, request, section_id, **kwargs):
         try:
             section = Section.objects.get(id=section_id)
@@ -282,6 +309,7 @@ class SectionDetail(APIView):
         serializer = SectionSerializer(section)
         return Response(serializer.data)
 
+    @staticmethod
     def put(self, request, section_id, **kwargs):
         try:
             section = Section.objects.get(id=section_id)
@@ -293,6 +321,7 @@ class SectionDetail(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @staticmethod
     def delete(self, request, section_id, **kwargs):
         try:
             section = Section.objects.get(id=section_id)
@@ -303,6 +332,7 @@ class SectionDetail(APIView):
 
 
 class DisciplineView(APIView):
+    @staticmethod
     def get(self, request, **kwargs):
         disciplines = Discipline.objects.all()
         serializer = DisciplineSerializer(disciplines, many=True)
