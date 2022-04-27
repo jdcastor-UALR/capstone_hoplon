@@ -16,6 +16,7 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path
+from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.urlpatterns import format_suffix_patterns
 
 from Django_API.views import InstructorList, InstructorDetail, UserList, UserDetail, RegistrationRequestList, \
@@ -54,7 +55,9 @@ urlpatterns = [
 
     path('api/solution/', SolutionList.as_view(), name='solutions'),
     path('api/solution/<int:solution_id>', SolutionDetail.as_view(), name='solution'),
-    path('api/solution/constraintmap/', SolutionConstraintMap.as_view(), name='solution_constraint_map')
+    path('api/solution/constraintmap/', SolutionConstraintMap.as_view(), name='solution_constraint_map'),
+
+    path('api/auth/token/', obtain_auth_token, name='api_token_auth'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
