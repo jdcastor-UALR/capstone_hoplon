@@ -487,6 +487,8 @@ class SolutionDetail(APIView):
 
 
 class SolutionConstraintMap(APIView):
+    permission_classes = [IsRoot | IsAdmin | IsAssistant]
+
     @staticmethod
     def get(request, **kwargs):
         section_data = json.loads(json.dumps(SectionFullSerializer(Section.objects.all(), many=True).data))
