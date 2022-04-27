@@ -4,6 +4,7 @@ import logging
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 
 from Django_API.model_functions import get_section_instructor_discipline_map, get_section_overlap_map
 from Django_API.models import Instructor, User, RegistrationRequest, Session, TimeSlot, Course, Section, Discipline, \
@@ -13,10 +14,14 @@ from Django_API.serializers import UserSerializer, RegistrationRequestSerializer
     TimeSlotSerializer, CourseSerializer, SectionSerializer, InstructorSerializer, DisciplineSerializer, \
     InstructorWriteSerializer, CourseWriteSerializer, SolutionSerializer, SectionFullSerializer
 
+from .user_permissions import *
+
 logger = logging.getLogger()
 
 
 class UserList(APIView):
+    permission_classes = [IsRoot]
+
     # Read
     @staticmethod
     def get(request, **kwargs, ):
@@ -35,6 +40,8 @@ class UserList(APIView):
 
 
 class UserDetail(APIView):
+    permission_classes = [IsRoot]
+
     # Read
     @staticmethod
     def get(request, user_id, **kwargs):
@@ -70,6 +77,8 @@ class UserDetail(APIView):
 
 
 class RegistrationRequestList(APIView):
+    permission_classes = [IsRoot]
+
     # Read
     @staticmethod
     def get(request, **kwargs, ):
@@ -88,6 +97,8 @@ class RegistrationRequestList(APIView):
 
 
 class RegistrationRequestDetail(APIView):
+    permission_classes = [IsRoot]
+
     # Read
     @staticmethod
     def get(request, registration_request_id, **kwargs):
@@ -123,6 +134,8 @@ class RegistrationRequestDetail(APIView):
 
 
 class SessionList(APIView):
+    permission_classes = [IsRoot | IsAdmin | IsAssistantReadOnly]
+
     # Read
     @staticmethod
     def get(request, **kwargs, ):
@@ -141,6 +154,8 @@ class SessionList(APIView):
 
 
 class SessionDetail(APIView):
+    permission_classes = [IsRoot | IsAdmin | IsAssistantReadOnly]
+
     # Read
     @staticmethod
     def get(request, session_id, **kwargs):
@@ -176,6 +191,8 @@ class SessionDetail(APIView):
 
 
 class TimeSlotList(APIView):
+    permission_classes = [IsRoot | IsAdmin | IsAssistantReadOnly]
+
     # Read
     @staticmethod
     def get(request, **kwargs, ):
@@ -194,6 +211,8 @@ class TimeSlotList(APIView):
 
 
 class TimeSlotDetail(APIView):
+    permission_classes = [IsRoot | IsAdmin | IsAssistantReadOnly]
+
     # Read
     @staticmethod
     def get(request, time_slot_id, **kwargs):
@@ -229,6 +248,8 @@ class TimeSlotDetail(APIView):
 
 
 class CourseList(APIView):
+    permission_classes = [IsRoot | IsAdmin | IsAssistantReadOnly]
+
     # Read
     @staticmethod
     def get(request, **kwargs, ):
@@ -247,6 +268,8 @@ class CourseList(APIView):
 
 
 class CourseDetail(APIView):
+    permission_classes = [IsRoot | IsAdmin | IsAssistantReadOnly]
+
     # Read
     @staticmethod
     def get(request, course_id, **kwargs):
@@ -282,6 +305,8 @@ class CourseDetail(APIView):
 
 
 class SectionList(APIView):
+    permission_classes = [IsRoot | IsAdmin | IsAssistantReadOnly]
+
     # Read
     @staticmethod
     def get(request, **kwargs, ):
@@ -300,6 +325,9 @@ class SectionList(APIView):
 
 
 class SectionDetail(APIView):
+    permission_classes = [IsRoot | IsAdmin | IsAssistantReadOnly]
+
+    # Read
     @staticmethod
     def get(request, section_id, **kwargs):
         try:
@@ -332,6 +360,9 @@ class SectionDetail(APIView):
 
 
 class DisciplineView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    # Read
     @staticmethod
     def get(request, **kwargs):
         disciplines = Discipline.objects.all()
@@ -340,6 +371,8 @@ class DisciplineView(APIView):
 
 
 class InstructorList(APIView):
+    permission_classes = [IsRoot | IsAdmin | IsAssistantReadOnly]
+
     # Read
     @staticmethod
     def get(request, **kwargs):
@@ -358,6 +391,8 @@ class InstructorList(APIView):
 
 
 class InstructorDetail(APIView):
+    permission_classes = [IsRoot | IsAdmin | IsAssistantReadOnly]
+
     # Read
     @staticmethod
     def get(request, instructor_id, **kwargs):
@@ -393,6 +428,7 @@ class InstructorDetail(APIView):
 
 
 class SolutionList(APIView):
+    permission_classes = [IsRoot | IsAdmin | IsAssistant]
 
     @staticmethod
     def _get_solutions():
@@ -416,6 +452,7 @@ class SolutionList(APIView):
 
 
 class SolutionDetail(APIView):
+    permission_classes = [IsRoot | IsAdmin | IsAssistant]
 
     @staticmethod
     def _get_solution(solution_id):
