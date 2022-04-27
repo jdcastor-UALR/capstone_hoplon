@@ -122,6 +122,14 @@ class RegistrationRequestDetail(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @staticmethod
+    def post(request, **kwargs):
+        serializer = RegistrationRequestSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     # Delete
     @staticmethod
     def delete(request, registration_request_id, **kwargs):
