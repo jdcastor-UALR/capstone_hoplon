@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.auth.hashers import make_password
 # Register your models here.
 from .models import RegistrationRequest, User
 from .utility import send_email
@@ -7,8 +8,10 @@ from .utility import send_email
 @admin.action(description='Approve Selected Accounts')
 def approve_account(modeladmin, request, queryset):
     for registration in queryset:
-        User.objects.create(accessLevel=registration.access_level, password=registration.requested_password,
-                            email=registration.contact_email)
+        User.objects.create(accessLevel=registration.access_level,
+                            password=make_password(registration.requested_password),
+                            email=registration.contact_email,
+                            username=registration.contact_email)
         send_email(registration.contact_email, True, registration.requested_password)
     RegistrationRequestAdmin.delete_queryset(modeladmin, request, queryset)
 

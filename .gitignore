@@ -173,3 +173,4 @@ frontend/.yarn/*
 
 
 package.json
+/build/
