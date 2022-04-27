@@ -6,16 +6,17 @@ import Button from "@material-ui/core/Button";
 import MenuItem from "@material-ui/core/MenuItem";
 import {PageHeading} from "../Utility/text-styles";
 import APIService from "../../APIService";
+import {saveToken} from "../../auth";
 
 const LoginForm = (setUsername, setPassword) => {
   return (
     <>
       <Grid container alignItems={"center"} justifyContent={"center"} spacing={2}>
         <Grid item xs={12}>
-          <TextField required label={"Email"} type={"text"} onChange={setUsername} />
+          <TextField required label={"Email"} type={"text"} onChange={event => setUsername(event.target.value)} />
         </Grid>
         <Grid item xs={12}>
-          <TextField required label={"Password"} type={"password"} onChange={setPassword} />
+          <TextField required label={"Password"} type={"password"} onChange={event => setPassword(event.target.value)} />
         </Grid>
       </Grid>
     </>
@@ -59,6 +60,7 @@ const LoginPage = () => {
     if (isLoginForm) {
       APIService.authenticate(username, password).then((data) => {
         console.log(data);
+        saveToken(data);
       }, (error) => console.error(error));
     }
   };

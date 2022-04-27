@@ -22,15 +22,18 @@ function getHeaders(isJSON=false) {
   if (!isJSON && !token) {
     return null;
   }
+  console.log(result)
+  console.log(token)
   return result;
 }
 
 const APIService = {
   authenticate: async (username, password) => {
-    const response = await fetch(URL_AUTH);
+    const options = {method: 'POST', headers: getHeaders(true),
+      body: JSON.stringify({username:username, password:password})};
+    const response = await fetch(URL_AUTH, options);
     catchErrorResponse(response);
     const data = response.json();
-    saveToken(data);
     return data;
   },
 
