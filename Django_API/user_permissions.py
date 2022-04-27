@@ -51,3 +51,9 @@ class IsRoot(BasePermission):
             return True
         return False
 
+
+class IsPost(BasePermission):
+    def has_permission(self, request, view):
+        if request.method == "POST":
+            return True
+        return False

@@ -4,6 +4,7 @@ import logging
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 
 from Django_API.model_functions import get_section_instructor_discipline_map, get_section_overlap_map
 from Django_API.models import Instructor, User, RegistrationRequest, Session, TimeSlot, Course, Section, Discipline, \
@@ -13,20 +14,24 @@ from Django_API.serializers import UserSerializer, RegistrationRequestSerializer
     TimeSlotSerializer, CourseSerializer, SectionSerializer, InstructorSerializer, DisciplineSerializer, \
     InstructorWriteSerializer, CourseWriteSerializer, SolutionSerializer, SectionFullSerializer
 
+from .user_permissions import *
+
 logger = logging.getLogger()
 
 
 class UserList(APIView):
+    permission_classes = [IsRoot]
+
     # Read
     @staticmethod
-    def get(self, request, **kwargs, ):
+    def get(request, **kwargs, ):
         user = User.objects.all()
         serializer = UserSerializer(user, many=True)
         return Response(serializer.data)
 
     # Create
     @staticmethod
-    def post(self, request, **kwargs):
+    def post(request, **kwargs):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -35,9 +40,11 @@ class UserList(APIView):
 
 
 class UserDetail(APIView):
+    permission_classes = [IsRoot]
+
     # Read
     @staticmethod
-    def get(self, request, user_id, **kwargs):
+    def get(request, user_id, **kwargs):
         try:
             user = User.objects.get(id=user_id)
         except User.DoesNotExist:
@@ -47,7 +54,7 @@ class UserDetail(APIView):
 
     # Update
     @staticmethod
-    def put(self, request, user_id, **kwargs):
+    def put(request, user_id, **kwargs):
         try:
             user = User.objects.get(id=user_id)
         except User.DoesNotExist:
@@ -60,7 +67,7 @@ class UserDetail(APIView):
 
     # Delete
     @staticmethod
-    def delete(self, request, user_id, **kwargs):
+    def delete(request, user_id, **kwargs):
         try:
             user = User.objects.get(id=user_id)
         except User.DoesNotExist:
@@ -70,16 +77,18 @@ class UserDetail(APIView):
 
 
 class RegistrationRequestList(APIView):
+    permission_classes = [IsRoot]
+
     # Read
     @staticmethod
-    def get(self, request, **kwargs, ):
+    def get(request, **kwargs, ):
         registration_request = RegistrationRequest.objects.all()
         serializer = RegistrationRequestSerializer(registration_request, many=True)
         return Response(serializer.data)
 
     # Create
     @staticmethod
-    def post(self, request, **kwargs):
+    def post(request, **kwargs):
         serializer = RegistrationRequestSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -88,9 +97,11 @@ class RegistrationRequestList(APIView):
 
 
 class RegistrationRequestDetail(APIView):
+    permission_classes = [IsRoot | IsPost]
+
     # Read
     @staticmethod
-    def get(self, request, registration_request_id, **kwargs):
+    def get(request, registration_request_id, **kwargs):
         try:
             registration_request = RegistrationRequest.objects.get(id=registration_request_id)
         except RegistrationRequest.DoesNotExist:
@@ -100,7 +111,7 @@ class RegistrationRequestDetail(APIView):
 
     # Update
     @staticmethod
-    def put(self, request, registration_request_id, **kwargs):
+    def put(request, registration_request_id, **kwargs):
         try:
             registration_request = RegistrationRequest.objects.get(id=registration_request_id)
         except RegistrationRequest.DoesNotExist:
@@ -113,7 +124,7 @@ class RegistrationRequestDetail(APIView):
 
     # Delete
     @staticmethod
-    def delete(self, request, registration_request_id, **kwargs):
+    def delete(request, registration_request_id, **kwargs):
         try:
             registration_request = RegistrationRequest.objects.get(id=registration_request_id)
         except RegistrationRequest.DoesNotExist:
@@ -123,16 +134,18 @@ class RegistrationRequestDetail(APIView):
 
 
 class SessionList(APIView):
+    permission_classes = [IsRoot | IsAdmin | IsAssistantReadOnly]
+
     # Read
     @staticmethod
-    def get(self, request, **kwargs, ):
+    def get(request, **kwargs, ):
         session = Session.objects.all()
         serializer = SessionSerializer(session, many=True)
         return Response(serializer.data)
 
     # Create
     @staticmethod
-    def post(self, request, **kwargs):
+    def post(request, **kwargs):
         serializer = SessionSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -141,9 +154,11 @@ class SessionList(APIView):
 
 
 class SessionDetail(APIView):
+    permission_classes = [IsRoot | IsAdmin | IsAssistantReadOnly]
+
     # Read
     @staticmethod
-    def get(self, request, session_id, **kwargs):
+    def get(request, session_id, **kwargs):
         try:
             session = Session.objects.get(id=session_id)
         except Session.DoesNotExist:
@@ -153,7 +168,7 @@ class SessionDetail(APIView):
 
     # Update
     @staticmethod
-    def put(self, request, session_id, **kwargs):
+    def put(request, session_id, **kwargs):
         try:
             session = Session.objects.get(id=session_id)
         except Session.DoesNotExist:
@@ -166,7 +181,7 @@ class SessionDetail(APIView):
 
     # Delete
     @staticmethod
-    def delete(self, request, session_id, **kwargs):
+    def delete(request, session_id, **kwargs):
         try:
             session = Session.objects.get(id=session_id)
         except Session.DoesNotExist:
@@ -176,16 +191,18 @@ class SessionDetail(APIView):
 
 
 class TimeSlotList(APIView):
+    permission_classes = [IsRoot | IsAdmin | IsAssistantReadOnly]
+
     # Read
     @staticmethod
-    def get(self, request, **kwargs, ):
+    def get(request, **kwargs, ):
         time_slot = TimeSlot.objects.all()
         serializer = TimeSlotSerializer(time_slot, many=True)
         return Response(serializer.data)
 
     # Create
     @staticmethod
-    def post(self, request, **kwargs):
+    def post(request, **kwargs):
         serializer = TimeSlotSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -194,9 +211,11 @@ class TimeSlotList(APIView):
 
 
 class TimeSlotDetail(APIView):
+    permission_classes = [IsRoot | IsAdmin | IsAssistantReadOnly]
+
     # Read
     @staticmethod
-    def get(self, request, time_slot_id, **kwargs):
+    def get(request, time_slot_id, **kwargs):
         try:
             time_slot = TimeSlot.objects.get(id=time_slot_id)
         except TimeSlot.DoesNotExist:
@@ -206,7 +225,7 @@ class TimeSlotDetail(APIView):
 
     # Update
     @staticmethod
-    def put(self, request, time_slot_id, **kwargs):
+    def put(request, time_slot_id, **kwargs):
         try:
             time_slot = TimeSlot.objects.get(id=time_slot_id)
         except TimeSlot.DoesNotExist:
@@ -219,7 +238,7 @@ class TimeSlotDetail(APIView):
 
     # Delete
     @staticmethod
-    def delete(self, request, time_slot_id, **kwargs):
+    def delete(request, time_slot_id, **kwargs):
         try:
             time_slot = TimeSlot.objects.get(id=time_slot_id)
         except TimeSlot.DoesNotExist:
@@ -229,16 +248,18 @@ class TimeSlotDetail(APIView):
 
 
 class CourseList(APIView):
+    permission_classes = [IsRoot | IsAdmin | IsAssistantReadOnly]
+
     # Read
     @staticmethod
-    def get(self, request, **kwargs, ):
+    def get(request, **kwargs, ):
         course = Course.objects.all()
         serializer = CourseSerializer(course, many=True)
         return Response(serializer.data)
 
     # Create
     @staticmethod
-    def post(self, request, **kwargs):
+    def post(request, **kwargs):
         serializer = CourseWriteSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -247,9 +268,11 @@ class CourseList(APIView):
 
 
 class CourseDetail(APIView):
+    permission_classes = [IsRoot | IsAdmin | IsAssistantReadOnly]
+
     # Read
     @staticmethod
-    def get(self, request, course_id, **kwargs):
+    def get(request, course_id, **kwargs):
         try:
             course = Course.objects.get(id=course_id)
         except Course.DoesNotExist:
@@ -259,7 +282,7 @@ class CourseDetail(APIView):
 
     # Update
     @staticmethod
-    def put(self, request, course_id, **kwargs):
+    def put(request, course_id, **kwargs):
         try:
             course = Course.objects.get(id=course_id)
         except Course.DoesNotExist:
@@ -272,7 +295,7 @@ class CourseDetail(APIView):
 
     # Delete
     @staticmethod
-    def delete(self, request, course_id, **kwargs):
+    def delete(request, course_id, **kwargs):
         try:
             course = Course.objects.get(id=course_id)
         except Course.DoesNotExist:
@@ -282,16 +305,18 @@ class CourseDetail(APIView):
 
 
 class SectionList(APIView):
+    permission_classes = [IsRoot | IsAdmin | IsAssistantReadOnly]
+
     # Read
     @staticmethod
-    def get(self, request, **kwargs, ):
+    def get(request, **kwargs, ):
         section = Section.objects.all()
         serializer = SectionSerializer(section, many=True)
         return Response(serializer.data)
 
     # Create
     @staticmethod
-    def post(self, request, **kwargs):
+    def post(request, **kwargs):
         serializer = SectionSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -300,8 +325,11 @@ class SectionList(APIView):
 
 
 class SectionDetail(APIView):
+    permission_classes = [IsRoot | IsAdmin | IsAssistantReadOnly]
+
+    # Read
     @staticmethod
-    def get(self, request, section_id, **kwargs):
+    def get(request, section_id, **kwargs):
         try:
             section = Section.objects.get(id=section_id)
         except Section.DoesNotExist:
@@ -310,7 +338,7 @@ class SectionDetail(APIView):
         return Response(serializer.data)
 
     @staticmethod
-    def put(self, request, section_id, **kwargs):
+    def put(request, section_id, **kwargs):
         try:
             section = Section.objects.get(id=section_id)
         except Section.DoesNotExist:
@@ -322,7 +350,7 @@ class SectionDetail(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @staticmethod
-    def delete(self, request, section_id, **kwargs):
+    def delete(request, section_id, **kwargs):
         try:
             section = Section.objects.get(id=section_id)
         except Section.DoesNotExist:
@@ -332,14 +360,19 @@ class SectionDetail(APIView):
 
 
 class DisciplineView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    # Read
     @staticmethod
-    def get(self, request, **kwargs):
+    def get(request, **kwargs):
         disciplines = Discipline.objects.all()
         serializer = DisciplineSerializer(disciplines, many=True)
         return Response(serializer.data)
 
 
 class InstructorList(APIView):
+    permission_classes = [IsRoot | IsAdmin | IsAssistantReadOnly]
+
     # Read
     @staticmethod
     def get(request, **kwargs):
@@ -358,6 +391,8 @@ class InstructorList(APIView):
 
 
 class InstructorDetail(APIView):
+    permission_classes = [IsRoot | IsAdmin | IsAssistantReadOnly]
+
     # Read
     @staticmethod
     def get(request, instructor_id, **kwargs):
@@ -393,6 +428,7 @@ class InstructorDetail(APIView):
 
 
 class SolutionList(APIView):
+    permission_classes = [IsRoot | IsAdmin | IsAssistant]
 
     @staticmethod
     def _get_solutions():
@@ -416,6 +452,7 @@ class SolutionList(APIView):
 
 
 class SolutionDetail(APIView):
+    permission_classes = [IsRoot | IsAdmin | IsAssistant]
 
     @staticmethod
     def _get_solution(solution_id):
@@ -450,6 +487,8 @@ class SolutionDetail(APIView):
 
 
 class SolutionConstraintMap(APIView):
+    permission_classes = [IsRoot | IsAdmin | IsAssistant]
+
     @staticmethod
     def get(request, **kwargs):
         section_data = json.loads(json.dumps(SectionFullSerializer(Section.objects.all(), many=True).data))
