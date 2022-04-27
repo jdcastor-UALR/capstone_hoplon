@@ -97,7 +97,7 @@ class RegistrationRequestList(APIView):
 
 
 class RegistrationRequestDetail(APIView):
-    permission_classes = [IsRoot]
+    permission_classes = [IsRoot | IsPost]
 
     # Read
     @staticmethod
