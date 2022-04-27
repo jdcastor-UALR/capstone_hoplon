@@ -1,4 +1,4 @@
-import {getToken, saveToken} from "./auth";
+import {getToken} from "./auth";
 import {URL_AUTH} from "./urls";
 
 function catchErrorResponse(response) {
@@ -7,60 +7,59 @@ function catchErrorResponse(response) {
   }
 }
 
-function getHeaders(isJSON=false) {
-  let result = {};
+const injectHeader = (options, ignoreAuth=false) => {
+  let headers = {};
 
-  if (isJSON) {
-    result['Content-Type'] = 'application/json';
-  }
-
+  const addJsonHeader = options.method === 'POST' || options.method === 'PUT';
   const token = getToken();
-  if (token) {
-    result['Authorization'] = `Token ${token}`;
+
+  if (!addJsonHeader && !token) {
+    return options;
   }
 
-  if (!isJSON && !token) {
-    return null;
+  if (addJsonHeader) {
+    headers['Content-Type'] = 'application/json';
   }
-  console.log(result)
-  console.log(token)
-  return result;
-}
+  if (token && !ignoreAuth) {
+    headers['Authorization'] = `Token ${token}`;
+  }
+  options.headers = headers;
+
+  return options;
+};
 
 const APIService = {
   authenticate: async (username, password) => {
-    const options = {method: 'POST', headers: getHeaders(true),
-      body: JSON.stringify({username:username, password:password})};
-    const response = await fetch(URL_AUTH, options);
+    const options = {method: 'POST', body: JSON.stringify({username: username, password: password})};
+    const response = await fetch(URL_AUTH, injectHeader(options, true));
     catchErrorResponse(response);
-    const data = response.json();
-    return data;
+    return response.json();
   },
 
   get: async (url) => {
-    const options = { method: 'GET', headers: getHeaders() };
-    const response = await fetch(url, options);
+    const options = { method: 'GET' };
+    const response = await fetch(url, injectHeader(options));
     catchErrorResponse(response);
     return response.json();
   },
 
   post: async (url, data) => {
-    const options = { method: 'POST', headers: getHeaders(true), body: JSON.stringify(data) };
-    const response = await fetch(url, options);
+    const options = { method: 'POST', body: JSON.stringify(data) };
+    const response = await fetch(url, injectHeader(options));
     catchErrorResponse(response);
     return response.json();
   },
 
   put: async (url, data) => {
-    const options = { method: 'PUT', headers: getHeaders(true), body: JSON.stringify(data) };
-    const response = await fetch(url + data.id.toString(), options);
+    const options = { method: 'PUT', body: JSON.stringify(data) };
+    const response = await fetch(url + data.id.toString(), injectHeader(options));
     catchErrorResponse(response);
     return response.json();
   },
 
   delete: async (url, id) => {
-    const options = { method: 'DELETE', headers: getHeaders() };
-    const response = await fetch(url + id.toString(), options);
+    const options = { method: 'DELETE' };
+    const response = await fetch(url + id.toString(), injectHeader(options));
     catchErrorResponse(response);
     return response;
   }
