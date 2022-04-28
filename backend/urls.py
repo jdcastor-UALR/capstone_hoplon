@@ -36,6 +36,7 @@ urlpatterns = [
 
     path('api/registrationrequest/', RegistrationRequestList.as_view(), name='registrationrequests'),
     path('api/registrationrequest/<int:registration_request_id>', RegistrationRequestDetail.as_view(), name='registrationrequest'),
+    path('api/registrationrequestpublic/', RegistrationRequestPublic.as_view(), name='registrationrequestpublic'),
 
     path('api/session/', SessionList.as_view(), name='sessions'),
     path('api/session/<int:session_id>', SessionDetail.as_view(), name='session'),
