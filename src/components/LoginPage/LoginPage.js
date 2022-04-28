@@ -7,6 +7,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import {PageHeading} from "../Utility/text-styles";
 import APIService from "../../APIService";
 import {saveToken} from "../../auth";
+import {URL_CREATE_REGISTRATION_REQUEST} from "../../urls";
 
 const LoginForm = (setUsername, setPassword) => {
   return (
@@ -23,15 +24,17 @@ const LoginForm = (setUsername, setPassword) => {
   );
 };
 
-const RegisterForm = (accessLevels) => {
+const RegisterForm = (accessLevels, setUsername, setPassword, setAccessLevel) => {
   return (
     <>
       <Grid container alignItems={"center"} justifyContent={"center"} spacing={2}>
         <Grid item xs={12}>
-          <TextField required label={"Email"} type={"text"} />
+          <TextField required label={"Email"} type={"text"}
+                     onChange={e => setUsername(e.target.value)} />
         </Grid>
         <Grid item xs={12}>
-          <TextField select label={"Requested Access Level"} style={{minWidth: 200}}>
+          <TextField select label={"Requested Access Level"} style={{minWidth: 200}}
+                     onChange={e => setAccessLevel(e.target.value)}>
             {accessLevels.map((option) => (
               <MenuItem key={option} value={option}>
                 {option}
@@ -40,7 +43,8 @@ const RegisterForm = (accessLevels) => {
           </TextField>
         </Grid>
         <Grid item xs={12}>
-          <TextField required label={"Requested Password"} type={"password"} />
+          <TextField required label={"Requested Password"} type={"password"}
+                     onChange={e => setPassword(e.target.value)} />
         </Grid>
       </Grid>
     </>
@@ -55,6 +59,7 @@ const LoginPage = (props) => {
 
   const [username, setUsername] = useState();
   const [password, setPassword] = useState();
+  const [accessLevel, setAccessLevel] = useState();
 
   const onSubmit = () => {
     if (isLoginForm) {
@@ -62,13 +67,21 @@ const LoginPage = (props) => {
         saveToken(data);
         window.location.reload(false);
       }, (error) => console.error(error));
+    } else {
+      APIService.post(URL_CREATE_REGISTRATION_REQUEST,
+        {contact_email: username, requested_password: password, access_level: accessLevel}).then((data) => {
+        console.log(data);
+      }, (error) => console.error(error));
     }
   };
 
   return (
     <div data-testid="LoginPage">
       {PageHeading((isLoginForm) ? 'Login' : 'Submit Registration Request')}
-      {(isLoginForm) ? LoginForm(setUsername, setPassword) : RegisterForm(accessLevels)}
+      {(isLoginForm) ?
+        LoginForm(setUsername, setPassword) :
+        RegisterForm(accessLevels, setUsername, setPassword, setAccessLevel)
+      }
       <Button color={"primary"} variant={"contained"} style={{marginTop: '2em', marginRight: '1em'}}
               onClick={onSubmit}>Submit</Button>
       <Button color={"default"} variant={"contained"}

@@ -97,7 +97,7 @@ class RegistrationRequestList(APIView):
 
 
 class RegistrationRequestDetail(APIView):
-    permission_classes = [IsRoot | IsPost]
+    permission_classes = [IsRoot]
 
     # Read
     @staticmethod
@@ -142,6 +142,8 @@ class RegistrationRequestDetail(APIView):
 
 
 class RegistrationRequestPublic(APIView):
+    permission_classes = [IsRoot | IsPost]
+
     @staticmethod
     def post(request, **kwargs):
         serializer = RegistrationRequestSerializer(data=request.data)

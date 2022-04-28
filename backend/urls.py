@@ -21,7 +21,8 @@ from rest_framework.urlpatterns import format_suffix_patterns
 
 from Django_API.views import InstructorList, InstructorDetail, UserList, UserDetail, RegistrationRequestList, \
     RegistrationRequestDetail, SessionList, SessionDetail, TimeSlotList, TimeSlotDetail, CourseList, CourseDetail, \
-    SectionList, SectionDetail, DisciplineView, SolutionList, SolutionDetail, SolutionConstraintMap
+    SectionList, SectionDetail, DisciplineView, SolutionList, SolutionDetail, SolutionConstraintMap, \
+    RegistrationRequestPublic
 from .views import index
 
 
@@ -36,7 +37,7 @@ urlpatterns = [
 
     path('api/registrationrequest/', RegistrationRequestList.as_view(), name='registrationrequests'),
     path('api/registrationrequest/<int:registration_request_id>', RegistrationRequestDetail.as_view(), name='registrationrequest'),
-    path('api/registrationrequestpublic/', RegistrationRequestPublic.as_view(), name='registrationrequestpublic'),
+    path('api/registrationrequest/create/', RegistrationRequestPublic.as_view(), name='registrationrequestpublic'),
 
     path('api/session/', SessionList.as_view(), name='sessions'),
     path('api/session/<int:session_id>', SessionDetail.as_view(), name='session'),

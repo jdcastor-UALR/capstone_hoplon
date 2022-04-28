@@ -1,5 +1,5 @@
 import {clearToken, getToken} from "./auth";
-import {URL_AUTH} from "./urls";
+import {URL_AUTH, URL_CREATE_REGISTRATION_REQUEST} from "./urls";
 
 function catchErrorResponse(response) {
   if (response.status === 401 && getToken()) {
@@ -47,9 +47,9 @@ const APIService = {
     return response.json();
   },
 
-  post: async (url, data) => {
+  post: async (url, data, ignoreAuth=false) => {
     const options = { method: 'POST', body: JSON.stringify(data) };
-    const response = await fetch(url, injectHeader(options));
+    const response = await fetch(url, injectHeader(options, ignoreAuth));
     catchErrorResponse(response);
     return response.json();
   },
