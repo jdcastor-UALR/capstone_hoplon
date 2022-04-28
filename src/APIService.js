@@ -1,7 +1,11 @@
-import {getToken} from "./auth";
+import {clearToken, getToken} from "./auth";
 import {URL_AUTH} from "./urls";
 
 function catchErrorResponse(response) {
+  if (response.status === 401 && getToken()) {
+    clearToken();
+  }
+
   if (response.status >= 400 && response.status < 600) {
     throw new Error(response.statusText);
   }

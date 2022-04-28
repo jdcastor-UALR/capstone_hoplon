@@ -1,14 +1,15 @@
-
+import Cookies from 'js-cookie';
 
 const getToken = () => {
-  const tokenString = sessionStorage.getItem('token');
-  const userToken = JSON.parse(tokenString);
-  return userToken?.token
+  return Cookies.get('token');
+};
+
+const clearToken = () => {
+  Cookies.remove('token');
 };
 
 const saveToken = (userToken) => {
-  console.log(userToken)
-  sessionStorage.setItem('token', JSON.stringify(userToken));
+  Cookies.set('token', userToken.token);
 };
 
-export { getToken, saveToken };
+export { getToken, clearToken, saveToken };

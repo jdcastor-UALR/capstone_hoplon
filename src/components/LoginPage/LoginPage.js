@@ -47,7 +47,7 @@ const RegisterForm = (accessLevels) => {
   );
 };
 
-const LoginPage = () => {
+const LoginPage = (props) => {
   const theme = useTheme();
 
   const [isLoginForm, setIsLoginForm] = useState(true);
@@ -59,8 +59,8 @@ const LoginPage = () => {
   const onSubmit = () => {
     if (isLoginForm) {
       APIService.authenticate(username, password).then((data) => {
-        console.log(data);
         saveToken(data);
+        window.location.reload(false);
       }, (error) => console.error(error));
     }
   };
