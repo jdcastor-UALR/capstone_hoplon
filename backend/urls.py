@@ -20,7 +20,7 @@ from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.urlpatterns import format_suffix_patterns
 
 from Django_API.views import InstructorList, InstructorDetail, UserList, UserDetail, RegistrationRequestList, \
-    RegistrationRequestDetail, SessionList, SessionDetail, TimeSlotList, TimeSlotDetail, CourseList, CourseDetail, \
+    RegistrationRequestDetail, TimeSlotList, TimeSlotDetail, CourseList, CourseDetail, \
     SectionList, SectionDetail, DisciplineView, SolutionList, SolutionDetail, SolutionConstraintMap, \
     RegistrationRequestPublic
 from .views import index
@@ -39,8 +39,6 @@ urlpatterns = [
     path('api/registrationrequest/<int:registration_request_id>', RegistrationRequestDetail.as_view(), name='registrationrequest'),
     path('api/registrationrequest/create/', RegistrationRequestPublic.as_view(), name='registrationrequestpublic'),
 
-    path('api/session/', SessionList.as_view(), name='sessions'),
-    path('api/session/<int:session_id>', SessionDetail.as_view(), name='session'),
     path('api/timeslot/', TimeSlotList.as_view(), name='timeslots'),
     path('api/timeslot/<int:time_slot_id>', TimeSlotDetail.as_view(), name='timeslot'),
 

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from Django_API.model_enums import SectionDayChoices
-from Django_API.models import User, RegistrationRequest, Session, Section, TimeSlot, Course, Instructor, Discipline, \
+from Django_API.models import User, RegistrationRequest, Section, TimeSlot, Course, Instructor, Discipline, \
     Solution, AssignedSection
 from Django_API.utility import prettyTimeString
 
@@ -15,12 +15,6 @@ class UserSerializer(serializers.ModelSerializer):
 class RegistrationRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = RegistrationRequest
-        fields = '__all__'
-
-
-class SessionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Session
         fields = '__all__'
 
 

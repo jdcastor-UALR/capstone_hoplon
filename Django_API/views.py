@@ -7,10 +7,10 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
 from Django_API.model_functions import get_section_instructor_discipline_map, get_section_overlap_map
-from Django_API.models import Instructor, User, RegistrationRequest, Session, TimeSlot, Course, Section, Discipline, \
+from Django_API.models import Instructor, User, RegistrationRequest, TimeSlot, Course, Section, Discipline, \
     Solution
 from Django_API.recursive_scheduler import RecursiveScheduler
-from Django_API.serializers import UserSerializer, RegistrationRequestSerializer, SessionSerializer, \
+from Django_API.serializers import UserSerializer, RegistrationRequestSerializer, \
     TimeSlotSerializer, CourseSerializer, SectionSerializer, InstructorSerializer, DisciplineSerializer, \
     InstructorWriteSerializer, CourseWriteSerializer, SolutionSerializer, SectionFullSerializer
 
@@ -22,14 +22,15 @@ logger = logging.getLogger()
 class UserList(APIView):
     permission_classes = [IsRoot]
 
-    # Read
     @staticmethod
-    def get(request, **kwargs, ):
+    def _get_users():
         user = User.objects.all()
         serializer = UserSerializer(user, many=True)
-        return Response(serializer.data)
+        return serializer.data
 
-    # Create
+    def get(self, request, **kwargs):
+        return Response(self._get_users())
+
     @staticmethod
     def post(request, **kwargs):
         serializer = UserSerializer(data=request.data)
@@ -42,51 +43,50 @@ class UserList(APIView):
 class UserDetail(APIView):
     permission_classes = [IsRoot]
 
-    # Read
     @staticmethod
-    def get(request, user_id, **kwargs):
+    def _get_user(user_id):
         try:
-            user = User.objects.get(id=user_id)
+            return User.objects.get(id=user_id)
         except User.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = UserSerializer(user)
-        return Response(serializer.data)
+            return None
 
-    # Update
-    @staticmethod
-    def put(request, user_id, **kwargs):
-        try:
-            user = User.objects.get(id=user_id)
-        except User.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = UserSerializer(user, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
+    def get(self, request, user_id, **kwargs):
+        user = self._get_user(user_id)
+        if user:
+            serializer = UserSerializer(user)
             return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
-    # Delete
-    @staticmethod
-    def delete(request, user_id, **kwargs):
-        try:
-            user = User.objects.get(id=user_id)
-        except User.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        user.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    def put(self, request, user_id, **kwargs):
+        user = self._get_user(user_id)
+        if user:
+            serializer = UserSerializer(user, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def delete(self, request, user_id, **kwargs):
+        user = self._get_user(user_id)
+        if user:
+            user.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class RegistrationRequestList(APIView):
     permission_classes = [IsRoot]
 
-    # Read
     @staticmethod
-    def get(request, **kwargs, ):
+    def _get_registration_requests():
         registration_request = RegistrationRequest.objects.all()
         serializer = RegistrationRequestSerializer(registration_request, many=True)
-        return Response(serializer.data)
+        return serializer.data
 
-    # Create
+    def get(self, request, **kwargs, ):
+        return Response(self._get_registration_requests())
+
     @staticmethod
     def post(request, **kwargs):
         serializer = RegistrationRequestSerializer(data=request.data)
@@ -99,46 +99,36 @@ class RegistrationRequestList(APIView):
 class RegistrationRequestDetail(APIView):
     permission_classes = [IsRoot]
 
-    # Read
     @staticmethod
-    def get(request, registration_request_id, **kwargs):
+    def _get_registration_request(registration_request_id):
         try:
-            registration_request = RegistrationRequest.objects.get(id=registration_request_id)
+            return RegistrationRequest.objects.get(id=registration_request_id)
         except RegistrationRequest.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = RegistrationRequestSerializer(registration_request)
-        return Response(serializer.data)
+            return None
 
-    # Update
-    @staticmethod
-    def put(request, registration_request_id, **kwargs):
-        try:
-            registration_request = RegistrationRequest.objects.get(id=registration_request_id)
-        except RegistrationRequest.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = RegistrationRequestSerializer(registration_request, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
+    def get(self, request, registration_request_id, **kwargs):
+        registration_request = self._get_registration_request(registration_request_id)
+        if registration_request:
+            serializer = RegistrationRequestSerializer(registration_request)
             return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
-    @staticmethod
-    def post(request, **kwargs):
-        serializer = RegistrationRequestSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def put(self, request, registration_request_id, **kwargs):
+        registration_request = self._get_registration_request(registration_request_id)
+        if registration_request:
+            serializer = RegistrationRequestSerializer(registration_request, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
-    # Delete
-    @staticmethod
-    def delete(request, registration_request_id, **kwargs):
-        try:
-            registration_request = RegistrationRequest.objects.get(id=registration_request_id)
-        except RegistrationRequest.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        registration_request.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    def delete(self, request, registration_request_id, **kwargs):
+        registration_request = self._get_registration_request(registration_request_id)
+        if registration_request:
+            registration_request.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class RegistrationRequestPublic(APIView):
@@ -153,74 +143,18 @@ class RegistrationRequestPublic(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class SessionList(APIView):
-    permission_classes = [IsRoot | IsAdmin | IsAssistantReadOnly]
-
-    # Read
-    @staticmethod
-    def get(request, **kwargs, ):
-        session = Session.objects.all()
-        serializer = SessionSerializer(session, many=True)
-        return Response(serializer.data)
-
-    # Create
-    @staticmethod
-    def post(request, **kwargs):
-        serializer = SessionSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class SessionDetail(APIView):
-    permission_classes = [IsRoot | IsAdmin | IsAssistantReadOnly]
-
-    # Read
-    @staticmethod
-    def get(request, session_id, **kwargs):
-        try:
-            session = Session.objects.get(id=session_id)
-        except Session.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = SessionSerializer(session)
-        return Response(serializer.data)
-
-    # Update
-    @staticmethod
-    def put(request, session_id, **kwargs):
-        try:
-            session = Session.objects.get(id=session_id)
-        except Session.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = SessionSerializer(session, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    # Delete
-    @staticmethod
-    def delete(request, session_id, **kwargs):
-        try:
-            session = Session.objects.get(id=session_id)
-        except Session.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        session.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-
 class TimeSlotList(APIView):
     permission_classes = [IsRoot | IsAdmin | IsAssistantReadOnly]
 
-    # Read
     @staticmethod
-    def get(request, **kwargs, ):
+    def _get_timeslots():
         time_slot = TimeSlot.objects.all()
         serializer = TimeSlotSerializer(time_slot, many=True)
-        return Response(serializer.data)
+        return serializer.data
 
-    # Create
+    def get(self, request, **kwargs, ):
+        return Response(self._get_timeslots())
+
     @staticmethod
     def post(request, **kwargs):
         serializer = TimeSlotSerializer(data=request.data)
@@ -233,51 +167,50 @@ class TimeSlotList(APIView):
 class TimeSlotDetail(APIView):
     permission_classes = [IsRoot | IsAdmin | IsAssistantReadOnly]
 
-    # Read
     @staticmethod
-    def get(request, time_slot_id, **kwargs):
+    def _get_timeslot(time_slot_id):
         try:
-            time_slot = TimeSlot.objects.get(id=time_slot_id)
+            return TimeSlot.objects.get(id=time_slot_id)
         except TimeSlot.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = TimeSlotSerializer(time_slot)
-        return Response(serializer.data)
+            return None
 
-    # Update
-    @staticmethod
-    def put(request, time_slot_id, **kwargs):
-        try:
-            time_slot = TimeSlot.objects.get(id=time_slot_id)
-        except TimeSlot.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = TimeSlotSerializer(time_slot, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
+    def get(self, request, time_slot_id, **kwargs):
+        time_slot = self._get_timeslot(time_slot_id)
+        if time_slot:
+            serializer = TimeSlotSerializer(time_slot)
             return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
-    # Delete
-    @staticmethod
-    def delete(request, time_slot_id, **kwargs):
-        try:
-            time_slot = TimeSlot.objects.get(id=time_slot_id)
-        except TimeSlot.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        time_slot.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    def put(self, request, time_slot_id, **kwargs):
+        time_slot = self._get_timeslot(time_slot_id)
+        if time_slot:
+            serializer = TimeSlotSerializer(time_slot, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def delete(self, request, time_slot_id, **kwargs):
+        time_slot = self._get_timeslot(time_slot_id)
+        if time_slot:
+            time_slot.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class CourseList(APIView):
     permission_classes = [IsRoot | IsAdmin | IsAssistantReadOnly]
 
-    # Read
     @staticmethod
-    def get(request, **kwargs, ):
+    def _get_courses():
         course = Course.objects.all()
         serializer = CourseSerializer(course, many=True)
-        return Response(serializer.data)
+        return serializer.data
 
-    # Create
+    def get(self, request, **kwargs, ):
+        return Response(self._get_courses())
+
     @staticmethod
     def post(request, **kwargs):
         serializer = CourseWriteSerializer(data=request.data)
@@ -290,51 +223,50 @@ class CourseList(APIView):
 class CourseDetail(APIView):
     permission_classes = [IsRoot | IsAdmin | IsAssistantReadOnly]
 
-    # Read
     @staticmethod
-    def get(request, course_id, **kwargs):
+    def _get_course(course_id):
         try:
-            course = Course.objects.get(id=course_id)
+            return Course.objects.get(id=course_id)
         except Course.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = CourseSerializer(course)
-        return Response(serializer.data)
+            return None
 
-    # Update
-    @staticmethod
-    def put(request, course_id, **kwargs):
-        try:
-            course = Course.objects.get(id=course_id)
-        except Course.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = CourseWriteSerializer(course, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
+    def get(self, request, course_id, **kwargs):
+        course = self._get_course(course_id)
+        if course:
+            serializer = CourseSerializer(course)
             return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
-    # Delete
-    @staticmethod
-    def delete(request, course_id, **kwargs):
-        try:
-            course = Course.objects.get(id=course_id)
-        except Course.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        course.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    def put(self, request, course_id, **kwargs):
+        course = self._get_course(course_id)
+        if course:
+            serializer = CourseWriteSerializer(course, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def delete(self, request, course_id, **kwargs):
+        course = self._get_course(course_id)
+        if course:
+            course.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class SectionList(APIView):
     permission_classes = [IsRoot | IsAdmin | IsAssistantReadOnly]
 
-    # Read
     @staticmethod
-    def get(request, **kwargs, ):
+    def _get_sections():
         section = Section.objects.all()
         serializer = SectionSerializer(section, many=True)
-        return Response(serializer.data)
+        return serializer.data
 
-    # Create
+    def get(self, request, **kwargs, ):
+        return Response(self._get_sections())
+
     @staticmethod
     def post(request, **kwargs):
         serializer = SectionSerializer(data=request.data)
@@ -347,42 +279,41 @@ class SectionList(APIView):
 class SectionDetail(APIView):
     permission_classes = [IsRoot | IsAdmin | IsAssistantReadOnly]
 
-    # Read
     @staticmethod
-    def get(request, section_id, **kwargs):
+    def _get_section(section_id):
         try:
-            section = Section.objects.get(id=section_id)
+            return Section.objects.get(id=section_id)
         except Section.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = SectionSerializer(section)
-        return Response(serializer.data)
+            return None
 
-    @staticmethod
-    def put(request, section_id, **kwargs):
-        try:
-            section = Section.objects.get(id=section_id)
-        except Section.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = SectionSerializer(section, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
+    def get(self, request, section_id, **kwargs):
+        section = self._get_section(section_id)
+        if section:
+            serializer = SectionSerializer(section)
             return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
-    @staticmethod
-    def delete(request, section_id, **kwargs):
-        try:
-            section = Section.objects.get(id=section_id)
-        except Section.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        section.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    def put(self, request, section_id, **kwargs):
+        section = self._get_section(section_id)
+        if section:
+            serializer = SectionSerializer(section, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def delete(self, request, section_id, **kwargs):
+        section = self._get_section(section_id)
+        if section:
+            section.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class DisciplineView(APIView):
     permission_classes = [IsAuthenticated]
 
-    # Read
     @staticmethod
     def get(request, **kwargs):
         disciplines = Discipline.objects.all()
@@ -393,14 +324,15 @@ class DisciplineView(APIView):
 class InstructorList(APIView):
     permission_classes = [IsRoot | IsAdmin | IsAssistantReadOnly]
 
-    # Read
     @staticmethod
-    def get(request, **kwargs):
+    def _get_instructors():
         instructor = Instructor.objects.all()
         serializer = InstructorSerializer(instructor, many=True)
-        return Response(serializer.data)
+        return serializer.data
 
-    # Create
+    def get(self, request, **kwargs):
+        return Response(self._get_instructors())
+
     @staticmethod
     def post(request, **kwargs):
         serializer = InstructorWriteSerializer(data=request.data)
@@ -413,38 +345,36 @@ class InstructorList(APIView):
 class InstructorDetail(APIView):
     permission_classes = [IsRoot | IsAdmin | IsAssistantReadOnly]
 
-    # Read
     @staticmethod
-    def get(request, instructor_id, **kwargs):
+    def _get_instructor(instructor_id):
         try:
-            instructor = Instructor.objects.get(id=instructor_id)
+            return Instructor.objects.get(id=instructor_id)
         except Instructor.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = InstructorSerializer(instructor)
-        return Response(serializer.data)
+            return None
 
-    # Update
-    @staticmethod
-    def put(request, instructor_id, **kwargs):
-        try:
-            instructor = Instructor.objects.get(id=instructor_id)
-        except Instructor.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = InstructorWriteSerializer(instructor, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
+    def get(self, request, instructor_id, **kwargs):
+        instructor = self._get_instructor(instructor_id)
+        if instructor:
+            serializer = InstructorSerializer(instructor)
             return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
-    # Delete
-    @staticmethod
-    def delete(request, instructor_id, **kwargs):
-        try:
-            instructor = Instructor.objects.get(id=instructor_id)
-        except Instructor.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        instructor.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    def put(self, request, instructor_id, **kwargs):
+        instructor = self._get_instructor(instructor_id)
+        if instructor:
+            serializer = InstructorWriteSerializer(instructor, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def delete(self, request, instructor_id, **kwargs):
+        instructor = self._get_instructor(instructor_id)
+        if instructor:
+            instructor.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class SolutionList(APIView):
@@ -486,24 +416,21 @@ class SolutionDetail(APIView):
         if solution:
             serializer = SolutionSerializer(solution)
             return Response(serializer.data)
-        else:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
     def put(self, request, solution_id, **kwargs):
         solution = self._get_solution(solution_id)
         if solution:
             # TODO: put solution editing functionality here
             pass
-        else:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
     def delete(self, request, solution_id, **kwargs):
         solution = self._get_solution(solution_id)
         if solution:
             solution.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
-        else:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class SolutionConstraintMap(APIView):

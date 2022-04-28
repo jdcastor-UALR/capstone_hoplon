@@ -21,10 +21,6 @@ class RegistrationRequest(models.Model):
     contact_email = models.EmailField(max_length=30, blank=False, default='')
 
 
-class Session(models.Model):
-    associated_user = models.ForeignKey(User, on_delete=models.CASCADE)
-
-
 class TimeSlot(models.Model):
     begin_time = models.TimeField()
     end_time = models.TimeField()
