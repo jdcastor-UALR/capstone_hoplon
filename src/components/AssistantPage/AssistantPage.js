@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 import Typography from "@material-ui/core/Typography";
-import useTheme from "@material-ui/core/styles/useTheme";
 import Grid from "@material-ui/core/Grid";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
@@ -12,7 +11,8 @@ import APIService from "../../APIService";
 import {URL_CLASSES, URL_INSTRUCTORS, URL_SOLUTIONS} from "../../urls";
 import Button from "@material-ui/core/Button";
 import {Link} from "react-router-dom";
-import {PageHeading} from "../Utility/text-styles";
+import {PageHeading, UnauthorizedMessage} from "../Utility/text-styles";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const runScheduler = (setSolutions) => {
   APIService.post(URL_SOLUTIONS).then((data) => {
@@ -76,74 +76,49 @@ const generateCards = (schedule) => {
 }
 
 const AssistantPage = () => {
-  const theme = useTheme();
+  const [unauthorized, setUnauthorized] = useState(false);
+  const [loaded, setLoaded] = useState(false);
 
   const [solutions, setSolutions] = useState([]);
   const [instructors, setInstructors] = useState({});
   const [sections, setSections] = useState({});
 
-  const dummySchedule = [
-    {assignment_count: 5, assignments: [
-        {section: 'Section1', instructor: 'Smith'},
-        {section: 'Section2', instructor: 'Jones'},
-        {section: 'Section3', instructor: 'Smith'},
-        {section: 'Section4', instructor: 'Levett'},
-        {section: 'Section5', instructor: 'Levett'},
-      ], issues: ['Teacher teaching too many classes', 'Teacher teaching outside of disciplines'], id: 1},
-    {assignment_count: 4, assignments: [
-        {section: 'Section1', instructor: 'Smith'},
-        {section: 'Section2', instructor: 'Jones'},
-        {section: 'Section3', instructor: 'Smith'},
-        {section: 'Section4', instructor: 'Levett'},
-        {section: 'Section5', instructor: null},
-      ], issues: ['Teacher teaching too many classes'], id: 2},
-    {assignment_count: 3, assignments: [
-        {section: 'Section1', instructor: 'Smith'},
-        {section: 'Section2', instructor: 'Jones'},
-        {section: 'Section3', instructor: null},
-        {section: 'Section4', instructor: 'Levett'},
-        {section: 'Section5', instructor: null},
-      ], issues: ['Teacher teaching too many classes'], id: 3},
-    {assignment_count: 2, assignments: [
-        {section: 'Section1', instructor: 'Smith'},
-        {section: 'Section2', instructor: 'Jones'},
-        {section: 'Section3', instructor: null},
-        {section: 'Section4', instructor: null},
-        {section: 'Section5', instructor: null},
-      ], issues: [], id: 4},
-    {assignment_count: 1, assignments: [
-        {section: 'Section1', instructor: 'Smith'},
-        {section: 'Section2', instructor: null},
-        {section: 'Section3', instructor: null},
-        {section: 'Section4', instructor: null},
-        {section: 'Section5', instructor: null},
-      ], issues: [], id: 5},
-  ];
+  const handleError = (error) => {
+    if (error.message === '403') {
+      setUnauthorized(true);
+    } else {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
-    APIService.get(URL_SOLUTIONS).then((data) => {
-      setSolutions(data);
-    }, (error) => {
-      console.error(error);
-    });
+    const allPromise = Promise.all(
+      [APIService.get(URL_SOLUTIONS), APIService.get(URL_INSTRUCTORS), APIService.get(URL_CLASSES)]);
 
-    APIService.get(URL_INSTRUCTORS).then((data) => {
-      setInstructors(new Map(data.map(obj => [obj.id, obj])));
-    }, (error) => {
-      console.error(error);
-    });
-
-    APIService.get(URL_CLASSES).then((data) => {
-      setSections(new Map(data.map(obj => [obj.id, obj])));
-    }, (error) => {
-      console.error(error);
-    });
+    allPromise.then(data => {
+      setSolutions(data[0]);
+      setInstructors(new Map(data[1].map(obj => [obj.id, obj])));
+      setSections(new Map(data[2].map(obj => [obj.id, obj])));
+      setLoaded(true);
+    }).catch(handleError);
   }, []);
+
+  if (unauthorized) {
+    return (
+      <div>
+        {PageHeading('Generated Schedules')}
+        {UnauthorizedMessage('scheduler')}
+      </div>
+    );
+  }
 
   return (
     <div data-testid="AssistantPage">
       {PageHeading('Generated Schedules')}
-      {runSchedulerSection(solutions, instructors, sections, setSolutions)}
+      {(!loaded) ?
+        <CircularProgress /> :
+        runSchedulerSection(solutions, instructors, sections, setSolutions)
+      }
       <Grid container alignItems={"center"} justifyContent={"center"}>
         {generateCards(solutions.slice(0, 12))}
       </Grid>
