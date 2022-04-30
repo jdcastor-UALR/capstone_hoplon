@@ -1,14 +1,35 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.contrib.auth.hashers import check_password
 
 from Django_API.model_enums import AccessLevelChoices, SectionDayChoices
+
+
+class PasswordChange:
+    username = ""
+    password = ""
+    new_password = ""
+
+    def __init__(self, username, password, new_password):
+        self.username = username
+        self.password = password
+        self.new_password = new_password
+
+
+class DBInitStatus(models.Model):
+    root_initialized = models.BooleanField(default=False)
 
 
 class User(AbstractUser):
     accessLevel = models.CharField(max_length=255, choices=AccessLevelChoices.choices)
 
-    #def __str__(self):
-       # return "{}".format(self.email)
+    def change_password(self, password, new_password):
+        if check_password(password, self.password):
+            self.set_password(new_password)
+            self.is_active = True
+            self.save()
+            return True
+        return False
 
 
 class RegistrationRequest(models.Model):

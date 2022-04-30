@@ -1,9 +1,26 @@
 from rest_framework import serializers
 
 from Django_API.model_enums import SectionDayChoices
-from Django_API.models import User, RegistrationRequest, Section, TimeSlot, Course, Instructor, Discipline, \
+from Django_API.models import PasswordChange, User, RegistrationRequest, Section, TimeSlot, Course, Instructor, \
+    Discipline, \
     Solution, AssignedSection
 from Django_API.utility import prettyTimeString
+
+
+class PasswordChangeSerializer(serializers.Serializer):
+    def update(self, instance, validated_data):
+        pass
+
+    username = serializers.CharField(label="username")
+    password = serializers.CharField(label="password",
+                                     style={'input_type': 'password'}
+                                     )
+    new_password = serializers.CharField(label="new_password",
+                                         style={'input_type': 'password'}
+                                         )
+
+    def create(self, **kwargs):
+        return PasswordChange(**self.validated_data)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -113,7 +130,6 @@ class InstructorWriteSerializer(serializers.ModelSerializer):
 
 
 class AssignedSectionSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = AssignedSection
         fields = '__all__'

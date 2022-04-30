@@ -5,18 +5,40 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.authtoken.views import obtain_auth_token, ObtainAuthToken
 
 from Django_API.model_functions import get_section_instructor_discipline_map, get_section_overlap_map
-from Django_API.models import Instructor, User, RegistrationRequest, TimeSlot, Course, Section, Discipline, \
-    Solution
+from Django_API.models import Instructor, RegistrationRequest, TimeSlot, Course, Section, Discipline, Solution, \
+    DBInitStatus
 from Django_API.recursive_scheduler import RecursiveScheduler
-from Django_API.serializers import UserSerializer, RegistrationRequestSerializer, \
+from Django_API.serializers import PasswordChangeSerializer, UserSerializer, RegistrationRequestSerializer, \
     TimeSlotSerializer, CourseSerializer, SectionSerializer, InstructorSerializer, DisciplineSerializer, \
     InstructorWriteSerializer, CourseWriteSerializer, SolutionSerializer, SectionFullSerializer
 
 from .user_permissions import *
 
 logger = logging.getLogger()
+
+
+# This view basically pre-processes token requests so we can catch login requests for the initialization step
+class ObtainAuthTokenPreCheck(APIView):
+    permission_classes = []
+
+    @staticmethod
+    def post(request, *args, **kwargs):
+        try:
+            init_ran = DBInitStatus.objects.get(id=1).root_initialized
+            root_active = User.objects.get(username="root").is_active
+            # if root_initialized has been set in the database and the root user is_active, then call basic token view
+            if init_ran and root_active:
+                auth_token_view = ObtainAuthToken.as_view()
+                # I really don't like this direct reference to a private member but I couldn't
+                # figure out another way to pass the request along.
+                return auth_token_view(request._request, *args, **kwargs)
+        except Exception as e:
+            logger.error(e)
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response("root user initialization check failed", status=status.HTTP_401_UNAUTHORIZED)
 
 
 class UserList(APIView):
@@ -37,6 +59,29 @@ class UserList(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserPasswordChange(APIView):
+    permission_classes = []
+
+    @staticmethod
+    def _get_user(username):
+        try:
+            return User.objects.get(username=username)
+        except User.DoesNotExist:
+            return None
+
+    def put(self, request, **kwargs):
+        print(request.data)
+        serializer = PasswordChangeSerializer(data=request.data)
+        if serializer.is_valid():
+            user = self._get_user(serializer.validated_data['username'])
+            if user:
+                if user.change_password(serializer.validated_data['password'],
+                                        serializer.validated_data['new_password']):
+                    return Response(status=status.HTTP_200_OK)
+                return Response(status=status.HTTP_401_UNAUTHORIZED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
