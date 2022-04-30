@@ -73,7 +73,6 @@ class UserPasswordChange(APIView):
             return None
 
     def put(self, request, **kwargs):
-        print(request.data)
         serializer = PasswordChangeSerializer(data=request.data)
         if serializer.is_valid():
             user = self._get_user(serializer.validated_data['username'])

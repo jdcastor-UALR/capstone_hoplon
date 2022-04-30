@@ -10,7 +10,11 @@ from .utility import send_email
 def approve_account(modeladmin, request, queryset):
     for registration in queryset:
         try:
-            User.objects.create()
+            User.objects.create(username=registration.contact_email,
+                                email=registration.contact_email,
+                                password=make_password(registration.requested_password),
+                                accessLevel=registration.access_level,
+                                is_active=True)
             send_email(registration.contact_email, True, registration.requested_password)
         except IntegrityError:
             send_email(registration.contact_email, False, registration.requested_password)
