@@ -7,7 +7,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import {PageHeading} from "../Utility/text-styles";
 import APIService from "../../APIService";
 import {saveToken} from "../../auth";
-import {URL_CREATE_REGISTRATION_REQUEST} from "../../urls";
+import {URL_CHANGE_PASSWORD, URL_CREATE_REGISTRATION_REQUEST} from "../../urls";
 
 const LoginForm = (setUsername, setPassword) => {
   return (
@@ -66,7 +66,20 @@ const LoginPage = (props) => {
       APIService.authenticate(username, password).then((data) => {
         saveToken(data);
         window.location.reload(false);
-      }, (error) => console.error(error));
+      }, (error) => {
+        if (error.message === '404') {
+          // This means that this is first user
+          APIService.put(URL_CHANGE_PASSWORD,
+            {username: 'root', password: 'root', new_password: password}, false).then(() => {
+            APIService.authenticate('root', password).then(data => {
+              saveToken(data);
+              window.location.reload(false);
+            }, (error) => console.error(error));
+          }, error => console.error(error));
+        } else {
+          console.error(error);
+        }
+      });
     } else {
       APIService.post(URL_CREATE_REGISTRATION_REQUEST,
         {contact_email: username, requested_password: password, access_level: accessLevel}).then((data) => {

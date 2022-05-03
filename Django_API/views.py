@@ -36,9 +36,9 @@ class ObtainAuthTokenPreCheck(APIView):
                 # figure out another way to pass the request along.
                 return auth_token_view(request._request, *args, **kwargs)
         except Exception as e:
-            logger.error(e)
+            logger.exception(e)
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        return Response("root user initialization check failed", status=status.HTTP_401_UNAUTHORIZED)
+        return Response("root user initialization check failed", status=status.HTTP_404_NOT_FOUND)
 
 
 class UserList(APIView):
@@ -79,7 +79,7 @@ class UserPasswordChange(APIView):
             if user:
                 if user.change_password(serializer.validated_data['password'],
                                         serializer.validated_data['new_password']):
-                    return Response(status=status.HTTP_200_OK)
+                    return Response()
                 return Response(status=status.HTTP_401_UNAUTHORIZED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

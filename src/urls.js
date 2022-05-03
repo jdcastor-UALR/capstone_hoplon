@@ -7,4 +7,5 @@ export const API_URL = '/api/',
   URL_SOLUTIONS = `${API_URL}solution/`,
   URL_SOLUTION_CONSTRAINT_MAP = `${API_URL}solution/constraintmap/`,
   URL_AUTH = `${API_URL}auth/token/`,
-  URL_CREATE_REGISTRATION_REQUEST = `${API_URL}registrationrequest/create/`;
+  URL_CREATE_REGISTRATION_REQUEST = `${API_URL}registrationrequest/create/`,
+  URL_CHANGE_PASSWORD = `${API_URL}auth/changepassword/`;

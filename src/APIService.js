@@ -54,11 +54,12 @@ const APIService = {
     return response.json();
   },
 
-  put: async (url, data) => {
+  put: async (url, data, dataHasID=true) => {
     const options = { method: 'PUT', body: JSON.stringify(data) };
-    const response = await fetch(url + data.id.toString(), injectHeader(options));
+    if (dataHasID) url += data.id.toString();
+    const response = await fetch(url, injectHeader(options));
     catchErrorResponse(response);
-    return response.json();
+    return (response.type === 'basic') ? response : response.json();
   },
 
   delete: async (url, id) => {
