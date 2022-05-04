@@ -13,13 +13,13 @@ class Command(BaseCommand):
         {'lastName': 'Conde', 'maxSections': 4, 'qualifications':
             ['Game Development', 'Data Structures and Algorithms', 'Mobile Applications']},
         {'lastName': 'Chiang', 'maxSections': 3, 'qualifications':
-            ['Artificial Intelligence', 'Theory of Computation']},
+            ['Artificial Intelligence', 'Theory of Computation', 'Software Development Methodologies']},
         {'lastName': 'Orme', 'maxSections': 4, 'qualifications':
             ['Parallel and Distributed Systems', 'Mobile Applications', 'Cybersecurity']},
         {'lastName': 'Bolt', 'maxSections': 3, 'qualifications':
             ['Virtual Reality', 'Cybersecurity', 'Parallel and Distributed Systems']},
         {'lastName': 'Springer', 'maxSections': 4, 'qualifications':
-            ['Programming Languages', 'Data Structures and Algorithms']},
+            ['Programming Languages', 'Data Structures and Algorithms', 'Software Engineering', 'Software Development Methodologies']},
         {'lastName': 'Zak', 'maxSections': 3, 'qualifications':
             ['Mobile Applications', 'Game Development', 'Virtual Reality']},
         {'lastName': 'Milanova', 'maxSections': 4, 'qualifications':
@@ -52,7 +52,7 @@ class Command(BaseCommand):
         {'course_title': 'Advanced Game Programming', 'course_number': '3377', 'subject_disciplines':
             ['Programming-C++', 'Programming-Python', 'Data Structures and Algorithms']},
         {'course_title': 'Operating Systems', 'course_number': '3380', 'subject_disciplines':
-            ['Hardware Designs', 'Data Structures']},
+            ['Hardware Designs', 'Data Structures and Algorithms']},
         {'course_title': 'RPG Programming', 'course_number': '3382', 'subject_disciplines':
             ['Programming Languages']},
         {'course_title': 'Computer Networks', 'course_number': '3384', 'subject_disciplines':
@@ -76,184 +76,179 @@ class Command(BaseCommand):
                     {'begin_time': '9:25', 'end_time': '10:40', 'meetingDays': 'Thu.'}
                 ]
              },
-            {'courseTitle': 'Capstone Project', 'meetingTimes':
+            {'courseTitle': 'Computer Security', 'meetingTimes':
                 [
-                    {'begin_time': '13:35', 'end_time': '14:25', 'meetingDays': 'Mon.'},
-                    {'begin_time': '13:35', 'end_time': '14:25', 'meetingDays': 'Wed.'},
-                    {'begin_time': '9:25', 'end_time': '10:15', 'meetingDays': 'Fri.'},
+                    {'begin_time': '12:15', 'end_time': '13:30', 'meetingDays': 'Mon.'},
+                    {'begin_time': '12:25', 'end_time': '13:30', 'meetingDays': 'Wed.'}
                 ]
              },
             {'courseTitle': 'Computer Security', 'meetingTimes':
                 [
-                    {'begin_time': '9:25', 'end_time': '10:15', 'meetingDays': 'Mon.'},
-                    {'begin_time': '9:25', 'end_time': '10:15', 'meetingDays': 'Wed.'},
-                    {'begin_time': '10:15', 'end_time': '11:05', 'meetingDays': 'Fri.'}
+                    {'begin_time': '17:55', 'end_time': '19:10', 'meetingDays': 'Tue.'},
+                    {'begin_time': '17:55', 'end_time': '19:10', 'meetingDays': 'Thu.'}
                 ]
              },
             {'courseTitle': 'Computer Security', 'meetingTimes':
                 [
-                    {'begin_time': '14:25', 'end_time': '17:55', 'meetingDays': 'Tue.'}
+                    {'begin_time': '17:55', 'end_time': '19:10', 'meetingDays': 'Mon.'},
+                    {'begin_time': '17:55', 'end_time': '19:10', 'meetingDays': 'Wed.'}
                 ]
              },
             {'courseTitle': 'Distributed Computing', 'meetingTimes':
                 [
-                    {'begin_time': '10:25', 'end_time': '11:40', 'meetingDays': 'Mon.'},
-                    {'begin_time': '10:25', 'end_time': '11:40', 'meetingDays': 'Tue.'},
+                    {'begin_time': '9:25', 'end_time': '10:15', 'meetingDays': 'Mon.'},
+                    {'begin_time': '9:25', 'end_time': '10:15', 'meetingDays': 'Wed.'},
+                    {'begin_time': '9:25', 'end_time': '10:15', 'meetingDays': 'Fri.'}
                 ]
              },
             {'courseTitle': 'Principle of UI & UX', 'meetingTimes':
                 [
-                    {'begin_time': '9:25', 'end_time': '10:40', 'meetingDays': 'Tue.'},
-                    {'begin_time': '9:25', 'end_time': '10:40', 'meetingDays': 'Thu.'},
-                ]
-             },
-            {'courseTitle': 'Principle of UI & UX', 'meetingTimes':
-                [
-                    {'begin_time': '13:45', 'end_time': '15:00', 'meetingDays': 'Mon.'},
-                    {'begin_time': '13:45', 'end_time': '15:00', 'meetingDays': 'Wed.'}
+                    {'begin_time': '12:15', 'end_time': '13:05', 'meetingDays': 'Mon.'},
+                    {'begin_time': '12:25', 'end_time': '13:05', 'meetingDays': 'Wed.'},
+                    {'begin_time': '12:15', 'end_time': '13:05', 'meetingDays': 'Fri.'}
                 ]
              },
             {'courseTitle': 'Theory of Computers', 'meetingTimes':
                 [
-                    {'begin_time': '12:25', 'end_time': '13:15', 'meetingDays': 'Mon.'},
-                    {'begin_time': '12:25', 'end_time': '13:15', 'meetingDays': 'Wed.'},
-                    {'begin_time': '14:30', 'end_time': '15:20', 'meetingDays': 'Fri.'},
+                    {'begin_time': '8:00', 'end_time': '9:15', 'meetingDays': 'Tue.'},
+                    {'begin_time': '8:00', 'end_time': '9:15', 'meetingDays': 'Thu.'}
+                ]
+             },
+            {'courseTitle': 'Theory of Computers', 'meetingTimes':
+                [
+                    {'begin_time': '8:00', 'end_time': '9:15', 'meetingDays': 'Mon.'},
+                    {'begin_time': '8:00', 'end_time': '9:15', 'meetingDays': 'Wed.'}
                 ]
              },
             {'courseTitle': 'Special Topics', 'meetingTimes':
                 [
-                    {'begin_time': '8:25', 'end_time': '9:15', 'meetingDays': 'Mon.'},
-                    {'begin_time': '8:25', 'end_time': '9:15', 'meetingDays': 'Tue.'},
-                    {'begin_time': '10:25', 'end_time': '11:15', 'meetingDays': 'Wed.'}
-                ]
-             },
-            {'courseTitle': 'Special Topics', 'meetingTimes':
-                [
-                    {'begin_time': '11:25', 'end_time': '13:55', 'meetingDays': 'Thu.'}
+                    {'begin_time': '9:25', 'end_time': '10:40', 'meetingDays': 'Mon.'},
+                    {'begin_time': '9:25', 'end_time': '10:40', 'meetingDays': 'Wed.'}
                 ]
              },
             {'courseTitle': 'Interactive Computer and Graphics & Animations', 'meetingTimes':
                 [
-                    {'begin_time': '8:25', 'end_time': '9:15', 'meetingDays': 'Tue.'},
-                    {'begin_time': '8:25', 'end_time': '9:15', 'meetingDays': 'Wed.'},
-                    {'begin_time': '13:35', 'end_time': '14:25', 'meetingDays': 'Thu.'}
+                    {'begin_time': '12:15', 'end_time': '13:30', 'meetingDays': 'Tue.'},
+                    {'begin_time': '12:15', 'end_time': '13:30', 'meetingDays': 'Thu.'}
 
-                ]
-             },
-            {'courseTitle': 'Interactive Computer and Graphics & Animations', 'meetingTimes':
-                [
-                    {'begin_time': '12:25', 'end_time': '13:40', 'meetingDays': 'Fri.'},
-                    {'begin_time': '8:25', 'end_time': '9:40', 'meetingDays': 'Fri.'}
                 ]
              },
             {'courseTitle': '3D Modeling for Game Designs', 'meetingTimes':
                 [
-                    {'begin_time': '10:25', 'end_time': '11:40', 'meetingDays': 'Mon.'},
-                    {'begin_time': '10:25', 'end_time': '11:40', 'meetingDays': 'Thu.'}
+                    {'begin_time': '10:50', 'end_time': '11:55', 'meetingDays': 'Mon.'},
+                    {'begin_time': '10:50', 'end_time': '11:55', 'meetingDays': 'Wed.'}
                 ]
              },
             {'courseTitle': '3D Modeling for Game Designs', 'meetingTimes':
                 [
-                    {'begin_time': '11:15', 'end_time': '12:05', 'meetingDays': 'Tue.'},
-                    {'begin_time': '11:15', 'end_time': '12:05', 'meetingDays': 'Wed.'}
+                    {'begin_time': '10:50', 'end_time': '11:55', 'meetingDays': 'Tue.'},
+                    {'begin_time': '10:50', 'end_time': '11:55', 'meetingDays': 'Thu.'}
                 ]
              },
             {'courseTitle': 'Software Engineering', 'meetingTimes':
                 [
-                    {'begin_time': '13:00', 'end_time': '13:50', 'meetingDays': 'Tue.'},
-                    {'begin_time': '13:00', 'end_time': '13:50', 'meetingDays': 'Wed.'},
-                    {'begin_time': '8:00', 'end_time': '8:50', 'meetingDays': 'Thu.'}
-
-                ]
-             },
-            {'courseTitle': 'Software Engineering', 'meetingTimes':
-                [
-                    {'begin_time': '15:15', 'end_time': '16:30', 'meetingDays': 'Thu.'},
-                    {'begin_time': '15:15', 'end_time': '16:30', 'meetingDays': 'Fri.'}
+                    {'begin_time': '9:25', 'end_time': '10:40', 'meetingDays': 'Tue.'},
+                    {'begin_time': '9:25', 'end_time': '10:40', 'meetingDays': 'Thu.'}
                 ]
              },
             {'courseTitle': 'Web Stack Client Side Technology', 'meetingTimes':
                 [
-                    {'begin_time': '11:25', 'end_time': '12:15', 'meetingDays': 'Mon.'},
-                    {'begin_time': '16:05', 'end_time': '17:20', 'meetingDays': 'Tue.'}
-                ]
-             },
-            {'courseTitle': 'Web Stack Client Side Technology', 'meetingTimes':
-                [
-                    {'begin_time': '12:25', 'end_time': '14:55', 'meetingDays': 'Thu.'}
-                ]
-             },
-            {'courseTitle': 'Independent Study', 'meetingTimes':
-                [
-                    {'begin_time': '14:40', 'end_time': '15:55', 'meetingDays': 'Mon.'},
-                    {'begin_time': '10:20', 'end_time': '11:35', 'meetingDays': 'Wed.'}
+                    {'begin_time': '10:50', 'end_time': '11:55', 'meetingDays': 'Tue.'},
+                    {'begin_time': '10:50', 'end_time': '11:55', 'meetingDays': 'Thu.'}
                 ]
              },
             {'courseTitle': 'Advanced Game Programming', 'meetingTimes':
                 [
-                    {'begin_time': '12:00', 'end_time': '12:50', 'meetingDays': 'Tue.'},
-                    {'begin_time': '12:00', 'end_time': '12:50', 'meetingDays': 'Thu.'},
-                    {'begin_time': '11:30', 'end_time': '12:20', 'meetingDays': 'Fri.'}
+                    {'begin_time': '12:15', 'end_time': '13:30', 'meetingDays': 'Mon.'},
+                    {'begin_time': '12:15', 'end_time': '13:30', 'meetingDays': 'Wed.'}
                 ]
              },
             {'courseTitle': 'Advanced Game Programming', 'meetingTimes':
                 [
-                    {'begin_time': '15:55', 'end_time': '18:25', 'meetingDays': 'Mon.'}
+                    {'begin_time': '12:15', 'end_time': '13:30', 'meetingDays': 'Tue.'},
+                    {'begin_time': '12:15', 'end_time': '13:30', 'meetingDays': 'Thu.'}
                 ]
              },
             {'courseTitle': 'Operating Systems', 'meetingTimes':
                 [
-                    {'begin_time': '16:05', 'end_time': '16:55', 'meetingDays': 'Tue.'},
-                    {'begin_time': '16:05', 'end_time': '16:55', 'meetingDays': 'Fri.'},
-                    {'begin_time': '16:10', 'end_time': '17:00', 'meetingDays': 'Thu.'}
+                    {'begin_time': '9:25', 'end_time': '10:40', 'meetingDays': 'Tue.'},
+                    {'begin_time': '9:25', 'end_time': '10:40', 'meetingDays': 'Thu.'}
+                ]
+             },
+            {'courseTitle': 'Operating Systems', 'meetingTimes':
+                [
+                    {'begin_time': '9:25', 'end_time': '10:15', 'meetingDays': 'Mon.'},
+                    {'begin_time': '9:25', 'end_time': '10:15', 'meetingDays': 'Wed.'},
+                    {'begin_time': '9:25', 'end_time': '10:15', 'meetingDays': 'Fri.'}
                 ]
              },
             {'courseTitle': 'RPG Programming', 'meetingTimes':
                 [
-                    {'begin_time': '15:35', 'end_time': '16:25', 'meetingDays': 'Wed.'},
-                    {'begin_time': '15:35', 'end_time': '16:25', 'meetingDays': 'Thu.'},
-                    {'begin_time': '13:50', 'end_time': '14:40', 'meetingDays': 'Fri.'}
+                    {'begin_time': '10:55', 'end_time': '11:55', 'meetingDays': 'Tue.'},
+                    {'begin_time': '10:55', 'end_time': '11:55', 'meetingDays': 'Thu.'}
                 ]
              },
             {'courseTitle': 'Computer Networks', 'meetingTimes':
                 [
-                    {'begin_time': '16:50', 'end_time': '17:40', 'meetingDays': 'Wed.'},
-                    {'begin_time': '16:50', 'end_time': '17:40', 'meetingDays': 'Fri.'},
-                    {'begin_time': '16:20', 'end_time': '17:10', 'meetingDays': 'Thu.'}
+                    {'begin_time': '10:50', 'end_time': '11:40', 'meetingDays': 'Mon.'},
+                    {'begin_time': '10:50', 'end_time': '11:40', 'meetingDays': 'Wed.'},
+                    {'begin_time': '10:50', 'end_time': '11:40', 'meetingDays': 'Fri.'}
+                ]
+             },
+            {'courseTitle': 'Computer Networks', 'meetingTimes':
+                [
+                    {'begin_time': '12:15', 'end_time': '13:30', 'meetingDays': 'Tue.'},
+                    {'begin_time': '12:15', 'end_time': '13:30', 'meetingDays': 'Thu.'}
                 ]
              },
             {'courseTitle': 'Programming II', 'meetingTimes':
                 [
-                    {'begin_time': '16:55', 'end_time': '17:45', 'meetingDays': 'Mon.'},
-                    {'begin_time': '17:40', 'end_time': '18:30', 'meetingDays': 'Wed.'},
-                    {'begin_time': '17:05', 'end_time': '17:55', 'meetingDays': 'Thu.'}
+                    {'begin_time': '12:15', 'end_time': '13:30', 'meetingDays': 'Mon.'},
+                    {'begin_time': '12:15', 'end_time': '13:30', 'meetingDays': 'Wed.'}
                 ]
              },
             {'courseTitle': 'Introduction to Game Programming', 'meetingTimes':
                 [
-                    {'begin_time': '14:20', 'end_time': '15:10', 'meetingDays': 'Tue.'},
-                    {'begin_time': '18:30', 'end_time': '19:20', 'meetingDays': 'Thu.'},
-                    {'begin_time': '17:50', 'end_time': '18:40', 'meetingDays': 'Fri.'}
+                    {'begin_time': '10:55', 'end_time': '11:55', 'meetingDays': 'Tue.'},
+                    {'begin_time': '10:55', 'end_time': '11:55', 'meetingDays': 'Thu.'}
+                ]
+             },
+            {'courseTitle': 'Introduction to Game Programming', 'meetingTimes':
+                [
+                    {'begin_time': '10:55', 'end_time': '11:55', 'meetingDays': 'Mon.'},
+                    {'begin_time': '10:55', 'end_time': '11:55', 'meetingDays': 'Wed.'}
                 ]
              },
             {'courseTitle': 'Algorithm', 'meetingTimes':
                 [
-                    {'begin_time': '18:40', 'end_time': '21:10', 'meetingDays': 'Thu.'},
-                    {'begin_time': '18:40', 'end_time': '21:10', 'meetingDays': 'Fri.'}
+                    {'begin_time': '10:55', 'end_time': '11:55', 'meetingDays': 'Mon.'},
+                    {'begin_time': '10:55', 'end_time': '11:55', 'meetingDays': 'Wed.'}
                 ]
              },
             {'courseTitle': 'Programming I', 'meetingTimes':
                 [
-                    {'begin_time': '17:05', 'end_time': '17:55', 'meetingDays': 'Mon.'},
-                    {'begin_time': '18:35', 'end_time': '19:25', 'meetingDays': 'Wed.'},
-                    {'begin_time': '17:50', 'end_time': '18:40', 'meetingDays': 'Fri.'}
+                    {'begin_time': '12:15', 'end_time': '13:30', 'meetingDays': 'Tue.'},
+                    {'begin_time': '12:15', 'end_time': '13:30', 'meetingDays': 'Thu.'}
+                ]
+             },
+            {'courseTitle': 'Programming I', 'meetingTimes':
+                [
+                    {'begin_time': '17:55', 'end_time': '19:10', 'meetingDays': 'Mon.'},
+                    {'begin_time': '17:55', 'end_time': '19:10', 'meetingDays': 'Wed.'}
+                ]
+             },
+            {'courseTitle': 'Programming I', 'meetingTimes':
+                [
+                    {'begin_time': '8:00', 'end_time': '8:50', 'meetingDays': 'Mon.'},
+                    {'begin_time': '8:00', 'end_time': '8:50', 'meetingDays': 'Wed.'},
+                    {'begin_time': '8:00', 'end_time': '8:50', 'meetingDays': 'Fri.'}
                 ]
              },
             {'courseTitle': 'Mobile Application Development', 'meetingTimes':
                 [
-                    {'begin_time': '19:25', 'end_time': '20:40', 'meetingDays': 'Tue.'},
-                    {'begin_time': '19:25', 'end_time': '20:40', 'meetingDays': 'Wed.'},
-                    {'begin_time': '19:15', 'end_time': '20:30', 'meetingDays': 'Thu.'}
+                    {'begin_time': '16:30', 'end_time': '17:20', 'meetingDays': 'Mon.'},
+                    {'begin_time': '16:30', 'end_time': '17:20', 'meetingDays': 'Wed.'},
+                    {'begin_time': '16:30', 'end_time': '17:20', 'meetingDays': 'Fri.'}
                 ]
              }
 
