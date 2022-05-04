@@ -7,10 +7,11 @@ from Django_API.models import TimeSlot
 
 
 def prettyTimeString(section_id):
-    prettyString = ''
+    pretty_string = ''
     for time_slot in TimeSlot.objects.filter(section=section_id):
-        prettyString += ("{} {}-{} ").format(time_slot.meetingDays, time_slot.begin_time, time_slot.end_time)
-    return prettyString
+        pretty_string += "{} {}-{}, ".format(
+            time_slot.meetingDays, time_slot.begin_time.strftime('%H:%M'), time_slot.end_time.strftime('%H:%M'))
+    return pretty_string[:-2]
 
 
 def do_timeslots_overlap(timeslots: list):

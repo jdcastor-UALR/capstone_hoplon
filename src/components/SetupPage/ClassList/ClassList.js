@@ -18,12 +18,12 @@ const ClassListItems = (classes, courses, setCourses, openEditDialog) => {
   let listItems = [];
 
   for (let course of courses) {
-    const classesOnCourse = classes.filter(cls => cls.course === course.id);
+    const classesOnCourse = classes.filter(cls => cls.course.id === course.id);
     const meetingTimeStrings = classesOnCourse.map(cls => cls.meetingTimeString);
     listItems.push(
       <ListItem>
         <ListItemText primary={'CPSC ' + course.course_number + ' - ' + course.course_title}
-                      secondary={classesOnCourse.length.toString() + ' Section(s) - ' + meetingTimeStrings.join('; ')} />
+                      secondary={classesOnCourse.length.toString() + ' Section(s) - ' + meetingTimeStrings.join(' | ')} />
         <ListItemSecondaryAction>
           <IconButton edge={"end"} onClick={() => openEditDialog(course)}>
             <EditIcon />
