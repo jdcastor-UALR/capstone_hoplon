@@ -14,18 +14,7 @@ import {Link} from "react-router-dom";
 import {PageHeading, UnauthorizedMessage} from "../Utility/text-styles";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
-const runScheduler = (setSolutions, setLoaded) => {
-  setLoaded(false);
-  setSolutions([]);
-  APIService.post(URL_SOLUTIONS).then((data) => {
-    setLoaded(true);
-    if (data) {
-      setSolutions(data);
-    }
-  }, (error) => console.error(error));
-};
-
-const runSchedulerSection = (schedule, instructors, sections, setSolutions, setLoaded) => {
+const runSchedulerSection = (schedule, instructors, sections, runScheduler) => {
   let result = (<br />);
 
   if ((instructors.size === 0 || instructors.size == null) || (sections.size === 0 || sections.size == null)) {
@@ -42,7 +31,7 @@ const runSchedulerSection = (schedule, instructors, sections, setSolutions, setL
       <>
         <Typography>No solutions have been generated.</Typography>
         <br />
-        <Button variant={"contained"} color={"primary"} onClick={() => runScheduler(setSolutions, setLoaded)}>
+        <Button variant={"contained"} color={"primary"} onClick={runScheduler}>
           Run Scheduler
         </Button>
       </>
@@ -57,7 +46,6 @@ const generateCards = (schedule) => {
   let count = 1;
 
   for (let option of schedule) {
-    console.log(option);
     cards.push(
       <Card variant={"outlined"} key={option.id} style={{width: '20%', margin: '1em'}}>
         <CardContent>
@@ -83,10 +71,26 @@ const AssistantPage = () => {
   const [unauthorized, setUnauthorized] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [changes, setChanges] = useState(false);
+  const [runningScheduler, setRunningScheduler] = useState(false);
 
   const [solutions, setSolutions] = useState([]);
   const [instructors, setInstructors] = useState({});
   const [sections, setSections] = useState({});
+
+  const runScheduler = () => {
+    setLoaded(false);
+    setRunningScheduler(true);
+    setSolutions([]);
+    APIService.post(URL_SOLUTIONS).then((data) => {
+      if (data) {
+        setSolutions(data);
+      }
+    }, (error) => console.error(error)).finally(() => {
+      setLoaded(true);
+      setRunningScheduler(false);
+      setChanges(false);
+    });
+  };
 
   const handleError = (error) => {
     if (error.message === '403') {
@@ -123,9 +127,12 @@ const AssistantPage = () => {
   return (
     <div data-testid="AssistantPage">
       {PageHeading('Generated Schedules')}
+      {runningScheduler &&
+      <Typography>Please wait for the scheduler to finish, this step can take several minutes.</Typography>
+      }
       {(!loaded) ?
         <CircularProgress /> :
-        runSchedulerSection(solutions, instructors, sections, setSolutions, setLoaded)
+        runSchedulerSection(solutions, instructors, sections, runScheduler)
       }
       {(loaded && changes && solutions.length > 0) &&
         <Card variant={"outlined"} style={{margin: 'auto auto 1rem auto', width: '60%'}}>
@@ -134,10 +141,8 @@ const AssistantPage = () => {
               Click this button to re-run the scheduler!</Typography>
           </CardContent>
           <CardActions>
-            <Button variant={"contained"} color={"primary"} style={{margin: "auto"}} onClick={() => {
-              runScheduler(setSolutions, setLoaded);
-              setChanges(false);
-            }}>Run Scheduler</Button>
+            <Button variant={"contained"} color={"primary"} style={{margin: "auto"}}
+                    onClick={runScheduler}>Run Scheduler</Button>
           </CardActions>
         </Card>
       }

@@ -27,6 +27,8 @@ class RecursiveScheduler:
     incomplete_solutions_found = 0
     tree_distribution = {}
 
+    complete = False
+
     def __init__(self, sections: list, instructors: list, leaf_limit=DEFAULT_LEAF_LIMIT):
         """
         :param sections: Fully serialized data of section models
@@ -40,6 +42,7 @@ class RecursiveScheduler:
         self.lookup_instructors = {i['id']: i for i in self.instructors}
         self.sections = sections
         self.generated_solutions = []
+        self.complete = False
 
         self.section_discipline_map = get_section_instructor_discipline_map()
         self.section_overlap_map = get_section_overlap_map(sections)
@@ -58,9 +61,9 @@ class RecursiveScheduler:
                         self._generate_schedule(schedule, section, instructor)
 
         # Log statistics about algorithm run
-        print(f'Found {self.complete_solutions_found} complete solutions and {self.incomplete_solutions_found} '
-              f'incomplete solutions.')
-        print(self.tree_distribution)
+        logger.info(f'Found {self.complete_solutions_found} complete solutions and {self.incomplete_solutions_found} '
+                    f'incomplete solutions.')
+        logger.info(f'Solution Distribution: {self.tree_distribution}')
 
         # Save results of algorithm as model
         if len(self.generated_solutions):
@@ -101,7 +104,7 @@ class RecursiveScheduler:
         :param next_instructor: Initial instructor ID to root tree from, or instructor ID from parent execution
         :return: None
         """
-        if next_section is None or next_instructor is None:
+        if next_section is None or next_instructor is None or self.complete:
             pass
         else:
             schedule = schedule + [(next_section, next_instructor)]
@@ -160,7 +163,7 @@ class RecursiveScheduler:
 
         if len(schedule) == len(self.sections):
             self.complete_solutions_found += 1
-            print(schedule)
+            self.complete = True
         else:
             self.incomplete_solutions_found += 1
 

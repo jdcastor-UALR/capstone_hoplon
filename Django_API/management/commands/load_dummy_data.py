@@ -1,5 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
-from Django_API.models import Instructor, Discipline, Section, Course, TimeSlot
+
+from Django_API.model_functions import add_change_record
+from Django_API.models import Instructor, Discipline, Section, Course, TimeSlot, Solution, AssignedSection
 
 
 class Command(BaseCommand):
@@ -263,6 +265,11 @@ class Command(BaseCommand):
         Course.objects.all().delete()
         Section.objects.all().delete()
         TimeSlot.objects.all().delete()
+        Solution.objects.all().delete()
+        AssignedSection.objects.all().delete()
+
+        # Add record that change to data was made
+        add_change_record(False)
 
         # Loop For Instructors
         for instructor in self.instructors:
