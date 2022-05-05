@@ -21,7 +21,7 @@ from rest_framework.urlpatterns import format_suffix_patterns
 from Django_API.views import InstructorList, InstructorDetail, UserList, UserDetail, UserPasswordChange, \
     RegistrationRequestList, RegistrationRequestDetail, TimeSlotList, TimeSlotDetail, CourseList, CourseDetail, \
     SectionList, SectionDetail, DisciplineView, SolutionList, SolutionDetail, SolutionConstraintMap, \
-    RegistrationRequestPublic, ObtainAuthTokenPreCheck
+    RegistrationRequestPublic, ObtainAuthTokenPreCheck, ChangeRecordView
 from .views import index
 
 
@@ -55,6 +55,8 @@ urlpatterns = [
     path('api/solution/', SolutionList.as_view(), name='solutions'),
     path('api/solution/<int:solution_id>', SolutionDetail.as_view(), name='solution'),
     path('api/solution/constraintmap/', SolutionConstraintMap.as_view(), name='solution_constraint_map'),
+
+    path('api/changes/', ChangeRecordView.as_view(), name='change_record'),
 
     path('api/auth/token/', ObtainAuthTokenPreCheck.as_view(), name='api_token_auth'),
     path('api/auth/changepassword/', UserPasswordChange.as_view(), name='password_change')

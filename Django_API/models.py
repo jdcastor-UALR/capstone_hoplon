@@ -77,3 +77,8 @@ class AssignedSection(models.Model):
     solution = models.ForeignKey(Solution, on_delete=models.CASCADE)
     section = models.ForeignKey(Section, on_delete=models.CASCADE)
     instructor = models.ForeignKey(Instructor, blank=True, null=True, on_delete=models.SET_NULL)
+
+
+class ChangeRecord(models.Model):
+    scheduler = models.BooleanField(default=False)
+    timestamp = models.DateTimeField(auto_now_add=True)

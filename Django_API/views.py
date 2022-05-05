@@ -1,20 +1,19 @@
 import json
-import logging
 
 from rest_framework import status
-from rest_framework.views import APIView
-from rest_framework.response import Response
+from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.authtoken.views import obtain_auth_token, ObtainAuthToken
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from Django_API.model_functions import get_section_instructor_discipline_map, get_section_overlap_map
+from Django_API.model_functions import get_section_instructor_discipline_map, get_section_overlap_map, data_changed, \
+    add_change_record
 from Django_API.models import Instructor, RegistrationRequest, TimeSlot, Course, Section, Discipline, Solution, \
     DBInitStatus
 from Django_API.recursive_scheduler import RecursiveScheduler
 from Django_API.serializers import PasswordChangeSerializer, UserSerializer, RegistrationRequestSerializer, \
     TimeSlotSerializer, CourseSerializer, SectionSerializer, InstructorSerializer, DisciplineSerializer, \
     InstructorWriteSerializer, CourseWriteSerializer, SolutionSerializer, SectionFullSerializer, SectionWriteSerializer
-
 from .user_permissions import *
 
 logger = logging.getLogger()
@@ -204,6 +203,7 @@ class TimeSlotList(APIView):
         serializer = TimeSlotSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+            add_change_record(False)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -231,6 +231,7 @@ class TimeSlotDetail(APIView):
             serializer = TimeSlotSerializer(time_slot, data=request.data)
             if serializer.is_valid():
                 serializer.save()
+                add_change_record(False)
                 return Response(serializer.data)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_404_NOT_FOUND)
@@ -239,6 +240,7 @@ class TimeSlotDetail(APIView):
         time_slot = self._get_timeslot(time_slot_id)
         if time_slot:
             time_slot.delete()
+            add_change_record(False)
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -260,6 +262,7 @@ class CourseList(APIView):
         serializer = CourseWriteSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+            add_change_record(False)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -287,6 +290,7 @@ class CourseDetail(APIView):
             serializer = CourseWriteSerializer(course, data=request.data)
             if serializer.is_valid():
                 serializer.save()
+                add_change_record(False)
                 return Response(serializer.data)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_404_NOT_FOUND)
@@ -295,6 +299,7 @@ class CourseDetail(APIView):
         course = self._get_course(course_id)
         if course:
             course.delete()
+            add_change_record(False)
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -316,10 +321,12 @@ class SectionList(APIView):
         serializer = SectionWriteSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+            add_change_record(False)
             try:
                 data = SectionSerializer(Section.objects.get(id=serializer.data['id'])).data
                 return Response(data, status=status.HTTP_201_CREATED)
-            except Section.DoesNotExist:
+            except Exception as e:
+                logger.exception(e)
                 return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -347,10 +354,12 @@ class SectionDetail(APIView):
             serializer = SectionWriteSerializer(section, data=request.data)
             if serializer.is_valid():
                 serializer.save()
+                add_change_record(False)
                 try:
                     data = SectionSerializer(self._get_section(serializer.data['id'])).data
                     return Response(data)
-                except Section.DoesNotExist:
+                except Exception as e:
+                    logger.exception(e)
                     return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_404_NOT_FOUND)
@@ -359,6 +368,7 @@ class SectionDetail(APIView):
         section = self._get_section(section_id)
         if section:
             section.delete()
+            add_change_record(False)
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -390,6 +400,7 @@ class InstructorList(APIView):
         serializer = InstructorWriteSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+            add_change_record(False)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -417,6 +428,7 @@ class InstructorDetail(APIView):
             serializer = InstructorWriteSerializer(instructor, data=request.data)
             if serializer.is_valid():
                 serializer.save()
+                add_change_record(False)
                 return Response(serializer.data)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_404_NOT_FOUND)
@@ -425,6 +437,7 @@ class InstructorDetail(APIView):
         instructor = self._get_instructor(instructor_id)
         if instructor:
             instructor.delete()
+            add_change_record(False)
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -447,6 +460,7 @@ class SolutionList(APIView):
         try:
             rs = RecursiveScheduler(section_data, instructor_data)
             rs.run()
+            add_change_record(True)
         except Exception as e:
             logger.exception(e)
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -494,3 +508,11 @@ class SolutionConstraintMap(APIView):
         section_overlap_map = get_section_overlap_map(section_data)
         discipline_overlap_map = get_section_instructor_discipline_map()
         return Response({'section_overlap_map': section_overlap_map, 'discipline_overlap_map': discipline_overlap_map})
+
+
+class ChangeRecordView(APIView):
+    permission_classes = [IsRoot | IsAdmin | IsAssistant]
+
+    @staticmethod
+    def get(request, **kwargs):
+        return Response({'data_changed': data_changed()})

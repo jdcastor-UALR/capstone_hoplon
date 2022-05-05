@@ -36,9 +36,10 @@ class RecursiveScheduler:
             section_data = json.loads(json.dumps(SectionFullSerializer(Section.objects.all(), many=True).data))
             instructor_data = json.loads(json.dumps(InstructorSerializer(Instructor.objects.all(), many=True).data))
         """
-        self.instructors += instructors
+        self.instructors = instructors
         self.lookup_instructors = {i['id']: i for i in self.instructors}
-        self.sections += sections
+        self.sections = sections
+        self.generated_solutions = []
 
         self.section_discipline_map = get_section_instructor_discipline_map()
         self.section_overlap_map = get_section_overlap_map(sections)
@@ -69,7 +70,7 @@ class RecursiveScheduler:
 
             try:
                 # Save solution objects
-                solutions_to_save = list(sorted(self.generated_solutions, key=lambda x: len(x), reverse=True))[:1000]
+                solutions_to_save = list(sorted(self.generated_solutions, key=lambda x: len(x), reverse=True))[:48]
                 saved_solutions = Solution.objects.bulk_create(
                     map(lambda x: Solution(assignment_count=len(x)), solutions_to_save))
 

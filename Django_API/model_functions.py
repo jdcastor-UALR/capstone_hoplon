@@ -1,4 +1,4 @@
-from Django_API.models import Section, Course, Instructor
+from Django_API.models import Section, Course, Instructor, ChangeRecord
 from Django_API.utility import do_timeslots_overlap
 
 
@@ -28,3 +28,13 @@ def get_section_overlap_map(section_data):
                 result[section['id']].append(other_section['id'])
 
     return result
+
+
+def add_change_record(is_scheduler_run):
+    record = ChangeRecord(scheduler=is_scheduler_run)
+    record.save()
+
+
+def data_changed():
+    record = ChangeRecord.objects.order_by('timestamp').last()
+    return not record.scheduler if record else True

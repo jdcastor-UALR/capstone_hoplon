@@ -8,21 +8,24 @@ import CardActions from "@material-ui/core/CardActions";
 import IconButton from "@material-ui/core/IconButton";
 import EditIcon from "@material-ui/icons/Edit"
 import APIService from "../../APIService";
-import {URL_CLASSES, URL_INSTRUCTORS, URL_SOLUTIONS} from "../../urls";
+import {URL_CHANGES, URL_CLASSES, URL_INSTRUCTORS, URL_SOLUTIONS} from "../../urls";
 import Button from "@material-ui/core/Button";
 import {Link} from "react-router-dom";
 import {PageHeading, UnauthorizedMessage} from "../Utility/text-styles";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
-const runScheduler = (setSolutions) => {
+const runScheduler = (setSolutions, setLoaded) => {
+  setLoaded(false);
+  setSolutions([]);
   APIService.post(URL_SOLUTIONS).then((data) => {
+    setLoaded(true);
     if (data) {
       setSolutions(data);
     }
   }, (error) => console.error(error));
 };
 
-const runSchedulerSection = (schedule, instructors, sections, setSolutions) => {
+const runSchedulerSection = (schedule, instructors, sections, setSolutions, setLoaded) => {
   let result = (<br />);
 
   if ((instructors.size === 0 || instructors.size == null) || (sections.size === 0 || sections.size == null)) {
@@ -39,7 +42,7 @@ const runSchedulerSection = (schedule, instructors, sections, setSolutions) => {
       <>
         <Typography>No solutions have been generated.</Typography>
         <br />
-        <Button variant={"contained"} color={"primary"} onClick={() => runScheduler(setSolutions)}>
+        <Button variant={"contained"} color={"primary"} onClick={() => runScheduler(setSolutions, setLoaded)}>
           Run Scheduler
         </Button>
       </>
@@ -54,6 +57,7 @@ const generateCards = (schedule) => {
   let count = 1;
 
   for (let option of schedule) {
+    console.log(option);
     cards.push(
       <Card variant={"outlined"} key={option.id} style={{width: '20%', margin: '1em'}}>
         <CardContent>
@@ -78,6 +82,7 @@ const generateCards = (schedule) => {
 const AssistantPage = () => {
   const [unauthorized, setUnauthorized] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [changes, setChanges] = useState(false);
 
   const [solutions, setSolutions] = useState([]);
   const [instructors, setInstructors] = useState({});
@@ -92,13 +97,16 @@ const AssistantPage = () => {
   };
 
   useEffect(() => {
-    const allPromise = Promise.all(
-      [APIService.get(URL_SOLUTIONS), APIService.get(URL_INSTRUCTORS), APIService.get(URL_CLASSES)]);
+    const allPromise = Promise.all([
+      APIService.get(URL_SOLUTIONS), APIService.get(URL_INSTRUCTORS),
+      APIService.get(URL_CLASSES), APIService.get(URL_CHANGES)
+    ]);
 
     allPromise.then(data => {
       setSolutions(data[0]);
       setInstructors(new Map(data[1].map(obj => [obj.id, obj])));
       setSections(new Map(data[2].map(obj => [obj.id, obj])));
+      setChanges(data[3].data_changed);
       setLoaded(true);
     }).catch(handleError);
   }, []);
@@ -117,7 +125,21 @@ const AssistantPage = () => {
       {PageHeading('Generated Schedules')}
       {(!loaded) ?
         <CircularProgress /> :
-        runSchedulerSection(solutions, instructors, sections, setSolutions)
+        runSchedulerSection(solutions, instructors, sections, setSolutions, setLoaded)
+      }
+      {(loaded && changes && solutions.length > 0) &&
+        <Card variant={"outlined"} style={{margin: 'auto auto 1rem auto', width: '60%'}}>
+          <CardContent>
+            <Typography>These solutions were generated with data that has been modified, and could be invalid.
+              Click this button to re-run the scheduler!</Typography>
+          </CardContent>
+          <CardActions>
+            <Button variant={"contained"} color={"primary"} style={{margin: "auto"}} onClick={() => {
+              runScheduler(setSolutions, setLoaded);
+              setChanges(false);
+            }}>Run Scheduler</Button>
+          </CardActions>
+        </Card>
       }
       <Grid container alignItems={"center"} justifyContent={"center"}>
         {generateCards(solutions.slice(0, 12))}
