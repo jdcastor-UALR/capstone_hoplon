@@ -19,7 +19,7 @@ const InstructorListItems = (instructors, setInstructors, openEditDialog) => {
 
   for (let instructor of instructors) {
     listItems.push(
-      <ListItem>
+      <ListItem key={instructor.id}>
         <ListItemText primary={instructor.lastName}
                       secondary={'Assignment Limit: ' + instructor.maxSections.toString()} />
         <ListItemSecondaryAction>
@@ -37,7 +37,7 @@ const InstructorListItems = (instructors, setInstructors, openEditDialog) => {
         </ListItemSecondaryAction>
       </ListItem>
     );
-    listItems.push(<Divider />);
+    listItems.push(<Divider key={`divider-${instructor.id}`} />);
   }
 
   return listItems;
@@ -58,7 +58,7 @@ const InstructorList = (props) => {
     <div data-testid="InstructorList">
       <List style={{border: `1px #0000001f solid`}}>
         {InstructorListItems(props.instructors, props.setInstructors, openEditDialog)}
-        <ListItem button onClick={openAddDialog}>
+        <ListItem button onClick={openAddDialog} key={'addRow'}>
           <ListItemIcon><AddIcon /></ListItemIcon>
           <ListItemText primary={'Add New'} />
         </ListItem>

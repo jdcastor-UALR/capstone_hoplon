@@ -21,7 +21,7 @@ const ClassListItems = (classes, courses, setCourses, openEditDialog) => {
     const classesOnCourse = classes.filter(cls => cls.course.id === course.id);
     const meetingTimeStrings = classesOnCourse.map(cls => cls.meetingTimeString);
     listItems.push(
-      <ListItem>
+      <ListItem key={course.id}>
         <ListItemText primary={'CPSC ' + course.course_number + ' - ' + course.course_title}
                       secondary={classesOnCourse.length.toString() + ' Section(s) - ' + meetingTimeStrings.join(' | ')} />
         <ListItemSecondaryAction>
@@ -39,7 +39,7 @@ const ClassListItems = (classes, courses, setCourses, openEditDialog) => {
         </ListItemSecondaryAction>
       </ListItem>
     );
-    listItems.push(<Divider />);
+    listItems.push(<Divider key={`divider-${course.id}`} />);
   }
 
   return listItems;
@@ -60,7 +60,7 @@ const ClassList = (props) => {
     <div data-testid="ClassList">
       <List style={{border: `1px #0000001f solid`}}>
         {ClassListItems(props.classes, props.courses, props.setCourses, openEditDialog)}
-        <ListItem button onClick={openAddDialog}>
+        <ListItem button onClick={openAddDialog} key={'addRow'}>
           <ListItemIcon><AddIcon /></ListItemIcon>
           <ListItemText primary={'Add New'} />
         </ListItem>

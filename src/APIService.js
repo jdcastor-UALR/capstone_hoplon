@@ -1,5 +1,5 @@
 import {clearToken, getToken} from "./auth";
-import {URL_AUTH, URL_CREATE_REGISTRATION_REQUEST} from "./urls";
+import {URL_AUTH, URL_CHANGE_PASSWORD, URL_CREATE_REGISTRATION_REQUEST} from "./urls";
 
 function catchErrorResponse(response) {
   if (response.status === 401 && getToken()) {
@@ -59,7 +59,7 @@ const APIService = {
     if (dataHasID) url += data.id.toString();
     const response = await fetch(url, injectHeader(options));
     catchErrorResponse(response);
-    return (response.type === 'basic') ? response : response.json();
+    return (url === URL_CHANGE_PASSWORD) ? response : response.json();
   },
 
   delete: async (url, id) => {

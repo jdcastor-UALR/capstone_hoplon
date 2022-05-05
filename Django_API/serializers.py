@@ -64,7 +64,7 @@ class CourseWriteSerializer(serializers.ModelSerializer):
 
 
 class SectionSerializer(serializers.ModelSerializer):
-    course = CourseSerializer()
+    course = CourseSerializer(read_only=True)
     meetingTimes = serializers.SerializerMethodField('get_meeting_times_by_day')
     meetingTimeString = serializers.SerializerMethodField('prettify_time_string')
 
@@ -74,6 +74,15 @@ class SectionSerializer(serializers.ModelSerializer):
     def get_meeting_times_by_day(self, instance):
         times = sorted(instance.meetingTimes.all(), key=lambda x: SectionDayChoices.values.index(x.meetingDays))
         return TimeSlotSerializer(times, many=True).data
+
+    class Meta:
+        model = Section
+        fields = '__all__'
+
+
+class SectionWriteSerializer(serializers.ModelSerializer):
+    course = serializers.PrimaryKeyRelatedField(queryset=Course.objects)
+    meetingTimes = TimeSlotSerializer(many=True)
 
     class Meta:
         model = Section

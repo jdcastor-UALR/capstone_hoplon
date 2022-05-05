@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
-import {DayAbbrevToValue} from "../../../constants";
+import {DayAbbrevToValue, timeslotToString} from "../../../constants";
 import MenuItem from "@material-ui/core/MenuItem";
 import ArrowDropDown from "@material-ui/icons/ArrowDropDown";
 import ArrowRight from "@material-ui/icons/ArrowRight";
@@ -36,6 +36,8 @@ const SectionForm = (props) => {
   const createSection = (timeSlot) => {
     APIService.post(URL_CLASSES, {course: row.id, meetingTimes: [timeSlot]})
       .then(data => {
+        console.log(data);
+        console.log(classes);
         setClasses(clss => clss.concat([data]));
       }, error => console.error(error));
   };
@@ -50,7 +52,8 @@ const SectionForm = (props) => {
   };
 
   const updateSection = (section) => {
-    APIService.put(URL_CLASSES, section).then((data) => {
+    const request = {id: section.id, course: section.course.id, meetingTimes: section.meetingTimes};
+    APIService.put(URL_CLASSES, request).then((data) => {
       setClasses((clss) => {
         const rowIndex = clss.findIndex(cls => cls.id === section.id);
         const classesCopy = clss.slice(0);
@@ -79,6 +82,7 @@ const SectionForm = (props) => {
         const classesCopy = clss.slice(0);
         const oldTimeSlot = classesCopy[rowIndex].meetingTimes.findIndex(mt => mt.id === timeSlot.id);
         classesCopy[rowIndex].meetingTimes[oldTimeSlot] = data;
+        classesCopy[rowIndex].meetingTimeString = timeslotToString(data);
         return classesCopy;
       });
     }, (error) => console.error(error));
@@ -98,7 +102,7 @@ const SectionForm = (props) => {
     for (let time of cls.meetingTimes) {
       const label = `${time.meetingDays} ${time.begin_time}-${time.end_time}`
       rows.push((
-        <FormControlLabel value={time.id} label={label} control={<Radio />} />
+        <FormControlLabel key={time.id} value={time.id} label={label} control={<Radio />} />
       ));
     }
     return rows;
@@ -108,7 +112,7 @@ const SectionForm = (props) => {
     let list = [];
     if (classes) {
       list = classes.filter(cls => cls.course.id === row.id).map((cls) => (
-        <>
+        <div key={cls.id}>
           <ListItem button onClick={() => selectSection(cls.id)}>
             {getIcon(cls.id)}
             <ListItemText primary={`Section ${cls.id}`} secondary={`${cls.meetingTimes.length} time slot(s)`} />
@@ -128,7 +132,7 @@ const SectionForm = (props) => {
               {getTimeSlotRows(cls)}
             </RadioGroup>
           </FormGroup>
-        </>
+        </div>
       ))
     }
     return list;

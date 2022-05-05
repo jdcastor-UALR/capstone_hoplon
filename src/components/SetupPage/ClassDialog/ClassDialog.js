@@ -55,7 +55,7 @@ const ClassForm = (props) => {
         </Grid>
         <Grid item xs={12}>
           {row.subject_disciplines.map((qual) => (
-            <Chip label={qual.name} onDelete={() =>
+            <Chip key={qual.id} label={qual.name} onDelete={() =>
               setRow({...row, subject_disciplines: row.subject_disciplines.filter(x => x.id !== qual.id)})} />
           ))}
         </Grid>

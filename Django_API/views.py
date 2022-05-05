@@ -13,7 +13,7 @@ from Django_API.models import Instructor, RegistrationRequest, TimeSlot, Course,
 from Django_API.recursive_scheduler import RecursiveScheduler
 from Django_API.serializers import PasswordChangeSerializer, UserSerializer, RegistrationRequestSerializer, \
     TimeSlotSerializer, CourseSerializer, SectionSerializer, InstructorSerializer, DisciplineSerializer, \
-    InstructorWriteSerializer, CourseWriteSerializer, SolutionSerializer, SectionFullSerializer
+    InstructorWriteSerializer, CourseWriteSerializer, SolutionSerializer, SectionFullSerializer, SectionWriteSerializer
 
 from .user_permissions import *
 
@@ -313,10 +313,14 @@ class SectionList(APIView):
 
     @staticmethod
     def post(request, **kwargs):
-        serializer = SectionSerializer(data=request.data)
+        serializer = SectionWriteSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            try:
+                data = SectionSerializer(Section.objects.get(id=serializer.data['id'])).data
+                return Response(data, status=status.HTTP_201_CREATED)
+            except Section.DoesNotExist:
+                return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -340,10 +344,14 @@ class SectionDetail(APIView):
     def put(self, request, section_id, **kwargs):
         section = self._get_section(section_id)
         if section:
-            serializer = SectionSerializer(section, data=request.data)
+            serializer = SectionWriteSerializer(section, data=request.data)
             if serializer.is_valid():
                 serializer.save()
-                return Response(serializer.data)
+                try:
+                    data = SectionSerializer(self._get_section(serializer.data['id'])).data
+                    return Response(data)
+                except Section.DoesNotExist:
+                    return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_404_NOT_FOUND)
 
