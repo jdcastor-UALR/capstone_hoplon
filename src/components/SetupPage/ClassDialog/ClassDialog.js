@@ -37,7 +37,7 @@ const ClassForm = (props) => {
         </Grid>
         <Grid item>
           <TextField label={"Course Number"} required value={row.course_number || ''}
-                     inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', maxLength: 6 }} type={"text"}
+                     inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', maxLength: 4 }} type={"text"}
                      onChange={(e) => setRow({...row, course_number: e.target.value})}  />
         </Grid>
         <Grid item>

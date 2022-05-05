@@ -1,12 +1,7 @@
-import logging
 from collections import Counter
 
 from Django_API.model_functions import get_section_instructor_discipline_map, get_section_overlap_map
 from Django_API.models import Solution, AssignedSection
-
-DEFAULT_LEAF_LIMIT = 2
-
-logger = logging.getLogger()
 
 
 class RecursiveScheduler:
@@ -29,7 +24,7 @@ class RecursiveScheduler:
 
     complete = False
 
-    def __init__(self, sections: list, instructors: list, leaf_limit=DEFAULT_LEAF_LIMIT):
+    def __init__(self, sections: list, instructors: list):
         """
         :param sections: Fully serialized data of section models
         :param instructors: Fully serialized data of instructor models
@@ -47,8 +42,6 @@ class RecursiveScheduler:
         self.section_discipline_map = get_section_instructor_discipline_map()
         self.section_overlap_map = get_section_overlap_map(sections)
 
-        self.leaf_limit = leaf_limit
-
     def run(self):
         """ Runs algorithm to generate all possible schedules and save as Solution model """
         schedule = []
@@ -61,9 +54,9 @@ class RecursiveScheduler:
                         self._generate_schedule(schedule, section, instructor)
 
         # Log statistics about algorithm run
-        logger.info(f'Found {self.complete_solutions_found} complete solutions and {self.incomplete_solutions_found} '
-                    f'incomplete solutions.')
-        logger.info(f'Solution Distribution: {self.tree_distribution}')
+        print(f'Found {self.complete_solutions_found} complete solutions and {self.incomplete_solutions_found} '
+              f'incomplete solutions.')
+        print(f'Solution Distribution: {self.tree_distribution}')
 
         # Save results of algorithm as model
         if len(self.generated_solutions):
@@ -93,7 +86,7 @@ class RecursiveScheduler:
                 AssignedSection.objects.bulk_create(assignments)
 
             except Exception as e:
-                logger.error('Encountered exception while saving results from scheduler.')
+                print('Encountered exception while saving results from scheduler.')
                 raise e
 
     def _generate_schedule(self, schedule, next_section, next_instructor):
@@ -117,7 +110,7 @@ class RecursiveScheduler:
                     if not instructors:
                         self._add_solution(schedule)
                     else:
-                        for instructor in instructors[:self.leaf_limit]:
+                        for instructor in instructors:
                             self._generate_schedule(schedule, section, instructor)
 
     def _get_remaining_sections(self, schedule):

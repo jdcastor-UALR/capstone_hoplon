@@ -41,7 +41,7 @@ const SetupPage = () => {
 
   if (unauthorized) {
     return (
-      <div>
+      <div data-testid="SetupPage">
         {PageHeading('Setup Page')}
         {UnauthorizedMessage('setup')}
       </div>

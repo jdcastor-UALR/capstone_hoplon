@@ -1,5 +1,5 @@
 import {clearToken, getToken} from "./auth";
-import {URL_AUTH, URL_CHANGE_PASSWORD, URL_CREATE_REGISTRATION_REQUEST} from "./urls";
+import {URL_AUTH, URL_CHANGE_PASSWORD} from "./urls";
 
 function catchErrorResponse(response) {
   if (response.status === 401 && getToken()) {

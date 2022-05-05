@@ -1,4 +1,5 @@
 import json
+import logging
 import time
 
 from django.core.management import BaseCommand

@@ -31,7 +31,7 @@ const ClassListItems = (classes, courses, setCourses, openEditDialog) => {
           <IconButton edge={"end"}
                       onClick={() => {
                         APIService.delete(URL_COURSES, course.id).then(data => {
-                          setCourses(courses.filter(crs => crs.id !== course.id));
+                          setCourses(courses => courses.filter(crs => crs.id !== course.id));
                         }, error => console.error(error));
                       }}>
             <DeleteIcon />
