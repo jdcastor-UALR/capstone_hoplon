@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from rest_framework.urlpatterns import format_suffix_patterns
+from rest_framework.authtoken.views import obtain_auth_token;
 
 from Django_API.views import InstructorList, InstructorDetail, UserList, UserDetail, UserPasswordChange, \
     RegistrationRequestList, RegistrationRequestDetail, TimeSlotList, TimeSlotDetail, CourseList, CourseDetail, \
@@ -27,7 +28,11 @@ from .views import index
 
 urlpatterns = [
     path('', index, name='index'),
-    path('admin/', admin.site.urls),
+    path('index/', index, name='index'),
+    # react frontend paths send to index
+    path('login/', index, name='index'),
+    path('setup/', index, name='index'),
+
     path('api/instructor/', InstructorList.as_view(), name='instructors'),
     path('api/instructor/<int:instructor_id>', InstructorDetail.as_view(), name='instructor'),
 
@@ -61,5 +66,4 @@ urlpatterns = [
     path('api/auth/token/', ObtainAuthTokenPreCheck.as_view(), name='api_token_auth'),
     path('api/auth/changepassword/', UserPasswordChange.as_view(), name='password_change')
 ]
-
 urlpatterns = format_suffix_patterns(urlpatterns)
