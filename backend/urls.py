@@ -28,8 +28,11 @@ from .views import index
 
 urlpatterns = [
     path('', index, name='index'),
+    path('index/', index, name='index'),
+    # react frontend paths send to index
     path('login/', index, name='index'),
-    path('admin/', admin.site.urls),
+    path('setup/', index, name='index'),
+
     path('api/instructor/', InstructorList.as_view(), name='instructors'),
     path('api/instructor/<int:instructor_id>', InstructorDetail.as_view(), name='instructor'),
 
