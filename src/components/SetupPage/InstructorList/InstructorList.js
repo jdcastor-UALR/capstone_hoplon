@@ -13,6 +13,7 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import InstructorDialog from "../InstructorDialog/InstructorDialog";
 import APIService from "../../../APIService";
 import {URL_INSTRUCTORS} from "../../../urls";
+import Tooltip from "@material-ui/core/Tooltip";
 
 const InstructorListItems = (instructors, setInstructors, openEditDialog) => {
   let listItems = [];
@@ -23,17 +24,21 @@ const InstructorListItems = (instructors, setInstructors, openEditDialog) => {
         <ListItemText primary={instructor.lastName}
                       secondary={'Assignment Limit: ' + instructor.maxSections.toString()} />
         <ListItemSecondaryAction>
-          <IconButton edge={"end"} aria-label={"edit-instructor"} onClick={() => openEditDialog(instructor)}>
-            <EditIcon />
-          </IconButton>
-          <IconButton edge={"end"} aria-label={"delete-instructor"}
-                      onClick={() => {
-                        APIService.delete(URL_INSTRUCTORS, instructor.id).then(() => {
-                          setInstructors(instructors.filter(i => i.id !== instructor.id));
-                        }, (errors) => console.error(errors));
-                      }}>
-            <DeleteIcon />
-          </IconButton>
+          <Tooltip title={'Edit Instructor'} placement={'left'}>
+            <IconButton edge={"end"} aria-label={"edit-instructor"} onClick={() => openEditDialog(instructor)}>
+              <EditIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={'Delete Instructor'} placement={'right'}>
+            <IconButton edge={"end"} aria-label={"delete-instructor"}
+                        onClick={() => {
+                          APIService.delete(URL_INSTRUCTORS, instructor.id).then(() => {
+                            setInstructors(instructors.filter(i => i.id !== instructor.id));
+                          }, (errors) => console.error(errors));
+                        }}>
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
         </ListItemSecondaryAction>
       </ListItem>
     );
