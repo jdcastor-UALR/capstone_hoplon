@@ -35,7 +35,7 @@ def send_email(email, approved, password):
         message_body += "Approved "
     else:
         message_body += "Denied "
-    message_body += "with the credentials: Email: " + email + " Password: " + password
+    message_body += "with the credentials: Email: " + email + " And your requested password"
     send_mail(
         subject='ADTAA Account Request',
         from_email=None,
