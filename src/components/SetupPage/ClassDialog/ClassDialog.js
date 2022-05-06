@@ -13,6 +13,7 @@ import Typography from "@material-ui/core/Typography";
 import SectionForm from "../SectionForm/SectionForm";
 import APIService from "../../../APIService";
 import {URL_COURSES, URL_INSTRUCTORS} from "../../../urls";
+import {Link} from "react-router-dom";
 
 
 const ClassForm = (props) => {
@@ -62,6 +63,7 @@ const ClassForm = (props) => {
       </Grid>
       {!create &&
         <>
+          <Button variant={"contained"} component={Link} to={`/setup/${row.id}`}>Edit Sections</Button>
           <Typography variant={'h6'} style={{textAlign: "center", marginTop: "1rem"}}>Sections</Typography>
           <SectionForm row={row} classes={classes} setClasses={setClasses} />
         </>
