@@ -8,6 +8,7 @@ import {styleWrapper} from "./StyleWrapper";
 import './App.css'
 import EditSolution from "./components/AssistantPage/EditSolution/EditSolution";
 import {getToken} from "./auth";
+import EditSection from "./components/SetupPage/EditSection/EditSection";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path={'/'} element={getToken() ? <AssistantPage /> : <Navigate to={"/login"} />} />
           <Route path={'/edit/:solution_id'} element={getToken() ? <EditSolution /> : <Navigate to={"/login"} />} />
           <Route path={'/setup'} element={getToken() ? <SetupPage /> : <Navigate to={"/login"} />} />
+          <Route path={'/setup/:course_id'} element={getToken() ? <EditSection /> : <Navigate to={"/login"} />} />
           <Route path={'/login'} element={!getToken() ? <LoginPage /> : <Navigate to={"/"} />} />
         </Routes>
       </div>

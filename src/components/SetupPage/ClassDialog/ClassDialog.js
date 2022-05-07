@@ -13,6 +13,10 @@ import Typography from "@material-ui/core/Typography";
 import SectionForm from "../SectionForm/SectionForm";
 import APIService from "../../../APIService";
 import {URL_COURSES, URL_INSTRUCTORS} from "../../../urls";
+import {Link} from "react-router-dom";
+import Tooltip from "@material-ui/core/Tooltip";
+import IconButton from "@material-ui/core/IconButton";
+import EditIcon from "@material-ui/icons/Edit";
 
 
 const ClassForm = (props) => {
@@ -62,7 +66,14 @@ const ClassForm = (props) => {
       </Grid>
       {!create &&
         <>
-          <Typography variant={'h6'} style={{textAlign: "center", marginTop: "1rem"}}>Sections</Typography>
+          <Typography variant={'h6'} style={{textAlign: "center", marginTop: "1rem", marginLeft: '-56px'}}>
+            <Tooltip title={'Edit Sections'} placement={'left'}>
+              <IconButton component={Link} to={`/setup/${row.id}`}>
+                <EditIcon />
+              </IconButton>
+            </Tooltip>
+            Sections
+          </Typography>
           <SectionForm row={row} classes={classes} setClasses={setClasses} />
         </>
       }

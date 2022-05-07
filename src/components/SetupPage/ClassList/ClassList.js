@@ -13,6 +13,7 @@ import List from "@material-ui/core/List";
 import ClassDialog from "../ClassDialog/ClassDialog";
 import APIService from "../../../APIService";
 import {URL_COURSES} from "../../../urls";
+import Tooltip from "@material-ui/core/Tooltip";
 
 const ClassListItems = (classes, courses, setCourses, openEditDialog) => {
   let listItems = [];
@@ -25,17 +26,21 @@ const ClassListItems = (classes, courses, setCourses, openEditDialog) => {
         <ListItemText primary={'CPSC ' + course.course_number + ' - ' + course.course_title}
                       secondary={classesOnCourse.length.toString() + ' Section(s) - ' + meetingTimeStrings.join(' | ')} />
         <ListItemSecondaryAction>
-          <IconButton edge={"end"} onClick={() => openEditDialog(course)}>
-            <EditIcon />
-          </IconButton>
-          <IconButton edge={"end"}
-                      onClick={() => {
-                        APIService.delete(URL_COURSES, course.id).then(data => {
-                          setCourses(courses => courses.filter(crs => crs.id !== course.id));
-                        }, error => console.error(error));
-                      }}>
-            <DeleteIcon />
-          </IconButton>
+          <Tooltip title={'Edit Course'} placement={'left'}>
+            <IconButton edge={"end"} onClick={() => openEditDialog(course)}>
+              <EditIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={'Delete Course'} placement={'right'}>
+            <IconButton edge={"end"}
+                        onClick={() => {
+                          APIService.delete(URL_COURSES, course.id).then(data => {
+                            setCourses(courses => courses.filter(crs => crs.id !== course.id));
+                          }, error => console.error(error));
+                        }}>
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
         </ListItemSecondaryAction>
       </ListItem>
     );
