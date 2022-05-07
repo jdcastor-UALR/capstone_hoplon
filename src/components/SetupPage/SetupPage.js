@@ -5,12 +5,15 @@ import Divider from "@material-ui/core/Divider";
 import InstructorList from "./InstructorList/InstructorList";
 import ClassList from "./ClassList/ClassList";
 import APIService from "../../APIService";
-import {URL_CLASSES, URL_COURSES, URL_DISCIPLINES, URL_INSTRUCTORS} from "../../urls";
+import {URL_CLASSES, URL_COURSES, URL_DISCIPLINES, URL_INSTRUCTORS, URL_WRITE_ACCESS} from "../../urls";
 import {PageHeading, UnauthorizedMessage} from "../Utility/text-styles";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import Typography from "@material-ui/core/Typography";
+import ErrorDialog from "../Utility/ErrorDialog/ErrorDialog";
 
 const SetupPage = () => {
   const [unauthorized, setUnauthorized] = useState(false);
+  const [writeAuthorized, setWriteAuthorized] = useState(true);
   const [loaded, setLoaded] = useState(false);
 
   const [disciplines, setDisciplines] = useState([]);
@@ -18,11 +21,19 @@ const SetupPage = () => {
   const [classes, setClasses] = useState([]);
   const [courses, setCourses] = useState([]);
 
+  const [errorOpen, setErrorOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const openErrorDialog = (message) => {
+    setErrorMessage(message);
+    setErrorOpen(true);
+  };
+
   const handleError = (error) => {
     if (error.message === '403') {
       setUnauthorized(true);
     } else {
-      console.error(error);
+      openErrorDialog(error.message);
     }
   };
 
@@ -37,6 +48,10 @@ const SetupPage = () => {
       setCourses(data[3]);
       setLoaded(true);
     }, handleError);
+
+    APIService.get(URL_WRITE_ACCESS).then(() => {}, (error) => {
+      if (error.message === '403') setWriteAuthorized(false);
+    });
   }, []);
 
   if (unauthorized) {
@@ -56,7 +71,8 @@ const SetupPage = () => {
           <div style={{padding: '1rem 5rem'}}>
             {(!loaded) ?
               <CircularProgress /> :
-              <InstructorList instructors={instructors} setInstructors={setInstructors} disciplines={disciplines} />}
+              <InstructorList instructors={instructors} setInstructors={setInstructors} disciplines={disciplines}
+                              writeAuthorized={writeAuthorized} errorDialog={openErrorDialog} />}
           </div>
         </Grid>
         <Divider orientation={"vertical"} flexItem />
@@ -65,11 +81,12 @@ const SetupPage = () => {
           <div style={{padding: '1rem 5rem'}}>
             {(!loaded) ?
               <CircularProgress /> :
-              <ClassList classes={classes} setClasses={setClasses} courses={courses}
-                         setCourses={setCourses} disciplines={disciplines} />}
+              <ClassList classes={classes} setClasses={setClasses} courses={courses} setCourses={setCourses}
+                         disciplines={disciplines} writeAuthorized={writeAuthorized} errorDialog={openErrorDialog} />}
           </div>
         </Grid>
       </Grid>
+      <ErrorDialog open={errorOpen} setOpen={setErrorOpen} message={errorMessage} />
     </div>
   );
 };

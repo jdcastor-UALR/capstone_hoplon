@@ -84,7 +84,8 @@ const ClassForm = (props) => {
 
 
 const ClassDialog = (props) => {
-  const { create, open, setOpen, row, setCourses, classes, setClasses, disciplines, setSelected, setEditOpen } = props;
+  const { create, open, setOpen, row, setCourses, classes, setClasses,
+    disciplines, setSelected, setEditOpen, errorDialog } = props;
   const [courseFormData, setCourseFormData] = useState(
     {course_title: '', course_number: null, subject_disciplines: []});
 
@@ -104,9 +105,8 @@ const ClassDialog = (props) => {
         const newCourse = {...newRow, subject_disciplines: courseFormData.subject_disciplines};
         setCourses(courses => courses.concat([newCourse]));
         setSelected(newCourse);
-        setOpen(false);
         setEditOpen(true);
-      }, error => console.error(error));
+      }, error => errorDialog(error.message)).finally(close);
     } else {
       APIService.put(URL_COURSES, data).then((data) => {
         setCourses(courses => {
@@ -115,8 +115,7 @@ const ClassDialog = (props) => {
           coursesCopy[rowIndex] = courseFormData;
           return coursesCopy;
         });
-        setOpen(false);
-      }, error => console.error(error));
+      }, error => errorDialog(error.message)).finally(close);
     }
   };
 

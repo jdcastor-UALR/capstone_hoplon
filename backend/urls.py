@@ -22,7 +22,7 @@ from rest_framework.authtoken.views import obtain_auth_token;
 from Django_API.views import InstructorList, InstructorDetail, UserList, UserDetail, UserPasswordChange, \
     RegistrationRequestList, RegistrationRequestDetail, TimeSlotList, TimeSlotDetail, CourseList, CourseDetail, \
     SectionList, SectionDetail, DisciplineView, SolutionList, SolutionDetail, SolutionConstraintMap, \
-    RegistrationRequestPublic, ObtainAuthTokenPreCheck, ChangeRecordView
+    RegistrationRequestPublic, ObtainAuthTokenPreCheck, ChangeRecordView, WriteAccessView
 from .views import index
 
 
@@ -34,6 +34,8 @@ urlpatterns = [
     path('setup/', index, name='index'),
 
     path('admin/', admin.site.urls),
+
+    path('api/writeaccess/', WriteAccessView.as_view(), name='writeaccesshelper'),
 
     path('api/instructor/', InstructorList.as_view(), name='instructors'),
     path('api/instructor/<int:instructor_id>', InstructorDetail.as_view(), name='instructor'),

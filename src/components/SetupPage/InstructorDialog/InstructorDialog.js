@@ -63,7 +63,7 @@ const InstructorForm = (props) => {
 
 
 const InstructorDialog = (props) => {
-  const { create, open, setOpen, row, disciplines, setInstructors } = props;
+  const { create, open, setOpen, row, disciplines, setInstructors, errorDialog } = props;
   const [instructorFormData, setInstructorFormData] = useState(
     {lastName: null, maxSections: null, qualifications: []});
 
@@ -79,8 +79,7 @@ const InstructorDialog = (props) => {
         setInstructors((instructors) => instructors.concat(
           [{...newRow, qualifications: instructorFormData.qualifications}])
         );
-        setOpen(false);
-      }, (error) => console.log(error));
+      }, (error) => errorDialog(error.message)).finally(close);
     } else {
       APIService.put(URL_INSTRUCTORS, data).then(() => {
         setInstructors((instructors) => {
@@ -89,8 +88,7 @@ const InstructorDialog = (props) => {
           instructorsCopy[rowIndex] = instructorFormData;
           return instructorsCopy;
         });
-        setOpen(false);
-      }, (error) => console.log(error));
+      }, (error) => errorDialog(error.message)).finally(close);
     }
   }
 

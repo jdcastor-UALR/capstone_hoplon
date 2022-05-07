@@ -515,3 +515,11 @@ class ChangeRecordView(APIView):
     @staticmethod
     def get(request, **kwargs):
         return Response({'data_changed': data_changed()})
+
+
+class WriteAccessView(APIView):
+    permission_classes = [IsRoot | IsAdmin]
+
+    @staticmethod
+    def get(request, **kwargs):
+        return Response()

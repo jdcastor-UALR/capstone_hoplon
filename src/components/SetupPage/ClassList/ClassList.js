@@ -15,42 +15,8 @@ import APIService from "../../../APIService";
 import {URL_COURSES} from "../../../urls";
 import Tooltip from "@material-ui/core/Tooltip";
 
-const ClassListItems = (classes, courses, setCourses, openEditDialog) => {
-  let listItems = [];
-
-  for (let course of courses) {
-    const classesOnCourse = classes.filter(cls => cls.course.id === course.id);
-    const meetingTimeStrings = classesOnCourse.map(cls => cls.meetingTimeString);
-    listItems.push(
-      <ListItem key={course.id}>
-        <ListItemText primary={'CPSC ' + course.course_number + ' - ' + course.course_title}
-                      secondary={classesOnCourse.length.toString() + ' Section(s) - ' + meetingTimeStrings.join(' | ')} />
-        <ListItemSecondaryAction>
-          <Tooltip title={'Edit Course'} placement={'left'}>
-            <IconButton edge={"end"} onClick={() => openEditDialog(course)}>
-              <EditIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title={'Delete Course'} placement={'right'}>
-            <IconButton edge={"end"}
-                        onClick={() => {
-                          APIService.delete(URL_COURSES, course.id).then(data => {
-                            setCourses(courses => courses.filter(crs => crs.id !== course.id));
-                          }, error => console.error(error));
-                        }}>
-              <DeleteIcon />
-            </IconButton>
-          </Tooltip>
-        </ListItemSecondaryAction>
-      </ListItem>
-    );
-    listItems.push(<Divider key={`divider-${course.id}`} />);
-  }
-
-  return listItems;
-};
-
 const ClassList = (props) => {
+  const {classes, setClasses, courses, setCourses, disciplines, writeAuthorized, errorDialog} = props;
   const [selected, setSelected] = useState({});
 
   const [addOpen, setAddOpen] = useState(false);
@@ -61,20 +27,64 @@ const ClassList = (props) => {
     setEditOpen(true);
   };
 
+  const ClassListItems = () => {
+    let listItems = [];
+
+    for (let course of courses) {
+      const classesOnCourse = classes.filter(cls => cls.course.id === course.id);
+      const meetingTimeStrings = classesOnCourse.map(cls => cls.meetingTimeString);
+      listItems.push(
+        <ListItem key={course.id}>
+          <ListItemText primary={'CPSC ' + course.course_number + ' - ' + course.course_title}
+                        secondary={classesOnCourse.length.toString() + ' Section(s) - ' + meetingTimeStrings.join(' | ')} />
+          {writeAuthorized &&
+            <ListItemSecondaryAction>
+              <Tooltip title={'Edit Course'} placement={'left'}>
+                <IconButton edge={"end"} onClick={() => openEditDialog(course)}>
+                  <EditIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title={'Delete Course'} placement={'right'}>
+                <IconButton edge={"end"}
+                            onClick={() => {
+                              APIService.delete(URL_COURSES, course.id).then(data => {
+                                setCourses(courses => courses.filter(crs => crs.id !== course.id));
+                              }, error => errorDialog(error.message));
+                            }}>
+                  <DeleteIcon />
+                </IconButton>
+              </Tooltip>
+            </ListItemSecondaryAction>
+          }
+        </ListItem>
+      );
+      listItems.push(<Divider key={`divider-${course.id}`} />);
+    }
+
+    return listItems;
+  };
+
   return (
     <div data-testid="ClassList">
       <List style={{border: `1px #0000001f solid`}}>
-        {ClassListItems(props.classes, props.courses, props.setCourses, openEditDialog)}
-        <ListItem button onClick={openAddDialog} key={'addRow'}>
-          <ListItemIcon><AddIcon /></ListItemIcon>
-          <ListItemText primary={'Add New'} />
-        </ListItem>
+        {ClassListItems()}
+        {writeAuthorized &&
+          <ListItem button onClick={openAddDialog} key={'addRow'}>
+            <ListItemIcon><AddIcon /></ListItemIcon>
+            <ListItemText primary={'Add New'} />
+          </ListItem>
+        }
       </List>
-      <ClassDialog create={true} open={addOpen} setOpen={setAddOpen} setCourses={props.setCourses}
-                   disciplines={props.disciplines} setClasses={props.setClasses}
-                   setSelected={setSelected} setEditOpen={setEditOpen}/>
-      <ClassDialog open={editOpen} setOpen={setEditOpen} row={selected} setCourses={props.setCourses}
-                   disciplines={props.disciplines} classes={props.classes} setClasses={props.setClasses} />
+      {writeAuthorized &&
+        <>
+          <ClassDialog create={true} open={addOpen} setOpen={setAddOpen} setCourses={setCourses}
+                       disciplines={disciplines} setClasses={setClasses} errorDialog={errorDialog}
+                       setSelected={setSelected} setEditOpen={setEditOpen}/>
+          <ClassDialog open={editOpen} setOpen={setEditOpen} row={selected} setCourses={setCourses}
+                       disciplines={disciplines} classes={classes} setClasses={setClasses} errorDialog={errorDialog} />
+        </>
+      }
+
     </div>
   );
 };
