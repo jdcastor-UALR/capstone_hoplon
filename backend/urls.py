@@ -33,6 +33,8 @@ urlpatterns = [
     path('login/', index, name='index'),
     path('setup/', index, name='index'),
 
+    path('admin/', admin.site.urls),
+
     path('api/instructor/', InstructorList.as_view(), name='instructors'),
     path('api/instructor/<int:instructor_id>', InstructorDetail.as_view(), name='instructor'),
 
