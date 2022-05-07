@@ -13,8 +13,7 @@ from Django_API.models import Instructor, RegistrationRequest, TimeSlot, Course,
 from Django_API.recursive_scheduler import RecursiveScheduler
 from Django_API.serializers import PasswordChangeSerializer, UserSerializer, RegistrationRequestSerializer, \
     TimeSlotSerializer, CourseSerializer, SectionSerializer, InstructorSerializer, DisciplineSerializer, \
-    InstructorWriteSerializer, CourseWriteSerializer, SolutionSerializer, SectionFullSerializer, SectionWriteSerializer, \
-    SolutionChangeSerializer
+    InstructorWriteSerializer, CourseWriteSerializer, SolutionSerializer, SectionFullSerializer, SectionWriteSerializer
 from .user_permissions import *
 
 logger = logging.getLogger()
@@ -471,7 +470,7 @@ class SolutionList(APIView):
 
 
 class SolutionDetail(APIView):
-    #permission_classes = [IsRoot | IsAdmin | IsAssistant]
+    permission_classes = [IsRoot | IsAdmin | IsAssistant]
 
     @staticmethod
     def _get_solution(solution_id):
@@ -486,18 +485,20 @@ class SolutionDetail(APIView):
             serializer = SolutionSerializer(solution)
             return Response(serializer.data)
         return Response(status=status.HTTP_404_NOT_FOUND)
-    '''
+
     def put(self, request, solution_id, **kwargs):
         solution = self._get_solution(solution_id)
-        if solution:
-            serializer = SolutionChangeSerializer(solution, data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                add_change_record(False)
-                return Response(serializer.data)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        return Response(status=status.HTTP_404_NOT_FOUND)
-    '''
+        print(request.data)
+        return Response(request.data)
+        # if solution:
+        #     serializer = SolutionChangeSerializer(solution, data=request.data)
+        #     if serializer.is_valid():
+        #         serializer.save()
+        #         add_change_record(False)
+        #         return Response(serializer.data)
+        #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # return Response(status=status.HTTP_404_NOT_FOUND)
+
     def delete(self, request, solution_id, **kwargs):
         solution = self._get_solution(solution_id)
         if solution:

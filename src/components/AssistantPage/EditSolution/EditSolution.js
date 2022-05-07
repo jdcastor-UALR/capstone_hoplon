@@ -88,11 +88,11 @@ const EditSolution = () => {
 
     allPromise.then(data => {
       setSolution(data[0]);
-      setEditedSolution(data[1]);
-      setInstructors(new Map(data[2].map(obj => [obj.id, obj])));
-      setSections(new Map(data[3].map(obj => [obj.id, obj])));
-      setSectionOverlapMap(data[4].section_overlap_map);
-      setDisciplineMap(data[4].discipline_overlap_map);
+      setEditedSolution(data[0]);
+      setInstructors(new Map(data[1].map(obj => [obj.id, obj])));
+      setSections(new Map(data[2].map(obj => [obj.id, obj])));
+      setSectionOverlapMap(data[3].section_overlap_map);
+      setDisciplineMap(data[3].discipline_overlap_map);
       setLoaded(true);
     }).catch(handleError);
   }, []);
@@ -105,13 +105,22 @@ const EditSolution = () => {
     );
   }
 
+  const onSubmit = () => {
+    const data = editedSolution;
+
+    APIService.put(`${URL_SOLUTIONS}${solution_id}`, data, false).then(data => {
+      console.log(data);
+    }, error => console.error(error));
+  };
+
   return (
     <div data-testid="EditSolution">
       <div style={{marginBottom: '0.5rem', display: 'flex', flexDirection: 'row', justifyContent: 'space-between',
         alignItems: 'flex-end', width: '80vw', marginLeft: 'auto', marginRight: 'auto'}}>
         <Button variant={"contained"} style={{height: '36px'}} component={Link} to={'/'}>Cancel</Button>
         {PageHeading('Edit Solution')}
-        <Button variant={"contained"} style={{height: '36px'}} color={"primary"} disabled={!loaded}>Submit</Button>
+        <Button variant={"contained"} style={{height: '36px'}} color={"primary"}
+                disabled={!loaded} onClick={onSubmit}>Submit</Button>
       </div>
       <div style={{height: '80vh', width: '80vw', margin: 'auto'}}>
         {(loaded) ?
