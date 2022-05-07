@@ -13,6 +13,7 @@ import Button from "@material-ui/core/Button";
 import {Link} from "react-router-dom";
 import {PageHeading, UnauthorizedMessage} from "../Utility/text-styles";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import ErrorDialog from "../Utility/ErrorDialog/ErrorDialog";
 
 const AssistantPage = () => {
   const [unauthorized, setUnauthorized] = useState(false);
@@ -25,6 +26,9 @@ const AssistantPage = () => {
   const [sections, setSections] = useState([]);
   const [constraintMap, setConstraintMap] = useState({});
 
+  const [errorOpen, setErrorOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+
   const runScheduler = () => {
     setLoaded(false);
     setRunningScheduler(true);
@@ -33,7 +37,7 @@ const AssistantPage = () => {
       if (data) {
         setSolutions(data);
       }
-    }, (error) => console.error(error)).finally(() => {
+    }, handleError).finally(() => {
       setLoaded(true);
       setRunningScheduler(false);
       setChanges(false);
@@ -135,7 +139,8 @@ const AssistantPage = () => {
     if (error.message === '403') {
       setUnauthorized(true);
     } else {
-      console.error(error);
+      setErrorMessage(error.message);
+      setErrorOpen(true);
     }
   };
 
@@ -190,6 +195,7 @@ const AssistantPage = () => {
           {generateCards()}
         </Grid>
       }
+      <ErrorDialog open={errorOpen} setOpen={setErrorOpen} message={errorMessage} />
     </div>
   );
 }

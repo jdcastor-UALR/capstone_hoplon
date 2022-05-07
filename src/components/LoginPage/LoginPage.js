@@ -8,6 +8,8 @@ import {PageHeading} from "../Utility/text-styles";
 import APIService from "../../APIService";
 import {saveToken} from "../../auth";
 import {URL_CHANGE_PASSWORD, URL_CREATE_REGISTRATION_REQUEST} from "../../urls";
+import Typography from "@material-ui/core/Typography";
+import {LoginFormMessages} from "../../constants";
 
 const LoginForm = (setUsername, setPassword) => {
   return (
@@ -51,9 +53,7 @@ const RegisterForm = (accessLevels, setUsername, setPassword, setAccessLevel) =>
   );
 };
 
-const LoginPage = (props) => {
-  const theme = useTheme();
-
+const LoginPage = () => {
   const [isLoginForm, setIsLoginForm] = useState(true);
   const accessLevels = ['root', 'admin', 'assistant'];
 
@@ -61,7 +61,21 @@ const LoginPage = (props) => {
   const [password, setPassword] = useState();
   const [accessLevel, setAccessLevel] = useState();
 
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+
+  const handleError = (error) => {
+    setUsername('');
+    setPassword('');
+
+    let message = 'ERROR: ';
+    message += (error.message === '400') ? LoginFormMessages.wrongCredentials : error.message;
+    setErrorMessage(message);
+  };
+
   const onSubmit = () => {
+    setErrorMessage('');
+    setSuccessMessage('');
     if (isLoginForm) {
       APIService.authenticate(username, password).then((data) => {
         saveToken(data);
@@ -74,23 +88,37 @@ const LoginPage = (props) => {
             APIService.authenticate('root', password).then(data => {
               saveToken(data);
               window.location.reload(false);
-            }, (error) => console.error(error));
-          }, error => console.error(error));
+            }, handleError);
+          }, handleError);
         } else {
-          console.error(error);
+          handleError(error);
         }
       });
     } else {
       APIService.post(URL_CREATE_REGISTRATION_REQUEST,
         {contact_email: username, requested_password: password, access_level: accessLevel}).then((data) => {
-        console.log(data);
-      }, (error) => console.error(error));
+        setSuccessMessage(LoginFormMessages.registerSuccess);
+      }, handleError);
     }
+  };
+
+  const switchForm = () => {
+    setErrorMessage('');
+    setSuccessMessage('');
+    setIsLoginForm(!isLoginForm)
   };
 
   return (
     <div data-testid="LoginPage">
       {PageHeading((isLoginForm) ? 'Login' : 'Submit Registration Request')}
+      <div style={{margin: '1rem'}}>
+        {(errorMessage !== '') &&
+          <Typography color={"error"} style={{fontWeight: 'bold'}}>{errorMessage}</Typography>
+        }
+        {(successMessage !== '') &&
+          <Typography style={{fontWeight: 'bold'}}>{successMessage}</Typography>
+        }
+      </div>
       {(isLoginForm) ?
         LoginForm(setUsername, setPassword) :
         RegisterForm(accessLevels, setUsername, setPassword, setAccessLevel)
@@ -99,7 +127,7 @@ const LoginPage = (props) => {
               onClick={onSubmit}>Submit</Button>
       <Button color={"default"} variant={"contained"}
               style={{marginTop: '2em'}}
-              onClick={() => setIsLoginForm(!isLoginForm)}>
+              onClick={switchForm}>
         {(isLoginForm) ? 'Register' : 'Return to Login'}
       </Button>
     </div>

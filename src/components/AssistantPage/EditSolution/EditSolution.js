@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
-import {PageHeading} from "../../Utility/text-styles";
+import {PageHeading, UnauthorizedMessage} from "../../Utility/text-styles";
 import {Link, useParams} from "react-router-dom";
 import APIService from "../../../APIService";
 import {URL_CLASSES, URL_INSTRUCTORS, URL_SOLUTION_CONSTRAINT_MAP, URL_SOLUTIONS} from "../../../urls";
@@ -9,6 +9,8 @@ import Button from "@material-ui/core/Button";
 import EditAssignmentDialog from "./EditAssignmentDialog/EditAssignmentDialog";
 import IconButton from "@material-ui/core/IconButton";
 import EditIcon from "@material-ui/icons/Edit";
+import ErrorDialog from "../../Utility/ErrorDialog/ErrorDialog";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 
 const EditSolution = () => {
@@ -20,8 +22,22 @@ const EditSolution = () => {
   const [disciplineMap, setDisciplineMap] = useState({});
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editRow, setEditRow] = useState();
+  const [loaded, setLoaded] = useState(false);
+  const [unauthorized, setUnauthorized] = useState(false);
+
+  const [errorOpen, setErrorOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const { solution_id } = useParams();
+
+  const handleError = (error) => {
+    if (error.message === '403') {
+      setUnauthorized(true);
+    } else {
+      setErrorMessage(error.message);
+      setErrorOpen(true);
+    }
+  };
 
   const columns = [
     { field: 'id', headerName: 'ID', hide: true},
@@ -66,35 +82,28 @@ const EditSolution = () => {
     return data;
   };
 
-  const isDataPopulated = () => (solution != null && instructors.size != null && sections.size != null &&
-    Object.keys(sectionOverlapMap).length !== 0 && Object.keys(disciplineMap).length !== 0);
-
   useEffect(() => {
-    APIService.get(URL_SOLUTIONS + solution_id.toString()).then((data) => {
-      setSolution(data);
-      setEditedSolution(data);
-    }, (error) => {
-      console.error(error);
-    });
+    const allPromise = Promise.all([APIService.get(URL_SOLUTIONS + solution_id.toString()),
+      APIService.get(URL_INSTRUCTORS), APIService.get(URL_CLASSES), APIService.get(URL_SOLUTION_CONSTRAINT_MAP)]);
 
-    APIService.get(URL_INSTRUCTORS).then((data) => {
-      setInstructors(new Map(data.map(obj => [obj.id, obj])));
-    }, (error) => {
-      console.error(error);
-    });
+    allPromise.then(data => {
+      setSolution(data[0]);
+      setEditedSolution(data[1]);
+      setInstructors(new Map(data[2].map(obj => [obj.id, obj])));
+      setSections(new Map(data[3].map(obj => [obj.id, obj])));
+      setSectionOverlapMap(data[4].section_overlap_map);
+      setDisciplineMap(data[4].discipline_overlap_map);
+      setLoaded(true);
+    }).catch(handleError);
+  }, []);
 
-    APIService.get(URL_CLASSES).then((data) => {
-      setSections(new Map(data.map(obj => [obj.id, obj])));
-    }, (error) => {
-      console.error(error);
-    });
-
-    APIService.get(URL_SOLUTION_CONSTRAINT_MAP).then((data) => {
-      setSectionOverlapMap(data.section_overlap_map);
-      setDisciplineMap(data.discipline_overlap_map);
-    }, (error) => console.error(error));
-  }, [solution_id]);
-
+  if (unauthorized) {
+    return (
+      <div>
+        {UnauthorizedMessage()}
+      </div>
+    );
+  }
 
   return (
     <div data-testid="EditSolution">
@@ -102,18 +111,19 @@ const EditSolution = () => {
         alignItems: 'flex-end', width: '80vw', marginLeft: 'auto', marginRight: 'auto'}}>
         <Button variant={"contained"} style={{height: '36px'}} component={Link} to={'/'}>Cancel</Button>
         {PageHeading('Edit Solution')}
-        <Button variant={"contained"} style={{height: '36px'}} color={"primary"}>Submit</Button>
+        <Button variant={"contained"} style={{height: '36px'}} color={"primary"} disabled={!loaded}>Submit</Button>
       </div>
       <div style={{height: '80vh', width: '80vw', margin: 'auto'}}>
-        {(isDataPopulated()) ?
+        {(loaded) ?
           (<DataGrid rows={getTableData(editedSolution.assignments)} columns={columns} autoPageSize/>)
-          : (<p>Loading</p>)}
+          : (<CircularProgress />)}
       </div>
-      {isDataPopulated() &&
+      {loaded &&
         <EditAssignmentDialog open={editDialogOpen} setOpen={setEditDialogOpen} row={editRow} schedule={editedSolution}
                               setSchedule={setEditedSolution} instructors={instructors}
                               sectionOverlapMap={sectionOverlapMap} disciplineMap={disciplineMap} />
       }
+      <ErrorDialog open={errorOpen} setOpen={setErrorOpen} message={errorMessage} />
     </div>
   );
 };
