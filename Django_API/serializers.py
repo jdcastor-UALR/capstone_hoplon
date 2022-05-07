@@ -1,3 +1,5 @@
+from abc import ABC
+
 from rest_framework import serializers
 
 from Django_API.model_enums import SectionDayChoices
@@ -150,3 +152,10 @@ class SolutionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Solution
         fields = '__all__'
+
+
+'''
+class SolutionChangeSerializer(serializers.ModelSerializer):
+    def update(self, instance, validated_data):
+        pass
+    '''

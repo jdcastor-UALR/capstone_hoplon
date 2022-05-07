@@ -2,7 +2,8 @@ from django.contrib import admin
 from django.db.utils import IntegrityError
 from django.contrib.auth.hashers import make_password
 # Register your models here.
-from .models import RegistrationRequest, User
+from .apps import logger
+from .models import RegistrationRequest, User, Solution
 from .utility import send_email
 
 
@@ -17,6 +18,7 @@ def approve_account(modeladmin, request, queryset):
                                 is_active=True)
             send_email(registration.contact_email, True, registration.requested_password)
         except IntegrityError:
+            logger.exception("An error occurred")
             send_email(registration.contact_email, False, registration.requested_password)
     RegistrationRequestAdmin.delete_queryset(modeladmin, request, queryset)
 
@@ -41,5 +43,10 @@ class UserAdmin(admin.ModelAdmin):
     list_display = ['id', 'accessLevel', 'email']
 
 
+class SolutionAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in Solution._meta.get_fields()]
+
+
+admin.site.register(Solution, SolutionAdmin)
 admin.site.register(RegistrationRequest, RegistrationRequestAdmin)
 admin.site.register(User, UserAdmin)
