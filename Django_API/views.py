@@ -5,15 +5,15 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
 from Django_API.model_functions import get_section_instructor_discipline_map, get_section_overlap_map, data_changed, \
     add_change_record
 from Django_API.models import Instructor, RegistrationRequest, TimeSlot, Course, Section, Discipline, Solution, \
-    DBInitStatus
+    DBInitStatus, AssignedSection
 from Django_API.recursive_scheduler import RecursiveScheduler
 from Django_API.serializers import PasswordChangeSerializer, UserSerializer, RegistrationRequestSerializer, \
     TimeSlotSerializer, CourseSerializer, SectionSerializer, InstructorSerializer, DisciplineSerializer, \
-    InstructorWriteSerializer, CourseWriteSerializer, SolutionSerializer, SectionFullSerializer, SectionWriteSerializer
+    InstructorWriteSerializer, CourseWriteSerializer, SolutionSerializer, SectionFullSerializer, SectionWriteSerializer, \
+    AssignedSectionSerializer, SolutionChangeSerializer
 from .user_permissions import *
 
 logger = logging.getLogger()
@@ -81,6 +81,7 @@ class UserPasswordChange(APIView):
                     return Response()
                 return Response(status=status.HTTP_401_UNAUTHORIZED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class UserDetail(APIView):
     permission_classes = [IsRoot]
@@ -488,16 +489,14 @@ class SolutionDetail(APIView):
 
     def put(self, request, solution_id, **kwargs):
         solution = self._get_solution(solution_id)
-        print(request.data)
-        return Response(request.data)
-        # if solution:
-        #     serializer = SolutionChangeSerializer(solution, data=request.data)
-        #     if serializer.is_valid():
-        #         serializer.save()
-        #         add_change_record(False)
-        #         return Response(serializer.data)
-        #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        # return Response(status=status.HTTP_404_NOT_FOUND)
+        if solution:
+            serializer = SolutionChangeSerializer(request.data, solution_id)
+            if serializer.is_valid():
+                serializer.save()
+                add_change_record(False)
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
     def delete(self, request, solution_id, **kwargs):
         solution = self._get_solution(solution_id)
