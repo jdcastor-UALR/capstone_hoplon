@@ -69,7 +69,7 @@ const LoginPage = () => {
     setPassword('');
 
     let message = 'ERROR: ';
-    message += (error.message === '400') ? LoginFormMessages.wrongCredentials : error.message;
+    message += (error.message.slice(0, 3) === '400') ? LoginFormMessages.wrongCredentials : error.message;
     setErrorMessage(message);
   };
 
@@ -81,7 +81,7 @@ const LoginPage = () => {
         saveToken(data);
         window.location.reload(false);
       }, (error) => {
-        if (error.message === '404') {
+        if (error.message.slice(0, 3) === '404') {
           // This means that this is first user
           APIService.put(URL_CHANGE_PASSWORD,
             {username: 'root', password: 'root', new_password: password}, false).then(() => {

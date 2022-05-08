@@ -30,7 +30,7 @@ const SetupPage = () => {
   };
 
   const handleError = (error) => {
-    if (error.message === '403') {
+    if (error.message.slice(0, 3) === '403') {
       setUnauthorized(true);
     } else {
       openErrorDialog(error.message);

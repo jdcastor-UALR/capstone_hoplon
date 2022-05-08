@@ -7,7 +7,7 @@ function catchErrorResponse(response) {
   }
 
   if (response.status >= 400 && response.status < 600) {
-    throw new Error(response.status);
+    throw new Error(`${response.status} - ${response.statusText}`);
   }
 }
 
