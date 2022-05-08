@@ -1,7 +1,4 @@
-from abc import ABC
-
 from rest_framework import serializers
-from rest_framework.response import Response
 
 from Django_API.model_enums import SectionDayChoices
 from Django_API.models import PasswordChange, User, RegistrationRequest, Section, TimeSlot, Course, Instructor, \
@@ -149,30 +146,6 @@ class AssignedSectionSerializer(serializers.ModelSerializer):
 
 class SolutionSerializer(serializers.ModelSerializer):
     assignments = AssignedSectionSerializer(source="assignedsection_set", many=True)
-
-    class Meta:
-        model = Solution
-        fields = '__all__'
-
-
-class SolutionChangeSerializer(serializers.ModelSerializer):
-    def update(self, request, solution_id):
-        dict(sorted(request.data.items()))
-        result = AssignedSection.objects.filter(solution_id=solution_id).order_by('id').values()
-        list_result = [entry for entry in result]
-        x = 0
-        while x < request.data["assignment_count"]:
-            keys = {"solution_id": "solution", "instructor_id": "instructor", "section_id": "section"}
-            for key, value in keys.items():
-                request.data["assignments"][x][key] = request.data["assignments"][x].pop(value)
-                if request.data["assignments"][x] != list_result[x]:
-                    AssignedSection.objects.filter(section_id=request.data["assignments"][x]['section_id'],
-                                                   solution_id=request.data["assignments"][x]['solution_id']).update(
-                        solution_id=request.data["assignments"][x]['solution_id'],
-                        instructor_id=request.data["assignments"][x]['instructor_id'],
-                        section_id=request.data["assignments"][x]['section_id'])
-            x = x + 1
-        return Response(request.data)
 
     class Meta:
         model = Solution

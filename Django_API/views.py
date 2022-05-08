@@ -13,7 +13,7 @@ from Django_API.recursive_scheduler import RecursiveScheduler
 from Django_API.serializers import PasswordChangeSerializer, UserSerializer, RegistrationRequestSerializer, \
     TimeSlotSerializer, CourseSerializer, SectionSerializer, InstructorSerializer, DisciplineSerializer, \
     InstructorWriteSerializer, CourseWriteSerializer, SolutionSerializer, SectionFullSerializer, SectionWriteSerializer, \
-    AssignedSectionSerializer, SolutionChangeSerializer
+    AssignedSectionSerializer
 from .user_permissions import *
 
 logger = logging.getLogger()
@@ -490,12 +490,83 @@ class SolutionDetail(APIView):
     def put(self, request, solution_id, **kwargs):
         solution = self._get_solution(solution_id)
         if solution:
-            serializer = SolutionChangeSerializer(request.data, solution_id)
-            if serializer.is_valid():
-                serializer.save()
-                add_change_record(False)
+            try:
+                # STEP 1: Get assignments from database solution and request edited solution
+                saved_assignments = solution.assignedsection_set.values()
+                updated_assignments = request.data.get('assignments')
+
+                # STEP 2: Verify submitted assignments are compatible with saved assignments
+                # This is not necessary, but it makes it safer
+                if len(updated_assignments) != len(saved_assignments):
+                    return Response('Incorrect number of assignments', status=status.HTTP_400_BAD_REQUEST)
+                if not all('id' in item and 'solution' in item and 'section' in item and 'instructor' in item
+                           for item in updated_assignments):
+                    return Response('Assignments missing required data members', status=status.HTTP_400_BAD_REQUEST)
+
+                # STEP 3: Begin iteration over each inputted assignment
+                assignments_to_update = []
+                for assignment in updated_assignments:
+                    # Get saved assignment where ID matches
+                    # the expression in parenthesis is a generator expression,
+                    # it acts like a list but it is evaluated one at a time
+                    # next gives us the first value
+                    saved_assignment = next(a for a in saved_assignments if a['id'] == assignment['id'])
+
+                    # STEP 4: Compare new assignment to old assignment
+                    if assignment['instructor'] != saved_assignment['instructor_id']:
+                        # Get model from ID, change instructor to new instructor, add to list
+                        model = AssignedSection.objects.get(id=assignment['id'])
+                        model.instructor = Instructor.objects.get(id=assignment['instructor'])
+                        assignments_to_update.append(model)
+
+                # STEP 5: Use list to update database
+                # bulk_update ensures we only hit the database once to save all models
+                AssignedSection.objects.bulk_update(assignments_to_update, ['instructor'])
+                serializer = SolutionSerializer(self._get_solution(solution_id))
                 return Response(serializer.data)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            # As a bonus I wrapped it all in a try-except block in case something went wrong
+            except Exception as e:
+                logger.exception(e)
+                return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+            '''
+            Here you're trying to sort a list of dictionaries, the format is like:
+            [ {id: X, section_id: X}, {id: X, section_id: x} ]
+            if you call sorted on this, python will try to use the < operator, which won't work
+            instead you have to provide a lambda function python can use to sort the dictionaries like:
+            sorted(request.data['assignments'], lambda x: x['id'])
+            '''
+            # dict(sorted(request.data.items()))
+            '''
+            Here you sort both lists and use a while loop to iterate through the index
+            In Python, the better approach is to directly iterate through lists with the in operator, to minimize the amount of extra variables
+            it also assumes several things, like the list will have the same assignments, which would break the loop if it weren't true
+            If you iterate by ID, make sure you use the len() function on the list to prevent any IndexErrors like:
+            while x < len(assignments)
+            '''
+            # result = AssignedSection.objects.filter(solution_id=solution_id).order_by('id').values()
+            # list_result = [entry for entry in result]
+            # x = 0
+            # while x < request.data["assignment_count"]:
+            #     keys = {"solution_id": "solution", "instructor_id": "instructor", "section_id": "section"}
+            #     for key, value in keys.items():
+            #         request.data["assignments"][x][key] = request.data["assignments"][x].pop(value)
+            #         if request.data["assignments"][x] != list_result[x]:
+            '''
+            This filter().update() will work, but there a couple ways to improve it
+            Calling an update() one-by-one will make it slower, it's much faster to push objects into a list and then call one DB query
+            Only one AssignedSection is being updated here so get() should be used instead of filter()
+            the ID field should be used to get from the database, because it's guaranteed to be unique
+            We only want to update the instructor field, the solution and section fields need to stay the same
+            '''
+            #             AssignedSection.objects.filter(section_id=request.data["assignments"][x]['section_id'],
+            #                                            solution_id=request.data["assignments"][x][
+            #                                                'solution_id']).update(
+            #                 solution_id=request.data["assignments"][x]['solution_id'],
+            #                 instructor_id=request.data["assignments"][x]['instructor_id'],
+            #                 section_id=request.data["assignments"][x]['section_id'])
+            #     x = x + 1
+            # return Response(request.data)
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     def delete(self, request, solution_id, **kwargs):
