@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import PropTypes from 'prop-types';
 import {PageHeading, UnauthorizedMessage} from "../../Utility/text-styles";
 import {Link, useParams} from "react-router-dom";
 import APIService from "../../../APIService";
@@ -11,6 +10,8 @@ import IconButton from "@material-ui/core/IconButton";
 import EditIcon from "@material-ui/icons/Edit";
 import ErrorDialog from "../../Utility/ErrorDialog/ErrorDialog";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import Snackbar from "@material-ui/core/Snackbar";
+import Alert from "@material-ui/lab/Alert";
 
 
 const EditSolution = () => {
@@ -25,6 +26,8 @@ const EditSolution = () => {
   const [loaded, setLoaded] = useState(false);
   const [unauthorized, setUnauthorized] = useState(false);
 
+  const [successSnackbar, setSuccessSnackbar] = useState(false);
+  const [editsMade, setEditsMade] = useState(false);
   const [errorOpen, setErrorOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -51,6 +54,7 @@ const EditSolution = () => {
           <IconButton onClick={() => {
             setEditRow(cellValues.row);
             setEditDialogOpen(true);
+            setEditsMade(true);
           }}>
             <EditIcon />
           </IconButton>
@@ -106,21 +110,22 @@ const EditSolution = () => {
   }
 
   const onSubmit = () => {
-    const data = editedSolution;
-
-    APIService.put(`${URL_SOLUTIONS}${solution_id}`, data, false).then(data => {
-      console.log(data);
-    }, error => console.error(error));
+    APIService.put(`${URL_SOLUTIONS}${solution_id}`, editedSolution, false).then(data => {
+      setSuccessSnackbar(true);
+      setEditsMade(false);
+      setSolution(data);
+      setEditedSolution(data);
+    }, handleError);
   };
 
   return (
     <div data-testid="EditSolution">
       <div style={{marginBottom: '0.5rem', display: 'flex', flexDirection: 'row', justifyContent: 'space-between',
         alignItems: 'flex-end', width: '80vw', marginLeft: 'auto', marginRight: 'auto'}}>
-        <Button variant={"contained"} style={{height: '36px'}} component={Link} to={'/'}>Cancel</Button>
+        <Button variant={"contained"} style={{height: '36px'}} component={Link} to={'/'}>Back</Button>
         {PageHeading('Edit Solution')}
         <Button variant={"contained"} style={{height: '36px'}} color={"primary"}
-                disabled={!loaded} onClick={onSubmit}>Submit</Button>
+                disabled={!editsMade} onClick={onSubmit}>Submit</Button>
       </div>
       <div style={{height: '80vh', width: '80vw', margin: 'auto'}}>
         {(loaded) ?
@@ -133,6 +138,9 @@ const EditSolution = () => {
                               sectionOverlapMap={sectionOverlapMap} disciplineMap={disciplineMap} />
       }
       <ErrorDialog open={errorOpen} setOpen={setErrorOpen} message={errorMessage} />
+      <Snackbar open={successSnackbar} autoHideDuration={4000} onClose={() => setSuccessSnackbar(false)}>
+        <Alert severity={'success'}>Solution saved successfully</Alert>
+      </Snackbar>
     </div>
   );
 };
