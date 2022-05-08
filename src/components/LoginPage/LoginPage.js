@@ -132,7 +132,7 @@ const LoginPage = () => {
       </div>
       {(isLoginForm) ? LoginForm() : RegisterForm()}
       <Button color={"primary"} variant={"contained"} style={{marginTop: '2em', marginRight: '1em'}}
-              onClick={onSubmit}>Submit</Button>
+              onClick={onSubmit} disabled={password === 'root'}>Submit</Button>
       <Button color={"default"} variant={"contained"}
               style={{marginTop: '2em'}}
               onClick={switchForm}>
