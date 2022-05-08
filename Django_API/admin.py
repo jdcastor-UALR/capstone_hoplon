@@ -42,11 +42,5 @@ class RegistrationRequestAdmin(admin.ModelAdmin):
 class UserAdmin(admin.ModelAdmin):
     list_display = ['id', 'accessLevel', 'email']
 
-
-class SolutionAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in Solution._meta.get_fields()]
-
-
-admin.site.register(Solution, SolutionAdmin)
 admin.site.register(RegistrationRequest, RegistrationRequestAdmin)
 admin.site.register(User, UserAdmin)
