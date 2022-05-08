@@ -18,8 +18,8 @@ def do_timeslots_overlap(timeslots: list):
     """ Function to determine if arbitrary number of TimeSlots overlap """
 
     day_num = {'Sun.': 2, 'Mon.': 3, 'Tue.': 4, 'Wed.': 5, 'Thu.': 6, 'Fri.': 7, 'Sat.': 8}
-    to_datetime = lambda ts: (datetime(2022, 1, day_num[ts['meetingDays']], int(ts['begin_time'][:2])),
-                              datetime(2022, 1, day_num[ts['meetingDays']], int(ts['end_time'][:2])))
+    to_datetime = lambda ts: (datetime(2022, 1, day_num[ts['meetingDays']], int(ts['begin_time'][:2]), int(ts['begin_time'][3:5])),
+                              datetime(2022, 1, day_num[ts['meetingDays']], int(ts['end_time'][:2]), int(ts['end_time'][3:5])))
     time_ranges = sorted((to_datetime(ts) for ts in timeslots), key=lambda x: x[0])
 
     for ts1, ts2 in pairwise(time_ranges):

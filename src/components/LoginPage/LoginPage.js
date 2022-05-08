@@ -69,7 +69,9 @@ const LoginPage = () => {
     setPassword('');
 
     let message = 'ERROR: ';
-    message += (error.message.slice(0, 3) === '400') ? LoginFormMessages.wrongCredentials : error.message;
+    if (error.message.slice(0, 3) === '400') {
+      message += (isLoginForm) ?  LoginFormMessages.wrongCredentials : LoginFormMessages.invalidRegistration;
+    }
     setErrorMessage(message);
   };
 

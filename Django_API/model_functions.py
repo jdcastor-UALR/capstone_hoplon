@@ -33,7 +33,7 @@ def get_section_overlap_map(section_data):
         section_timeslots = [ts for ts in section['meetingTimes']]
         for other_section in section_data:
             both_section_timeslots = section_timeslots + [ts for ts in other_section['meetingTimes']]
-            if do_timeslots_overlap(both_section_timeslots):
+            if do_timeslots_overlap(both_section_timeslots) and section['id'] != other_section['id']:
                 result[section['id']].append(other_section['id'])
 
     return result

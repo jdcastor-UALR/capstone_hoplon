@@ -182,6 +182,9 @@ class RegistrationRequestPublic(APIView):
 
     @staticmethod
     def post(request, **kwargs):
+        if RegistrationRequest.objects.filter(contact_email=request.data.get('contact_email', '')):
+            return Response('A registration request for that email is already being processed!',
+                            status=status.HTTP_403_FORBIDDEN)
         serializer = RegistrationRequestSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()

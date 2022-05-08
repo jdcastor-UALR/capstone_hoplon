@@ -74,12 +74,12 @@ const AssistantPage = () => {
   const getConstraintViolations = (schedule) => {
     let assignmentViolations = 0;
     let disciplineViolations = 0;
-    let overlapViolations = 0;
+    let overlapViolations = [];
 
     let assignmentMap = {};
 
     instructors.forEach(instructor => {
-      const assigned = schedule.assignments.filter(a => a.instructor === instructor);
+      const assigned = schedule.assignments.filter(a => a.instructor === instructor.id);
       const count = assigned.length;
       if (count > instructor.maxSections) {
         assignmentViolations += 1;
@@ -96,15 +96,19 @@ const AssistantPage = () => {
 
         const overlap = constraintMap.section_overlap_map[assignment.section];
         if (assignmentMap[assignment.instructor].some(section => overlap.includes(section))) {
-          overlapViolations += 1;
+          overlapViolations.push(assignment.instructor);
         }
       }
     });
+    const conflictCount = new Set(overlapViolations).size;
 
     let result = '';
-    if (assignmentViolations) result += `${assignmentViolations} instructors assigned over limit, `;
-    if (disciplineViolations) result += `${disciplineViolations} instructors teaching outside of their expertise, `;
-    if (overlapViolations) result += `${overlapViolations} instructors with schedule conflicts, `;
+    if (assignmentViolations)
+      result += `${assignmentViolations} instructor${(assignmentViolations < 2) ? '' : 's'} assigned over limit, `;
+    if (disciplineViolations)
+      result += `${disciplineViolations} assignment${(disciplineViolations < 2) ? '' : 's'} with unqualified instructors, `;
+    if (conflictCount)
+      result += `${conflictCount} instructor${(conflictCount < 2) ? '' : 's'} with schedule conflicts, `;
     return (result.length > 0) ? result.slice(0, -2) : 'None';
   }
 

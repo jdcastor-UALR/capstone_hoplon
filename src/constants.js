@@ -7,7 +7,8 @@ export const LoginFormMessages = {
   registerSuccess:
     'Successfully submitted registration request. You will receive an email when your request has been processed.',
   wrongCredentials:
-    'Wrong email or password, please try again.'
+    'Wrong email or password, please try again.',
+  invalidRegistration: 'Could not process request. Please ensure email address is valid and password is not blank.'
 };
 
 export const timeslotToString = (timeslot) => {
