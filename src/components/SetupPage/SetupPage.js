@@ -50,7 +50,7 @@ const SetupPage = () => {
     }, handleError);
 
     APIService.get(URL_WRITE_ACCESS).then(() => {}, (error) => {
-      if (error.message === '403') setWriteAuthorized(false);
+      if (error.message.slice(0, 3) === '403') setWriteAuthorized(false);
     });
   }, []);
 

@@ -11,58 +11,60 @@ import {URL_CHANGE_PASSWORD, URL_CREATE_REGISTRATION_REQUEST} from "../../urls";
 import Typography from "@material-ui/core/Typography";
 import {LoginFormMessages} from "../../constants";
 
-const LoginForm = (setUsername, setPassword) => {
-  return (
-    <>
-      <Grid container alignItems={"center"} justifyContent={"center"} spacing={2}>
-        <Grid item xs={12}>
-          <TextField required label={"Email"} type={"text"} onChange={event => setUsername(event.target.value)} />
-        </Grid>
-        <Grid item xs={12}>
-          <TextField required label={"Password"} type={"password"} onChange={event => setPassword(event.target.value)} />
-        </Grid>
-      </Grid>
-    </>
-  );
-};
-
-const RegisterForm = (accessLevels, setUsername, setPassword, setAccessLevel) => {
-  return (
-    <>
-      <Grid container alignItems={"center"} justifyContent={"center"} spacing={2}>
-        <Grid item xs={12}>
-          <TextField required label={"Email"} type={"text"}
-                     onChange={e => setUsername(e.target.value)} />
-        </Grid>
-        <Grid item xs={12}>
-          <TextField select label={"Requested Access Level"} style={{minWidth: 200}}
-                     onChange={e => setAccessLevel(e.target.value)}>
-            {accessLevels.map((option) => (
-              <MenuItem key={option} value={option}>
-                {option}
-              </MenuItem>
-            ))}
-          </TextField>
-        </Grid>
-        <Grid item xs={12}>
-          <TextField required label={"Requested Password"} type={"password"}
-                     onChange={e => setPassword(e.target.value)} />
-        </Grid>
-      </Grid>
-    </>
-  );
-};
-
 const LoginPage = () => {
   const [isLoginForm, setIsLoginForm] = useState(true);
   const accessLevels = ['root', 'admin', 'assistant'];
 
-  const [username, setUsername] = useState();
-  const [password, setPassword] = useState();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [accessLevel, setAccessLevel] = useState();
 
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+
+  const LoginForm = () => {
+    return (
+      <>
+        <Grid container alignItems={"center"} justifyContent={"center"} spacing={2}>
+          <Grid item xs={12}>
+            <TextField required label={"Email"} type={"text"}
+                       value={username || ''} onChange={event => setUsername(event.target.value)} />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField required label={"Password"} type={"password"}
+                       value={password || ''} onChange={event => setPassword(event.target.value)} />
+          </Grid>
+        </Grid>
+      </>
+    );
+  };
+
+  const RegisterForm = () => {
+    return (
+      <>
+        <Grid container alignItems={"center"} justifyContent={"center"} spacing={2}>
+          <Grid item xs={12}>
+            <TextField required label={"Email"} type={"text"} value={username || ''}
+                       onChange={e => setUsername(e.target.value)} />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField select label={"Requested Access Level"} style={{minWidth: 200}}
+                       onChange={e => setAccessLevel(e.target.value)}>
+              {accessLevels.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
+          <Grid item xs={12}>
+            <TextField required label={"Requested Password"} type={"password"} value={password || ''}
+                       onChange={e => setPassword(e.target.value)} />
+          </Grid>
+        </Grid>
+      </>
+    );
+  };
 
   const handleError = (error) => {
     setUsername('');
@@ -71,6 +73,9 @@ const LoginPage = () => {
     let message = 'ERROR: ';
     if (error.message.slice(0, 3) === '400') {
       message += (isLoginForm) ?  LoginFormMessages.wrongCredentials : LoginFormMessages.invalidRegistration;
+    }
+    if (error.message.slice(0, 3) === '403' && !isLoginForm) {
+      message += 'A registration request for that email is already being processed!'
     }
     setErrorMessage(message);
   };
@@ -102,12 +107,16 @@ const LoginPage = () => {
         setSuccessMessage(LoginFormMessages.registerSuccess);
       }, handleError);
     }
+    setUsername('');
+    setPassword('');
   };
 
   const switchForm = () => {
     setErrorMessage('');
     setSuccessMessage('');
-    setIsLoginForm(!isLoginForm)
+    setIsLoginForm(!isLoginForm);
+    setUsername('');
+    setPassword('');
   };
 
   return (
@@ -121,10 +130,7 @@ const LoginPage = () => {
           <Typography style={{fontWeight: 'bold'}}>{successMessage}</Typography>
         }
       </div>
-      {(isLoginForm) ?
-        LoginForm(setUsername, setPassword) :
-        RegisterForm(accessLevels, setUsername, setPassword, setAccessLevel)
-      }
+      {(isLoginForm) ? LoginForm() : RegisterForm()}
       <Button color={"primary"} variant={"contained"} style={{marginTop: '2em', marginRight: '1em'}}
               onClick={onSubmit}>Submit</Button>
       <Button color={"default"} variant={"contained"}
