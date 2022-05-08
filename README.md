@@ -1,8 +1,11 @@
-# Getting Started with Create React App
+# Hoplon ADTAA
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project is a web application designed to schedule classes with instructors, using a data model that a user can 
+modify. It was created for a Capstone Project class for the department of Computer Science at UA Little Rock, 
+Spring 2022. The repository was designed to uploaded to the Salesforce deployment service, Heroku, and uses a 
+Django/React boilerplate.
 
-## Available Scripts
+## React Frontend Scripts
 
 In the project directory, you can run:
 
@@ -39,32 +42,44 @@ Instead, it will copy all the configuration files and the transitive dependencie
 
 You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
 
-## Learn More
+## Django Backend
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+The Django backend API uses a PostgreSQL database and a gmail STMP email server. Ensure that the following environment
+variables are set before running:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- DB_USERNAME (Database user)
+- DB_PASSWORD (Database user's password)
+- EMAIL_HOST (Email service's URI)
+- EMAIL_HOST_USER (Email service's user)
+- EMAIL_HOST_PASSWORD (Email service's user's password)
 
-### Code Splitting
+### `python manage.py makemigrations`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+This command is used to make the migrations after `models.py` has been modified. The deployment server follows these 
+migrations after upload.
 
-### Analyzing the Bundle Size
+### `python manage.py migrate`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+This command is used to apply the migrations to the connected database. 
 
-### Making a Progressive Web App
+### `python manage.py load_helper_models`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+This command loads the static models that are used in the application, such as subject disciplines. It must be run 
+before using the application.
 
-### Advanced Configuration
+### `python manage.py load_dummy_data`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+This command loads example data to show how the application could be used.
 
-### Deployment
+### Admin Panel
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+The Django backend features a built-in admin panel to manage superuser responsibilities. This can be reached from the
+host URL followed by `/admin`.
 
-### `yarn build` fails to minify
+## Heroku Deployment Service
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+To use the heroku deployment service, the heroku github repository must be added as a remote to this project. Updates
+can be pushed to the deployment service by pushing to that remote like, `git push heroku main`. 
+
+The Heroku CLI can also be used to execute commands on the deployment service. The format of these commands are 
+`heroku run python manage.py [command] -a [heroku app name]`.
