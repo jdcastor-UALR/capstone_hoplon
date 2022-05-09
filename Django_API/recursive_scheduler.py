@@ -1,11 +1,18 @@
 from collections import Counter
 
+import time
+
 from Django_API.model_functions import get_section_instructor_discipline_map, get_section_overlap_map
 from Django_API.models import Solution, AssignedSection
 
 
 class RecursiveScheduler:
     """ A class to represent an instance of a recursive algorithm used to schedule sections to instructors """
+    # Limiters for generator in time and complete solutions generated
+    start_time: time
+    max_time = 5.0
+    max_solutions = 1200000000
+    complete = False
 
     instructors = []
     sections = []
@@ -21,8 +28,6 @@ class RecursiveScheduler:
     complete_solutions_found = 0
     incomplete_solutions_found = 0
     tree_distribution = {}
-
-    complete = False
 
     def __init__(self, sections: list, instructors: list):
         """
@@ -44,6 +49,7 @@ class RecursiveScheduler:
 
     def run(self):
         """ Runs algorithm to generate all possible schedules and save as Solution model """
+        self.start_time = time.time()
         schedule = []
         sections = self._get_remaining_sections(schedule)
         if sections:
@@ -124,7 +130,9 @@ class RecursiveScheduler:
 
         if len(sections_to_assign) < 1:
             return None
-        return sorted(sections_to_assign, key=lambda x: len(self.section_overlap_map[x]), reverse=True)
+        sections_to_assign = sorted(sections_to_assign, key=lambda x: len(self.section_overlap_map[x]), reverse=True)
+        return sorted(sections_to_assign, key=lambda x: len(self.section_discipline_map[x]))
+        # return sections_to_assign
 
     def _pick_instructor(self, schedule, section_id):
         """
@@ -156,9 +164,13 @@ class RecursiveScheduler:
 
         if len(schedule) == len(self.sections):
             self.complete_solutions_found += 1
-            self.complete = True
+            if self.complete_solutions_found >= self.max_solutions:
+                self.complete = True
         else:
             self.incomplete_solutions_found += 1
+
+        if time.time() - self.start_time > self.max_time:
+            self.complete = True
 
         self.tree_distribution[len(schedule)] = self.tree_distribution.get(len(schedule), 0) + 1
 
